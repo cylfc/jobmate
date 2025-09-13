@@ -1,2 +1,25 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+@theme static {
+  --font-sans: 'Epunda Slab', serif;
+
+  --color-brand-50: #FDF7F3;
+  --color-brand-100: #FAEDE0;
+  --color-brand-200: #F4D4B8;
+  --color-brand-300: #EEBA90;
+  --color-brand-400: #D68D67;
+  --color-brand-500: #C6613F;
+  --color-brand-600: #A84D2F;
+  --color-brand-700: #8A3A23;
+  --color-brand-800: #6C2B19;
+  --color-brand-900: #4E1F11;
+  --color-brand-950: #331408;
+
+  --color-bg-50: hsl(0, 0%, 100%);
+  --color-bg-100: hsl(48, 33.3%, 97.1%);
+  --color-bg-200: hsl(53, 28.6%, 94.5%);
+  --color-bg-300: hsl(48, 25%, 92.2%);
+  --color-bg-400: hsl(50, 20.7%, 88.6%);
+  --color-bg-500: hsl(50, 20.7%, 88.6%);
+}

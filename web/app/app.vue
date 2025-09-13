@@ -1,5 +1,5 @@
 <template>
-  <div>
-    <UButton>Button</UButton>
-  </div>
+  <u-app>
+    <nuxt-page class="bg-bg-50"/>
+  </u-app>
 </template>
