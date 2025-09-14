@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+@import "./scrollbar.css";
 
 @theme static {
   --font-sans: 'Epunda Slab', serif;
@@ -22,4 +23,6 @@
   --color-bg-300: hsl(48, 25%, 92.2%);
   --color-bg-400: hsl(50, 20.7%, 88.6%);
   --color-bg-500: hsl(50, 20.7%, 88.6%);
+
+  --ui-radius: 0;
 }

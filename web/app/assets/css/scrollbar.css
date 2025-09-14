@@ -1,0 +1,165 @@
+/* =========================== */
+/* GLOBAL SCROLLBAR STYLES - TAILWIND */
+/* =========================== */
+
+@layer base {
+  /* =========================== */
+  /* GLOBAL SCROLLBAR - WEBKIT BROWSERS */
+  /* =========================== */
+  
+  /* All scrollable elements */
+  *::-webkit-scrollbar {
+    @apply w-3 h-3;
+  }
+  
+  *::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+  
+  *::-webkit-scrollbar-thumb {
+    @apply bg-[#C6613F] border-2 border-gray-100;
+  }
+  
+  *::-webkit-scrollbar-thumb:hover {
+    @apply bg-[#A84D2F];
+  }
+  
+  *::-webkit-scrollbar-thumb:active {
+    @apply bg-[#8A3A23];
+  }
+  
+  *::-webkit-scrollbar-corner {
+    @apply bg-gray-100;
+  }
+
+  /* =========================== */
+  /* GLOBAL SCROLLBAR - FIREFOX */
+  /* =========================== */
+  
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #C6613F #f3f4f6;
+  }
+  
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #C6613F #f3f4f6;
+  }
+
+  /* =========================== */
+  /* DARK MODE SUPPORT */
+  /* =========================== */
+  
+  @media (prefers-color-scheme: dark) {
+    *::-webkit-scrollbar-track {
+      @apply bg-gray-800;
+    }
+    
+    *::-webkit-scrollbar-thumb {
+      @apply bg-[#C6613F] border-2 border-gray-800;
+    }
+    
+    *::-webkit-scrollbar-thumb:hover {
+      @apply bg-[#D68D67];
+    }
+    
+    *::-webkit-scrollbar-corner {
+      @apply bg-gray-800;
+    }
+    
+    html, * {
+      scrollbar-color: #C6613F #1f2937;
+    }
+  }
+  
+  /* Dark mode với class .dark */
+  .dark *::-webkit-scrollbar-track {
+    @apply bg-gray-800;
+  }
+  
+  .dark *::-webkit-scrollbar-thumb {
+    @apply bg-[#C6613F] border-2 border-gray-800;
+  }
+  
+  .dark *::-webkit-scrollbar-thumb:hover {
+    @apply bg-[#D68D67];
+  }
+  
+  .dark *::-webkit-scrollbar-corner {
+    @apply bg-gray-800;
+  }
+  
+  .dark html,
+  .dark * {
+    scrollbar-color: #C6613F rgba(255,255,255,0.1);
+  }
+
+  /* =========================== */
+  /* UNIFORM SCROLLBAR SIZE */
+  /* =========================== */
+  
+  /* All devices use same scrollbar size */
+  *::-webkit-scrollbar {
+    @apply w-3 h-3;
+  }
+
+  /* =========================== */
+  /* SPECIAL CASES */
+  /* =========================== */
+  
+  /* Body scrollbar - có thể style riêng */
+  body::-webkit-scrollbar {
+    @apply w-3 h-3;
+  }
+  
+  /* Code blocks - scrollbar mỏng hơn */
+  pre::-webkit-scrollbar,
+  code::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+  
+  /* Tables - scrollbar mỏng */
+  .table-container::-webkit-scrollbar,
+  table::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+}
+
+/* =========================== */
+/* UTILITY CLASSES (Optional overrides) */
+/* =========================== */
+
+@layer utilities {
+  /* Override global scrollbar cho element cụ thể */
+  .scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .scrollbar-hidden::-webkit-scrollbar {
+    @apply hidden;
+  }
+  
+  /* Scrollbar mỏng hơn */
+  .scrollbar-thin::-webkit-scrollbar {
+    @apply w-1 h-1;
+  }
+  
+  /* Scrollbar rộng hơn */
+  .scrollbar-thick::-webkit-scrollbar {
+    @apply w-4 h-4;
+  }
+  
+  /* Scrollbar trong suốt */
+  .scrollbar-transparent::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  
+  .scrollbar-transparent::-webkit-scrollbar-thumb {
+    @apply border-0 bg-[#C6613F]/70;
+  }
+  
+  .scrollbar-transparent::-webkit-scrollbar-thumb:hover {
+    @apply bg-[#C6613F];
+  }
+}
