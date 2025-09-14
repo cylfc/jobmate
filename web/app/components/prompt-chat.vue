@@ -1,18 +1,27 @@
 <template>
   <div>
-    <div class="relative min-w-2xl">
+    <u-card
+      :ui="{
+        root: 'ring-1 ring-brand-500 shadow-2xl',
+        body: 'p-3 sm:p-3 flex flex-col justify-between items-stretch gap-2',
+      }"
+    >
       <u-textarea
         :ui="{
-          base: 'ring-primary rounded-xl outline-none ring-1 p-4 text-base',
+          base: 'ring-0 hover:ring-0 focus-visible:ring-0 active:ring-0 p-0 text-base',
         }"
+        :maxrows="2"
         class="w-full"
         placeholder="Tell something..."
       />
-      <u-button variant="solid" class="absolute bottom-4 right-4 rounded-full h-10 w-10 text-center justify-center items-center" size="xl"
-        >
-        <u-icon name="i-lucide-sparkles" />
-        </u-button
-      >
-    </div>
+      <div class="flex flex-row justify-between items-end">
+        <prompt-chat-actions />
+        <u-button
+          variant="solid"
+          icon="i-lucide-arrow-up"
+          class="text-center justify-center items-center"
+        />
+      </div>
+    </u-card>
   </div>
 </template>
