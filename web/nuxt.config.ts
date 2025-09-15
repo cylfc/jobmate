@@ -11,4 +11,7 @@ export default defineNuxtConfig({
     '@nuxt/ui'
   ],
   css: ['~/assets/css/main.css'],
+  runtimeConfig: {
+    openaiApiKey: '',
+  },
 })

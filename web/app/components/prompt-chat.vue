@@ -12,15 +12,11 @@
         }"
         :maxrows="2"
         class="w-full"
-        placeholder="Tell something..."
+        placeholder="How I can help?"
       />
       <div class="flex flex-row justify-between items-end">
         <prompt-chat-actions />
-        <u-button
-          variant="solid"
-          icon="i-lucide-arrow-up"
-          class="text-center justify-center items-center"
-        />
+        <prompt-chat-send />
       </div>
     </u-card>
   </div>

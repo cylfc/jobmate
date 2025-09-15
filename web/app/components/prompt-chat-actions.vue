@@ -6,18 +6,36 @@
       :content="{ side: 'right', align: 'end' }"
       :ui="{ itemLeadingIcon: 'size-4' }"
     >
-       <u-button
-         variant="outline"
-         :icon="isOpen ? 'i-lucide-x' : 'i-lucide-plus'"
-         :ui="{
-          base: 'ring-brand-100'
-         }"
-       />
+      <u-button
+        variant="outline"
+        color="neutral"
+        :icon="isOpen ? 'i-lucide-x' : 'i-lucide-plus'"
+        :ui="{
+          base: 'ring-brand-100',
+        }"
+      />
+    </u-dropdown-menu>
+    <u-dropdown-menu
+      v-model:open="isOpenSettings"
+      :items="settingsMenuItems"
+      :content="{ side: 'right', align: 'end' }"
+      :ui="{ itemLeadingIcon: 'size-4' }"
+    >
+      <u-button
+        variant="outline"
+        color="neutral"
+        :icon="isOpenSettings ? 'i-lucide-x' : 'i-lucide-settings-2'"
+        :ui="{
+          base: 'ring-brand-100',
+          leadingIcon: 'stroke-1',
+        }"
+      />
     </u-dropdown-menu>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import type { DropdownMenuItem } from "@nuxt/ui";
 
 defineOptions({
@@ -25,12 +43,13 @@ defineOptions({
 });
 
 const isOpen = ref(false);
+const isOpenSettings = ref(false);
 
 const menuItems: DropdownMenuItem[][] = [
   [
     {
       label: "Upload File",
-      icon: "i-lucide-upload",
+      icon: "i-lucide-paperclip",
       onSelect: () => handleUploadFile(),
     },
     {
@@ -66,6 +85,45 @@ const menuItems: DropdownMenuItem[][] = [
   ],
 ];
 
+const settingsMenuItems: DropdownMenuItem[][] = [
+  [
+    {
+      label: "Chat Settings",
+      icon: "i-lucide-message-square",
+      onSelect: () => handleChatSettings(),
+    },
+    {
+      label: "AI Model",
+      icon: "i-lucide-brain",
+      onSelect: () => handleAIModel(),
+    },
+  ],
+  [
+    {
+      label: "Theme",
+      icon: "i-lucide-palette",
+      onSelect: () => handleTheme(),
+    },
+    {
+      label: "Language",
+      icon: "i-lucide-globe",
+      onSelect: () => handleLanguage(),
+    },
+  ],
+  [
+    {
+      label: "Keyboard Shortcuts",
+      icon: "i-lucide-keyboard",
+      onSelect: () => handleKeyboardShortcuts(),
+    },
+    {
+      label: "Help & Support",
+      icon: "i-lucide-help-circle",
+      onSelect: () => handleHelpSupport(),
+    },
+  ],
+];
+
 const handleUploadFile = () => {
   // TODO: Implement file upload logic
   console.log("Upload file clicked");
@@ -94,5 +152,36 @@ const handleClearChat = () => {
 const handleExportChat = () => {
   // TODO: Implement export chat logic
   console.log("Export chat clicked");
+};
+
+// Settings menu handlers
+const handleChatSettings = () => {
+  // TODO: Implement chat settings logic
+  console.log("Chat settings clicked");
+};
+
+const handleAIModel = () => {
+  // TODO: Implement AI model selection logic
+  console.log("AI model clicked");
+};
+
+const handleTheme = () => {
+  // TODO: Implement theme selection logic
+  console.log("Theme clicked");
+};
+
+const handleLanguage = () => {
+  // TODO: Implement language selection logic
+  console.log("Language clicked");
+};
+
+const handleKeyboardShortcuts = () => {
+  // TODO: Implement keyboard shortcuts logic
+  console.log("Keyboard shortcuts clicked");
+};
+
+const handleHelpSupport = () => {
+  // TODO: Implement help & support logic
+  console.log("Help & support clicked");
 };
 </script>
