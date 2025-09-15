@@ -1,5 +1,9 @@
 <template>
-  <div class="flex flex-row justify-center items-center min-h-screen min-w-screen bg-brand-50">
-    <prompt-chat class="fixed bottom-4 w-1/2 mx-auto"/>
+  <div
+    class="flex flex-row justify-center items-center min-h-screen min-w-screen bg-brand-50"
+  >
+    <div class="px-2 fixed w-full bottom-3">
+      <prompt-chat class=" mx-auto w-full md:w-3/5" />
+    </div>
   </div>
 </template>
