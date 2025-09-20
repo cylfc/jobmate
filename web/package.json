@@ -17,7 +17,7 @@
     "@nuxt/image": "1.11.0",
     "@nuxt/scripts": "0.11.13",
     "@nuxt/test-utils": "3.19.2",
-    "@nuxt/ui": "3.3.3",
+    "@nuxt/ui": "4.0.0-alpha.2",
     "@unhead/vue": "^2.0.14",
     "ai": "^5.0.44",
     "better-sqlite3": "^12.2.0",

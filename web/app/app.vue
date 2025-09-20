@@ -1,5 +1,9 @@
 <template>
-  <u-app>
-    <nuxt-page class="px-2 md:px-0"/>
-  </u-app>
+  <UApp>
+    <UMain>
+      <NuxtLayout>
+        <NuxtPage />
+      </NuxtLayout>
+    </UMain>
+  </UApp>
 </template>
