@@ -10,9 +10,6 @@
         variant="outline"
         color="neutral"
         :icon="isOpen ? 'i-lucide-x' : 'i-lucide-plus'"
-        :ui="{
-          base: 'ring-brand-100',
-        }"
       />
     </u-dropdown-menu>
     <u-dropdown-menu
@@ -25,10 +22,6 @@
         variant="outline"
         color="neutral"
         :icon="isOpenSettings ? 'i-lucide-x' : 'i-lucide-settings-2'"
-        :ui="{
-          base: 'ring-brand-100',
-          leadingIcon: 'stroke-1',
-        }"
       />
     </u-dropdown-menu>
   </div>

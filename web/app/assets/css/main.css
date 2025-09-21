@@ -3,18 +3,18 @@
 @import "./scrollbar.css";
 
 @theme static {
-  --font-sans: 'Epunda Slab', serif;
+  --font-sans: "Epunda Slab", serif;
 
-  --color-brand-50: #FDF7F3;
-  --color-brand-100: #FAEDE0;
-  --color-brand-200: #F4D4B8;
-  --color-brand-300: #EEBA90;
-  --color-brand-400: #D68D67;
-  --color-brand-500: #C6613F;
-  --color-brand-600: #A84D2F;
-  --color-brand-700: #8A3A23;
-  --color-brand-800: #6C2B19;
-  --color-brand-900: #4E1F11;
+  --color-brand-50: #fdf7f3;
+  --color-brand-100: #faede0;
+  --color-brand-200: #f4d4b8;
+  --color-brand-300: #eeba90;
+  --color-brand-400: #d68d67;
+  --color-brand-500: #c6613f;
+  --color-brand-600: #a84d2f;
+  --color-brand-700: #8a3a23;
+  --color-brand-800: #6c2b19;
+  --color-brand-900: #4e1f11;
   --color-brand-950: #331408;
 
   --color-bg-50: hsl(0, 0%, 100%);
