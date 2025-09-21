@@ -13,7 +13,7 @@
         trailing-icon="i-lucide-chevron-down"
         :ui="{
           base: 'ring-brand-100',
-          trailingIcon: 'size-4'
+          trailingIcon: 'size-4',
         }"
       />
     </u-dropdown-menu>
@@ -39,7 +39,7 @@ defineOptions({
 const selectedModel = ref({
   label: "GPT-4",
   icon: "i-lucide-brain",
-  value: "gpt-4"
+  value: "gpt-4",
 });
 
 // Available models
@@ -53,19 +53,22 @@ const modelMenuItems: DropdownMenuItem[][] = [
     {
       label: "GPT-3.5 Turbo",
       icon: "i-lucide-zap",
-      onSelect: () => selectModel("gpt-3.5-turbo", "GPT-3.5 Turbo", "i-lucide-zap"),
+      onSelect: () =>
+        selectModel("gpt-3.5-turbo", "GPT-3.5 Turbo", "i-lucide-zap"),
     },
   ],
   [
     {
       label: "Claude 3 Opus",
       icon: "i-lucide-sparkles",
-      onSelect: () => selectModel("claude-3-opus", "Claude 3 Opus", "i-lucide-sparkles"),
+      onSelect: () =>
+        selectModel("claude-3-opus", "Claude 3 Opus", "i-lucide-sparkles"),
     },
     {
       label: "Claude 3 Sonnet",
       icon: "i-lucide-crown",
-      onSelect: () => selectModel("claude-3-sonnet", "Claude 3 Sonnet", "i-lucide-crown"),
+      onSelect: () =>
+        selectModel("claude-3-sonnet", "Claude 3 Sonnet", "i-lucide-crown"),
     },
   ],
   [
