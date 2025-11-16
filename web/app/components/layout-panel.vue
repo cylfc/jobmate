@@ -23,16 +23,16 @@
     <div class="flex-1 bg-bg-200">
       <slot />
     </div>
-    <UDrawer id="layout-panel-left" class="lg:hidden">
+    <UDrawer id="layout-panel-left" :overlay="false" class="lg:hidden">
       <slot name="drawer-trigger">
         <div
           class="flex flex-row justify-center items-center fixed bottom-4 right-0 left-0"
         >
           <UButton
             color="primary"
-            variant="subtle"
-            trailing-icon="i-lucide-minus"
-            class="min-w-16 h-3 flex justify-center items-center shadow text-primary cursor-pointer"
+            variant="solid"
+            trailing-icon="i-lucide-chevron-up"
+            class="flex justify-center items-center shadow cursor-pointer"
           />
         </div>
       </slot>
