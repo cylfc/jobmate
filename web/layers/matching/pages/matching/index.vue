@@ -1,13 +1,121 @@
 <template>
-  <div>
-    <h1>Matching Page</h1>
-    <MatchingCard />
+  <div class="container mx-auto p-6 space-y-6">
+    <div>
+      <h1 class="text-3xl font-bold mb-2">Job Matching</h1>
+      <p class="text-gray-600">Find the best candidates for your job</p>
+    </div>
+
+    <MatchingStepper
+      :current-step="currentStep"
+      @update:current-step="goToStep"
+    />
+
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <StepsStep1JobInput
+        v-if="currentStep === 1"
+        :job="selectedJob"
+        @update:job="selectedJob = $event"
+        @next="handleNext"
+        @save-job="showSaveJobModal = true"
+      />
+
+      <StepsStep2CandidateInput
+        v-if="currentStep === 2"
+        :candidates="selectedCandidates"
+        @update:candidates="selectedCandidates = $event"
+        @next="handleNext"
+        @previous="handlePrevious"
+        @save-candidate="showSaveCandidateModal = true"
+      />
+
+      <StepsStep3Analysis
+        v-if="currentStep === 3"
+        :is-analyzing="isAnalyzing"
+        :analysis-progress="analysisProgress"
+        :matchings-count="matchings.length"
+        @next="handleNext"
+        @previous="handlePrevious"
+      />
+
+      <StepsStep4Results
+        v-if="currentStep === 4"
+        :matchings="matchings"
+        @previous="handlePrevious"
+        @reset="handleReset"
+        @save-candidate="handleSaveCandidateFromResults"
+      />
+    </div>
+
+    <ModalsSaveJobModal
+      v-model="showSaveJobModal"
+      :job="selectedJob"
+      @save="handleSaveJob"
+    />
+
+    <ModalsSaveCandidateModal
+      v-model="showSaveCandidateModal"
+      :candidate="selectedCandidateForSave"
+      @save="handleSaveCandidate"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import type { Candidate, Matching } from '../types/matching'
+
 definePageMeta({
   layout: 'default',
 })
-</script>
 
+const {
+  currentStep,
+  selectedJob,
+  selectedCandidates,
+  matchings,
+  isAnalyzing,
+  analysisProgress,
+  analyzeMatchings,
+  nextStep,
+  previousStep,
+  reset,
+} = useMatching()
+
+const showSaveJobModal = ref(false)
+const showSaveCandidateModal = ref(false)
+const selectedCandidateForSave = ref<Candidate | null>(null)
+
+const handleNext = async () => {
+  if (currentStep.value === 2) {
+    // Start analysis when moving from step 2 to step 3
+    if (selectedJob.value && selectedCandidates.value.length > 0) {
+      await analyzeMatchings(selectedJob.value, selectedCandidates.value)
+    }
+  }
+  nextStep()
+}
+
+const handlePrevious = () => {
+  previousStep()
+}
+
+const handleReset = () => {
+  reset()
+}
+
+const handleSaveJob = () => {
+  showSaveJobModal.value = false
+  // Job is saved via the modal
+}
+
+const handleSaveCandidate = () => {
+  selectedCandidateForSave.value = null
+  showSaveCandidateModal.value = false
+  // Candidate is saved via the modal
+}
+
+const handleSaveCandidateFromResults = (_matching: Matching) => {
+  // TODO: Extract candidate data from matching
+  selectedCandidateForSave.value = null
+  showSaveCandidateModal.value = true
+}
+</script>

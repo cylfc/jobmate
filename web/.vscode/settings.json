@@ -8,5 +8,13 @@
   "tailwindCSS.classAttributes": ["class", "ui"],
   "tailwindCSS.experimental.classRegex": [
     ["ui:\\s*{([^)]*)\\s*}", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
-  ]
+  ],
+  "volar.takeOverMode.enabled": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enable": true,
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "vetur.experimental.templateInterpolationService": true,
+  "vetur.validation.template": false,
+  "vetur.validation.script": false,
+  "vetur.validation.style": false
 }
