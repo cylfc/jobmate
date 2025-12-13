@@ -6,7 +6,7 @@
     </div>
 
     <div class="space-y-4">
-      <div v-if="selectedMode === 'input'" class="space-y-4">
+      <div v-if="selectedMode === CANDIDATE_INPUT_MODE.INPUT" class="space-y-4">
         <UFormField label="Candidate Information" name="candidateText" class="w-full">
           <UTextarea
             v-model="candidateText"
@@ -22,7 +22,7 @@
         </UFormField>
       </div>
 
-      <div v-else-if="selectedMode === 'upload'" class="space-y-4">
+      <div v-else-if="selectedMode === CANDIDATE_INPUT_MODE.UPLOAD" class="space-y-4">
         <UFormField label="Upload CV Files" name="cvs" class="w-full">
           <UInput
             type="file"
@@ -62,7 +62,7 @@
         </div>
       </div>
 
-      <div v-else-if="selectedMode === 'database'" class="space-y-4">
+      <div v-else-if="selectedMode === CANDIDATE_INPUT_MODE.DATABASE" class="space-y-4">
         <UFormField label="Filter Candidates" name="filters" class="w-full">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <UFormField label="Status" name="status" class="w-full">
@@ -170,11 +170,12 @@
         </UButton>
         <UButton
           color="primary"
-          :disabled="!canProceed"
+          :disabled="!canProceed || isProcessing"
+          :loading="isProcessing"
           icon="i-lucide-arrow-right"
           @click="handleNext"
         >
-          Next Step
+          {{ isProcessing ? 'Processing...' : 'Next Step' }}
         </UButton>
       </div>
     </div>
@@ -182,7 +183,8 @@
 </template>
 
 <script setup lang="ts">
-import type { Candidate, CandidateFilter } from '../../types/matching'
+import type { Candidate, CandidateFilter } from '@matching/types/matching'
+import { CANDIDATE_INPUT_MODE, type CandidateInputMode } from '@matching/constants/modes'
 
 interface Props {
   candidates: Candidate[]
@@ -198,19 +200,20 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const { getCandidatesFromDatabase } = useMatching()
+const { getCandidatesFromDatabase, parseCandidatesFromText } = useMatching()
 
-const selectedMode = ref<'input' | 'upload' | 'database'>('input')
+const selectedMode = ref<CandidateInputMode>(CANDIDATE_INPUT_MODE.INPUT)
 const uploadedFiles = ref<File[]>([])
 const selectedCandidates = ref<Candidate[]>([])
 const candidatesFromDatabase = ref<Candidate[]>([])
 const filters = ref<CandidateFilter>({})
 const candidateText = ref('')
+const isProcessing = ref(false)
 
 const tabs = [
-  { label: 'Input', value: 'input' as const, icon: 'i-lucide-pencil' },
-  { label: 'Upload CVs', value: 'upload' as const, icon: 'i-lucide-file-up' },
-  { label: 'From Database', value: 'database' as const, icon: 'i-lucide-database' },
+  { label: 'Input', value: CANDIDATE_INPUT_MODE.INPUT, icon: 'i-lucide-pencil' },
+  { label: 'Upload CVs', value: CANDIDATE_INPUT_MODE.UPLOAD, icon: 'i-lucide-file-up' },
+  { label: 'From Database', value: CANDIDATE_INPUT_MODE.DATABASE, icon: 'i-lucide-database' },
 ]
 
 const statusOptions = [
@@ -220,11 +223,11 @@ const statusOptions = [
 ]
 
 const canProceed = computed(() => {
-  if (selectedMode.value === 'input') {
+  if (selectedMode.value === CANDIDATE_INPUT_MODE.INPUT) {
     return candidateText.value.trim().length > 0
   }
-  if (selectedMode.value === 'upload') return uploadedFiles.value.length > 0
-  if (selectedMode.value === 'database') return selectedCandidates.value.length > 0
+  if (selectedMode.value === CANDIDATE_INPUT_MODE.UPLOAD) return uploadedFiles.value.length > 0
+  if (selectedMode.value === CANDIDATE_INPUT_MODE.DATABASE) return selectedCandidates.value.length > 0
   return false
 })
 
@@ -291,55 +294,35 @@ const getCandidateName = (candidate: Candidate) => {
   return candidate.email || 'Unknown'
 }
 
-const parseCandidateFromText = (text: string): Candidate => {
-  const emailMatch = text.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/)
-  const phoneMatch = text.match(/(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/)
-  
-  const lines = text.split('\n').filter(l => l.trim().length > 0)
-  const firstLine = lines[0] || ''
-  const nameParts = firstLine.split(/\s+/).filter(p => p.length > 0)
-  
-  return {
-    firstName: nameParts[0] || 'Candidate',
-    lastName: nameParts.slice(1).join(' ') || '',
-    email: emailMatch ? emailMatch[0] : '',
-    phone: phoneMatch ? phoneMatch[0] : undefined,
-    skills: [],
-    experience: 0,
-  }
-}
-
-const handleNext = () => {
+const handleNext = async () => {
   // Combine all candidates from different modes
   const allCandidates = [...selectedCandidates.value]
   
-  // If there's candidate text, parse candidates from text
-  if (selectedMode.value === 'input' && candidateText.value.trim().length > 0) {
-    const text = candidateText.value.trim()
-    
-    // Try to split by double newlines (multiple candidates)
-    const candidateBlocks = text.split(/\n\s*\n/).filter(block => block.trim().length > 0)
-    
-    // If no double newlines, treat entire text as one candidate
-    if (candidateBlocks.length === 0) {
-      candidateBlocks.push(text)
+  // If there's candidate text, parse candidates from text via API
+  if (selectedMode.value === CANDIDATE_INPUT_MODE.INPUT && candidateText.value.trim().length > 0) {
+    isProcessing.value = true
+    try {
+      const parsedCandidates = await parseCandidatesFromText(candidateText.value.trim())
+      
+      // Add parsed candidates if not already in list
+      parsedCandidates.forEach(candidate => {
+        const isDuplicate = allCandidates.some(c => 
+          (c.email && candidate.email && c.email === candidate.email) ||
+          (c.firstName === candidate.firstName && 
+           c.lastName === candidate.lastName &&
+           candidate.firstName !== 'Candidate')
+        )
+        
+        if (!isDuplicate) {
+          allCandidates.push(candidate)
+        }
+      })
+    } catch (error) {
+      console.error('Error parsing candidates from text:', error)
+      // Continue with existing candidates if parsing fails
+    } finally {
+      isProcessing.value = false
     }
-    
-    candidateBlocks.forEach(block => {
-      const candidateFromText = parseCandidateFromText(block)
-      
-      // Only add if not already in list (check by email or name)
-      const isDuplicate = allCandidates.some(c => 
-        (c.email && candidateFromText.email && c.email === candidateFromText.email) ||
-        (c.firstName === candidateFromText.firstName && 
-         c.lastName === candidateFromText.lastName &&
-         candidateFromText.firstName !== 'Candidate')
-      )
-      
-      if (!isDuplicate) {
-        allCandidates.push(candidateFromText)
-      }
-    })
   }
   
   emit('update:candidates', allCandidates)

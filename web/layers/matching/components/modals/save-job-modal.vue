@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Job, CreateJobInput } from '../../types/matching'
+import type { Job, CreateJobInput } from '@matching/types/matching'
 
 interface Props {
   modelValue: boolean

@@ -5,13 +5,14 @@
       <p class="text-gray-600">Review and manage matching candidates</p>
     </div>
 
-    <MatchingResultsTable
-      :matchings="matchings"
+    <TablesMatchingResultsTable
+      :matchings="localMatchings"
       @export="handleExport"
       @view-details="handleViewDetails"
       @schedule-interview="handleScheduleInterview"
       @send-message="handleSendMessage"
       @save-candidate="handleSaveCandidate"
+      @bulk-save-candidate="handleBulkSaveCandidate"
       @bulk-schedule="handleBulkSchedule"
       @bulk-chat="handleBulkChat"
     />
@@ -27,32 +28,95 @@
       >
         Previous
       </UButton>
-      <UButton
-        color="primary"
-        icon="i-lucide-refresh-cw"
-        @click="$emit('reset')"
-      >
-        Start New Matching
-      </UButton>
+      <div class="flex gap-2">
+        <UButton
+          color="neutral"
+          variant="outline"
+          icon="i-lucide-refresh-cw"
+          :loading="isLoading"
+          @click="handleRefresh"
+        >
+          Refresh
+        </UButton>
+        <UButton
+          color="primary"
+          icon="i-lucide-plus"
+          @click="$emit('reset')"
+        >
+          Start New Matching
+        </UButton>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Matching } from '../../types/matching'
+import type { Matching } from '@matching/types/matching'
 
 interface Props {
   matchings: Matching[]
 }
 
 interface Emits {
-  (e: 'previous'): void
-  (e: 'reset'): void
+  (e: 'previous' | 'reset' | 'refresh'): void
   (e: 'save-candidate', matching: Matching): void
+  (e: 'update:matchings', matchings: (Matching & { candidateName?: string })[]): void
 }
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
+
+const { getMatchings } = useMatching()
+const isLoading = ref(false)
+const localMatchings = ref<(Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]>([])
+
+// Load matchings when component mounts
+onMounted(async () => {
+  await loadMatchings()
+})
+
+// Watch for props changes (when parent updates matchings from Step 3 or refresh)
+watch(() => props.matchings, (newMatchings) => {
+  if (newMatchings && newMatchings.length > 0) {
+    localMatchings.value = newMatchings as (Matching & { candidateName?: string })[]
+    console.log('Step 4 - Updated matchings from props:', localMatchings.value)
+  }
+}, { immediate: true, deep: true })
+
+const loadMatchings = async () => {
+  isLoading.value = true
+  try {
+    // Try to get matchings from API (database) - but this might be empty if not saved yet
+    const apiMatchings = await getMatchings()
+    if (apiMatchings && apiMatchings.length > 0) {
+      localMatchings.value = apiMatchings as (Matching & { candidateName?: string })[]
+      emit('update:matchings', localMatchings.value)
+      console.log('Step 4 - Loaded matchings from API:', localMatchings.value)
+    } else if (props.matchings && props.matchings.length > 0) {
+      // Fallback to props (from Step 3 state or refresh)
+      localMatchings.value = props.matchings as (Matching & { candidateName?: string })[]
+      console.log('Step 4 - Using matchings from props:', localMatchings.value)
+    }
+  } catch (error) {
+    console.error('Error loading matchings:', error)
+    // Fallback to props if API fails
+    if (props.matchings && props.matchings.length > 0) {
+      localMatchings.value = props.matchings as (Matching & { candidateName?: string })[]
+    }
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const handleRefresh = async () => {
+  isLoading.value = true
+  // Emit refresh event to parent - parent will call analyzeMatchings and update matchings
+  emit('refresh')
+  // Wait a bit for parent to update matchings
+  await new Promise(resolve => setTimeout(resolve, 100))
+  // Props should be updated by now, watch will handle the update
+  isLoading.value = false
+}
 
 const handleExport = () => {
   // TODO: Implement export functionality
@@ -76,6 +140,18 @@ const handleSendMessage = (matching: Matching) => {
 
 const handleSaveCandidate = (matching: Matching) => {
   emit('save-candidate', matching)
+}
+
+const handleBulkSaveCandidate = (matchings: string[]) => {
+  // TODO: Bulk save candidate action
+  console.log('Bulk save candidate:', matchings)
+  // Find matching objects by IDs and emit save-candidate for each
+  matchings.forEach(id => {
+    const matching = localMatchings.value.find(m => m.id === id)
+    if (matching) {
+      emit('save-candidate', matching)
+    }
+  })
 }
 
 const handleBulkSchedule = (matchings: string[]) => {

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="container mx-auto p-6 space-y-6">
     <div>
@@ -43,6 +44,8 @@
         @previous="handlePrevious"
         @reset="handleReset"
         @save-candidate="handleSaveCandidateFromResults"
+        @refresh="handleRefreshMatchings"
+        @update:matchings="matchings = $event"
       />
     </div>
 
@@ -61,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Candidate, Matching } from '../types/matching'
+import type { Candidate, Matching } from '@matching/types/matching'
 
 definePageMeta({
   layout: 'default',
@@ -75,8 +78,10 @@ const {
   isAnalyzing,
   analysisProgress,
   analyzeMatchings,
+  getMatchings,
   nextStep,
   previousStep,
+  goToStep,
   reset,
 } = useMatching()
 
@@ -117,5 +122,20 @@ const handleSaveCandidateFromResults = (_matching: Matching) => {
   // TODO: Extract candidate data from matching
   selectedCandidateForSave.value = null
   showSaveCandidateModal.value = true
+}
+
+const handleRefreshMatchings = async () => {
+  // Refresh matchings by re-analyzing with current job and candidates
+  if (selectedJob.value && selectedCandidates.value.length > 0) {
+      await analyzeMatchings(selectedJob.value, selectedCandidates.value)
+      // matchings.value is updated by analyzeMatchings, which will trigger props update in Step 4
+      console.log('Parent - Refreshed matchings:', matchings.value)
+  } else {
+    // If no job/candidates, try to get from API
+    const apiMatchings = await getMatchings()
+    if (apiMatchings && apiMatchings.length > 0) {
+      matchings.value = apiMatchings
+    }
+  }
 }
 </script>
