@@ -1,16 +1,16 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-2xl font-bold mb-2">Step 1: Job Information</h2>
-      <p class="text-gray-600">Enter job details or select from your database</p>
+      <h2 class="text-2xl font-bold mb-2">{{ t('matching.step-1.title') }}</h2>
+      <p class="text-gray-600">{{ t('matching.step-1.description') }}</p>
     </div>
 
     <div class="space-y-4">
       <div v-if="selectedMode === JOB_INPUT_MODE.INPUT" class="space-y-4">
-        <UFormField label="Job Description" name="description" class="w-full">
+        <UFormField :label="t('matching.step-1.job-description')" name="description" class="w-full">
           <UTextarea
             v-model="jobDescription"
-            placeholder="Paste job description here..."
+            :placeholder="t('matching.step-1.job-description-placeholder')"
             :rows="10"
             class="w-full"
           />
@@ -18,7 +18,7 @@
       </div>
 
       <div v-else-if="selectedMode === JOB_INPUT_MODE.UPLOAD" class="space-y-4">
-        <UFormField label="Upload Job Description File" name="file" class="w-full">
+        <UFormField :label="t('matching.step-1.upload-file')" name="file" class="w-full">
           <UInput
             type="file"
             accept=".pdf,.doc,.docx,.txt"
@@ -27,17 +27,17 @@
           />
           <template #hint>
             <p class="text-sm text-gray-500 mt-1">
-              Supported formats: PDF, DOC, DOCX, TXT
+              {{ t('matching.step-1.supported-formats') }}
             </p>
           </template>
         </UFormField>
       </div>
 
       <div v-else-if="selectedMode === JOB_INPUT_MODE.LINK" class="space-y-4">
-        <UFormField label="Job Link" name="link" class="w-full">
+        <UFormField :label="t('matching.step-1.job-link')" name="link" class="w-full">
           <UInput
             v-model="jobLink"
-            placeholder="https://example.com/job/123"
+            :placeholder="t('matching.step-1.job-link-placeholder')"
             icon="i-lucide-link"
             class="w-full"
           />
@@ -45,11 +45,11 @@
       </div>
 
       <div v-else-if="selectedMode === JOB_INPUT_MODE.DATABASE" class="space-y-4">
-        <UFormField label="Select Job from Database" name="job" class="w-full">
+        <UFormField :label="t('matching.step-1.select-from-database')" name="job" class="w-full">
           <USelectMenu
             v-model="selectedJobId"
             :options="jobOptions"
-            placeholder="Select a job..."
+            :placeholder="t('matching.step-1.select-job-placeholder')"
             searchable
             class="w-full"
           />
@@ -80,7 +80,7 @@
           variant="outline"
           @click="openSaveJobModal"
         >
-          Save Job to Database
+          {{ t('matching.step-1.save-job') }}
         </UButton>
       </div>
       <UButton
@@ -89,7 +89,7 @@
         :loading="isProcessing"
         @click="handleNext"
       >
-        {{ isProcessing ? 'Processing...' : 'Next Step' }}
+        {{ isProcessing ? t('matching.step-1.processing') : t('matching.step-1.next-step') }}
       </UButton>
     </div>
   </div>
@@ -98,6 +98,8 @@
 <script setup lang="ts">
 import type { Job } from '@matching/types/matching'
 import { JOB_INPUT_MODE, type JobInputMode } from '@matching/constants/modes'
+
+const { t } = useI18n()
 
 interface Props {
   job: Job | null
@@ -121,12 +123,12 @@ const uploadedFile = ref<File | null>(null)
 const jobsFromDatabase = ref<Job[]>([])
 const isProcessing = ref(false)
 
-const tabs = [
-  { label: 'Input', value: JOB_INPUT_MODE.INPUT, icon: 'i-lucide-pencil' },
-  { label: 'Upload', value: JOB_INPUT_MODE.UPLOAD, icon: 'i-lucide-file-up' },
-  { label: 'Link', value: JOB_INPUT_MODE.LINK, icon: 'i-lucide-link' },
-  { label: 'Database', value: JOB_INPUT_MODE.DATABASE, icon: 'i-lucide-database' },
-]
+const tabs = computed(() => [
+  { label: t('matching.step-1.input'), value: JOB_INPUT_MODE.INPUT, icon: 'i-lucide-pencil' },
+  { label: t('matching.step-1.upload'), value: JOB_INPUT_MODE.UPLOAD, icon: 'i-lucide-file-up' },
+  { label: t('matching.step-1.link'), value: JOB_INPUT_MODE.LINK, icon: 'i-lucide-link' },
+  { label: t('matching.step-1.database'), value: JOB_INPUT_MODE.DATABASE, icon: 'i-lucide-database' },
+])
 
 const jobOptions = computed(() => {
   return jobsFromDatabase.value.map((job: Job) => ({

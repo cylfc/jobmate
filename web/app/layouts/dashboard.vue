@@ -1,14 +1,36 @@
 <template>
   <div class="min-h-screen flex flex-col bg-gray-50">
     <LayoutsDashboardHeader />
-    <div class="flex flex-1 overflow-hidden">
-      <LayoutsDashboardSidebar />
-      <main class="flex-1 overflow-y-auto">
-        <div class="p-6">
-          <slot />
-        </div>
-      </main>
-    </div>
+    <UDashboardGroup storage-key="dashboard-sidebar">
+      <UDashboardSidebar
+        resizable
+        collapsible
+        :default-size="20"
+        :min-size="16"
+        :max-size="30"
+        :collapsed-size="0"
+        class="bg-white"
+      >
+        <template #header="{ collapsed }">
+          <LayoutsDashboardSidebar :collapsed="collapsed" type="header" />
+        </template>
+
+        <template #default="{ collapsed }">
+          <LayoutsDashboardSidebar :collapsed="collapsed" type="content" />
+        </template>
+      </UDashboardSidebar>
+
+      <UDashboardPanel>
+        <template #header>
+          <div class="h-16" />
+        </template>
+        <main class="flex-1 overflow-y-auto">
+          <div class="mt-16">
+            <slot />
+          </div>
+        </main>
+      </UDashboardPanel>
+    </UDashboardGroup>
   </div>
 </template>
 

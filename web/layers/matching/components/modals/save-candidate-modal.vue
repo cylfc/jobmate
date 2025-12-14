@@ -3,40 +3,40 @@
     <template #content>
       <UCard>
         <template #header>
-          <h3 class="text-lg font-semibold">Save Candidate to Database</h3>
+          <h3 class="text-lg font-semibold">{{ t('matching.save-candidate-modal.title') }}</h3>
         </template>
 
         <div class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
-            <UFormField label="First Name" name="firstName" required>
-              <UInput v-model="form.firstName" placeholder="Enter first name" />
+            <UFormField :label="t('matching.save-candidate-modal.first-name')" name="firstName" required>
+              <UInput v-model="form.firstName" :placeholder="t('matching.save-candidate-modal.first-name-placeholder')" />
             </UFormField>
-            <UFormField label="Last Name" name="lastName" required>
-              <UInput v-model="form.lastName" placeholder="Enter last name" />
+            <UFormField :label="t('matching.save-candidate-modal.last-name')" name="lastName" required>
+              <UInput v-model="form.lastName" :placeholder="t('matching.save-candidate-modal.last-name-placeholder')" />
             </UFormField>
           </div>
 
-          <UFormField label="Email" name="email" required>
-            <UInput v-model="form.email" type="email" placeholder="Enter email" />
+          <UFormField :label="t('matching.save-candidate-modal.email')" name="email" required>
+            <UInput v-model="form.email" type="email" :placeholder="t('matching.save-candidate-modal.email-placeholder')" />
           </UFormField>
 
-          <UFormField label="Phone" name="phone">
-            <UInput v-model="form.phone" placeholder="Enter phone number" />
+          <UFormField :label="t('matching.save-candidate-modal.phone')" name="phone">
+            <UInput v-model="form.phone" :placeholder="t('matching.save-candidate-modal.phone-placeholder')" />
           </UFormField>
 
-          <UFormField label="Skills" name="skills">
+          <UFormField :label="t('matching.save-candidate-modal.skills')" name="skills">
             <UTextarea
               v-model="skillsText"
-              placeholder="Enter skills (one per line or comma-separated)"
+              :placeholder="t('matching.save-candidate-modal.skills-placeholder')"
               :rows="3"
             />
           </UFormField>
 
-          <UFormField label="Experience (years)" name="experience">
+          <UFormField :label="t('matching.save-candidate-modal.experience')" name="experience">
             <UInput
               v-model.number="form.experience"
               type="number"
-              placeholder="Enter years of experience"
+              :placeholder="t('matching.save-candidate-modal.experience-placeholder')"
             />
           </UFormField>
         </div>
@@ -48,14 +48,14 @@
               variant="ghost"
               @click="close"
             >
-              Cancel
+              {{ t('common.cancel') }}
             </UButton>
             <UButton
               color="primary"
               :loading="isSaving"
               @click="handleSave"
             >
-              Save Candidate
+              {{ t('matching.save-candidate-modal.save-candidate') }}
             </UButton>
           </div>
         </template>
@@ -66,6 +66,8 @@
 
 <script setup lang="ts">
 import type { Candidate, CreateCandidateInput } from '@matching/types/matching'
+
+const { t } = useI18n()
 
 interface Props {
   modelValue: boolean

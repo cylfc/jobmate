@@ -11,6 +11,8 @@
 <script setup lang="ts">
 import type { StepperItem } from '@nuxt/ui'
 
+const { t } = useI18n()
+
 interface Props {
   currentStep: number
 }
@@ -22,25 +24,25 @@ interface Emits {
 defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const stepperItems = ref<StepperItem[]>([
+const stepperItems = computed<StepperItem[]>(() => [
   {
-    title: 'Job Information',
-    description: 'Enter job details',
+    title: t('matching.stepper.job-information'),
+    description: t('matching.stepper.job-information-desc'),
     icon: 'i-lucide-briefcase',
   },
   {
-    title: 'Candidates',
-    description: 'Upload or select CVs',
+    title: t('matching.stepper.candidates'),
+    description: t('matching.stepper.candidates-desc'),
     icon: 'i-lucide-users',
   },
   {
-    title: 'AI Analysis',
-    description: 'Analyzing matches',
+    title: t('matching.stepper.ai-analysis'),
+    description: t('matching.stepper.ai-analysis-desc'),
     icon: 'i-lucide-brain',
   },
   {
-    title: 'Results',
-    description: 'View matching results',
+    title: t('matching.stepper.results'),
+    description: t('matching.stepper.results-desc'),
     icon: 'i-lucide-list-checks',
   },
 ])

@@ -9,65 +9,65 @@
               <span class="text-lg font-bold text-gray-900">JobMate</span>
             </div>
             <p class="text-sm text-gray-600">
-              Nền tảng tuyển dụng thông minh với AI
+              {{ t('footer.tagline') }}
             </p>
           </div>
           <div>
-            <h3 class="text-sm font-semibold text-gray-900 mb-4">Sản phẩm</h3>
+            <h3 class="text-sm font-semibold text-gray-900 mb-4">{{ t('footer.products') }}</h3>
             <ul class="space-y-2">
               <li>
                 <NuxtLink to="/jobs" class="text-sm text-gray-600 hover:text-primary-600">
-                  Việc làm
+                  {{ t('nav.jobs') }}
                 </NuxtLink>
               </li>
               <li>
                 <NuxtLink to="/candidates" class="text-sm text-gray-600 hover:text-primary-600">
-                  Ứng viên
+                  {{ t('nav.candidates') }}
                 </NuxtLink>
               </li>
               <li>
                 <NuxtLink to="/matching" class="text-sm text-gray-600 hover:text-primary-600">
-                  Matching
+                  {{ t('nav.matching') }}
                 </NuxtLink>
               </li>
             </ul>
           </div>
           <div>
-            <h3 class="text-sm font-semibold text-gray-900 mb-4">Công ty</h3>
+            <h3 class="text-sm font-semibold text-gray-900 mb-4">{{ t('footer.company') }}</h3>
             <ul class="space-y-2">
               <li>
                 <a href="#" class="text-sm text-gray-600 hover:text-primary-600">
-                  Về chúng tôi
+                  {{ t('footer.about-us') }}
                 </a>
               </li>
               <li>
                 <a href="#" class="text-sm text-gray-600 hover:text-primary-600">
-                  Blog
+                  {{ t('footer.blog') }}
                 </a>
               </li>
               <li>
                 <a href="#" class="text-sm text-gray-600 hover:text-primary-600">
-                  Liên hệ
+                  {{ t('footer.contact') }}
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <h3 class="text-sm font-semibold text-gray-900 mb-4">Hỗ trợ</h3>
+            <h3 class="text-sm font-semibold text-gray-900 mb-4">{{ t('footer.support') }}</h3>
             <ul class="space-y-2">
               <li>
                 <a href="#" class="text-sm text-gray-600 hover:text-primary-600">
-                  Trung tâm trợ giúp
+                  {{ t('footer.help-center') }}
                 </a>
               </li>
               <li>
                 <a href="#" class="text-sm text-gray-600 hover:text-primary-600">
-                  Điều khoản
+                  {{ t('footer.terms') }}
                 </a>
               </li>
               <li>
                 <a href="#" class="text-sm text-gray-600 hover:text-primary-600">
-                  Chính sách bảo mật
+                  {{ t('footer.privacy-policy') }}
                 </a>
               </li>
             </ul>
@@ -75,7 +75,7 @@
         </div>
         <div class="mt-8 pt-8 border-t border-gray-200">
           <p class="text-sm text-gray-600 text-center">
-            © {{ new Date().getFullYear() }} JobMate. All rights reserved.
+            © {{ new Date().getFullYear() }} JobMate. {{ t('common.all-rights-reserved') }}.
           </p>
         </div>
       </div>
@@ -84,6 +84,6 @@
 </template>
 
 <script setup lang="ts">
-// Default footer for landing page
+const { t } = useI18n()
 </script>
 

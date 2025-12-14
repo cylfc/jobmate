@@ -3,55 +3,55 @@
     <template #content>
       <UCard>
         <template #header>
-          <h3 class="text-lg font-semibold">Save Job to Database</h3>
+          <h3 class="text-lg font-semibold">{{ t('matching.save-job-modal.title') }}</h3>
         </template>
 
         <div class="space-y-4">
-          <UFormField label="Job Title" name="title" required>
-            <UInput v-model="form.title" placeholder="Enter job title" />
+          <UFormField :label="t('matching.save-job-modal.job-title')" name="title" required>
+            <UInput v-model="form.title" :placeholder="t('matching.save-job-modal.job-title-placeholder')" />
           </UFormField>
 
-          <UFormField label="Company" name="company">
-            <UInput v-model="form.company" placeholder="Enter company name" />
+          <UFormField :label="t('matching.save-job-modal.company')" name="company">
+            <UInput v-model="form.company" :placeholder="t('matching.save-job-modal.company-placeholder')" />
           </UFormField>
 
-          <UFormField label="Domain" name="domain">
-            <UInput v-model="form.domain" placeholder="Enter domain" />
+          <UFormField :label="t('matching.save-job-modal.domain')" name="domain">
+            <UInput v-model="form.domain" :placeholder="t('matching.save-job-modal.domain-placeholder')" />
           </UFormField>
 
-          <UFormField label="Location" name="location">
-            <UInput v-model="form.location" placeholder="Enter location" />
+          <UFormField :label="t('matching.save-job-modal.location')" name="location">
+            <UInput v-model="form.location" :placeholder="t('matching.save-job-modal.location-placeholder')" />
           </UFormField>
 
-          <UFormField label="Description" name="description" required>
+          <UFormField :label="t('matching.save-job-modal.description')" name="description" required>
             <UTextarea
               v-model="form.description"
-              placeholder="Enter job description"
+              :placeholder="t('matching.save-job-modal.description-placeholder')"
               :rows="5"
             />
           </UFormField>
 
-          <UFormField label="Requirements" name="requirements">
+          <UFormField :label="t('matching.save-job-modal.requirements')" name="requirements">
             <UTextarea
               v-model="requirementsText"
-              placeholder="Enter requirements (one per line)"
+              :placeholder="t('matching.save-job-modal.requirements-placeholder')"
               :rows="3"
             />
           </UFormField>
 
           <div class="grid grid-cols-2 gap-4">
-            <UFormField label="Min Salary" name="minSalary">
+            <UFormField :label="t('matching.save-job-modal.min-salary')" name="minSalary">
               <UInput
                 v-model.number="minSalary"
                 type="number"
-                placeholder="Min salary"
+                :placeholder="t('matching.save-job-modal.min-salary-placeholder')"
               />
             </UFormField>
-            <UFormField label="Max Salary" name="maxSalary">
+            <UFormField :label="t('matching.save-job-modal.max-salary')" name="maxSalary">
               <UInput
                 v-model.number="maxSalary"
                 type="number"
-                placeholder="Max salary"
+                :placeholder="t('matching.save-job-modal.max-salary-placeholder')"
               />
             </UFormField>
           </div>
@@ -64,14 +64,14 @@
               variant="ghost"
               @click="close"
             >
-              Cancel
+              {{ t('common.cancel') }}
             </UButton>
             <UButton
               color="primary"
               :loading="isSaving"
               @click="handleSave"
             >
-              Save Job
+              {{ t('matching.save-job-modal.save-job') }}
             </UButton>
           </div>
         </template>
@@ -82,6 +82,8 @@
 
 <script setup lang="ts">
 import type { Job, CreateJobInput } from '@matching/types/matching'
+
+const { t } = useI18n()
 
 interface Props {
   modelValue: boolean
