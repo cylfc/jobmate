@@ -18,8 +18,24 @@ export default defineNuxtConfig({
     "@nuxt/scripts",
     "@nuxt/test-utils",
     "@nuxt/ui",
-    "@nuxt/hints"
+    "@nuxt/hints",
+    "@nuxtjs/i18n"
   ],
+  i18n: {
+    lazy: true,
+    langDir: 'locales',
+    defaultLocale: 'vi',
+    locales: [
+      { code: 'vi', name: 'Tiếng Việt', file: 'vi.json' },
+      { code: 'en', name: 'English', file: 'en.json' }
+    ],
+    strategy: 'no_prefix',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root',
+    },
+  },
   css: ["~/assets/css/main.css"],
   runtimeConfig: {
     openaiApiKey: "",

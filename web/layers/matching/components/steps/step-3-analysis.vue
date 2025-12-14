@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-2xl font-bold mb-2">Step 3: AI Analysis</h2>
-      <p class="text-gray-600">Analyzing job-candidate matches</p>
+      <h2 class="text-2xl font-bold mb-2">{{ t('matching.step-3.title') }}</h2>
+      <p class="text-gray-600">{{ t('matching.step-3.description') }}</p>
     </div>
 
     <div v-if="isAnalyzing" class="space-y-4">
@@ -10,7 +10,7 @@
         <div class="space-y-4">
           <div>
             <div class="flex items-center justify-between mb-2">
-              <p class="text-sm font-medium">Processing Data</p>
+              <p class="text-sm font-medium">{{ t('matching.step-3.processing-data') }}</p>
               <span class="text-sm text-gray-500">{{ analysisProgress }}%</span>
             </div>
             <UProgress :value="analysisProgress" :max="100" />
@@ -43,10 +43,10 @@
     <div v-else-if="analysisComplete" class="p-6 bg-green-50 rounded-lg">
       <div class="flex items-center gap-2 mb-4">
         <UIcon name="i-lucide-check-circle" class="w-6 h-6 text-green-500" />
-        <p class="text-lg font-semibold text-green-900">Analysis Complete!</p>
+        <p class="text-lg font-semibold text-green-900">{{ t('matching.step-3.analysis-complete') }}</p>
       </div>
       <p class="text-sm text-green-700">
-        Found {{ matchingsCount }} matching candidates
+        {{ t('matching.step-3.found-matching', { count: matchingsCount }) }}
       </p>
     </div>
 
@@ -59,7 +59,7 @@
         icon="i-lucide-arrow-left"
         @click="$emit('previous')"
       >
-        Previous
+        {{ t('matching.step-3.previous') }}
       </UButton>
       <UButton
         v-if="analysisComplete"
@@ -67,13 +67,15 @@
         icon="i-lucide-arrow-right"
         @click="$emit('next')"
       >
-        View Results
+        {{ t('matching.step-3.view-results') }}
       </UButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 interface Props {
   isAnalyzing: boolean
   analysisProgress: number
@@ -88,16 +90,32 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
+const stepLabels = computed(() => [
+  t('matching.step-3.extracting-data'),
+  t('matching.step-3.processing-cvs'),
+  t('matching.step-3.calculating-scores'),
+  t('matching.step-3.generating-report'),
+])
+
 const analysisSteps = ref([
-  { label: 'Extracting data from job description', completed: false, active: false },
-  { label: 'Processing candidate CVs', completed: false, active: false },
-  { label: 'Calculating match scores', completed: false, active: false },
-  { label: 'Generating analysis report', completed: false, active: false },
+  { label: '', completed: false, active: false },
+  { label: '', completed: false, active: false },
+  { label: '', completed: false, active: false },
+  { label: '', completed: false, active: false },
 ])
 
 const analysisComplete = computed(() => {
   return !props.isAnalyzing && props.analysisProgress === 100
 })
+
+// Update labels when translation changes
+watch(stepLabels, (labels) => {
+  labels.forEach((label, index) => {
+    if (analysisSteps.value[index]) {
+      analysisSteps.value[index].label = label
+    }
+  })
+}, { immediate: true })
 
 watch(() => props.analysisProgress, (progress) => {
   const stepIndex = Math.floor((progress / 100) * analysisSteps.value.length)

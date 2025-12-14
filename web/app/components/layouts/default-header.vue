@@ -9,25 +9,25 @@
           </NuxtLink>
           <nav class="hidden md:flex items-center gap-6">
             <NuxtLink to="/" class="text-sm font-medium text-gray-700 hover:text-primary-600">
-              Trang chủ
+              {{ t('nav.home') }}
             </NuxtLink>
             <NuxtLink to="/jobs" class="text-sm font-medium text-gray-700 hover:text-primary-600">
-              Việc làm
+              {{ t('nav.jobs') }}
             </NuxtLink>
             <NuxtLink to="/candidates" class="text-sm font-medium text-gray-700 hover:text-primary-600">
-              Ứng viên
+              {{ t('nav.candidates') }}
             </NuxtLink>
             <NuxtLink to="/matching" class="text-sm font-medium text-gray-700 hover:text-primary-600">
-              Matching
+              {{ t('nav.matching') }}
             </NuxtLink>
           </nav>
         </div>
         <div class="flex items-center gap-4">
           <UButton to="/auth/login" color="neutral" variant="ghost" size="sm">
-            Đăng nhập
+            {{ t('auth.login') }}
           </UButton>
           <UButton to="/auth/register" color="primary" size="sm">
-            Đăng ký
+            {{ t('auth.register') }}
           </UButton>
         </div>
       </div>
@@ -36,6 +36,6 @@
 </template>
 
 <script setup lang="ts">
-// Default header for landing page
+const { t } = useI18n()
 </script>
 

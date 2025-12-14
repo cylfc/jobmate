@@ -1,29 +1,29 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-2xl font-bold mb-2">Step 2: Candidates</h2>
-      <p class="text-gray-600">Enter candidate information, upload CVs, or select from your database</p>
+      <h2 class="text-2xl font-bold mb-2">{{ t('matching.step-2.title') }}</h2>
+      <p class="text-gray-600">{{ t('matching.step-2.description') }}</p>
     </div>
 
     <div class="space-y-4">
       <div v-if="selectedMode === CANDIDATE_INPUT_MODE.INPUT" class="space-y-4">
-        <UFormField label="Candidate Information" name="candidateText" class="w-full">
+        <UFormField :label="t('matching.step-2.candidate-information')" name="candidateText" class="w-full">
           <UTextarea
             v-model="candidateText"
-            placeholder="Paste candidate information or CV text here..."
+            :placeholder="t('matching.step-2.candidate-placeholder')"
             :rows="10"
             class="w-full"
           />
           <template #hint>
             <p class="text-sm text-gray-500 mt-1">
-              Paste candidate information here. You can paste multiple candidates, each on a new line or separated by blank lines.
+              {{ t('matching.step-2.candidate-hint') }}
             </p>
           </template>
         </UFormField>
       </div>
 
       <div v-else-if="selectedMode === CANDIDATE_INPUT_MODE.UPLOAD" class="space-y-4">
-        <UFormField label="Upload CV Files" name="cvs" class="w-full">
+        <UFormField :label="t('matching.step-2.upload-cvs')" name="cvs" class="w-full">
           <UInput
             type="file"
             accept=".pdf,.doc,.docx"
@@ -33,13 +33,13 @@
           />
           <template #hint>
             <p class="text-sm text-gray-500 mt-1">
-              You can upload multiple CV files. Supported formats: PDF, DOC, DOCX
+              {{ t('matching.step-2.upload-hint') }}
             </p>
           </template>
         </UFormField>
 
         <div v-if="uploadedFiles.length > 0" class="space-y-2">
-          <p class="text-sm font-medium">Uploaded Files:</p>
+          <p class="text-sm font-medium">{{ t('matching.step-2.uploaded-files') }}</p>
           <div class="space-y-2">
             <div
               v-for="(file, index) in uploadedFiles"
@@ -63,22 +63,22 @@
       </div>
 
       <div v-else-if="selectedMode === CANDIDATE_INPUT_MODE.DATABASE" class="space-y-4">
-        <UFormField label="Filter Candidates" name="filters" class="w-full">
+        <UFormField :label="t('matching.step-2.filter-candidates')" name="filters" class="w-full">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <UFormField label="Status" name="status" class="w-full">
+            <UFormField :label="t('matching.step-2.status')" name="status" class="w-full">
               <USelectMenu
                 v-model="filters.status"
                 :options="statusOptions"
-                placeholder="Select status..."
+                :placeholder="t('matching.step-2.select-status')"
                 clearable
                 class="w-full"
               />
             </UFormField>
-            <UFormField label="Min Experience (years)" name="minExperience" class="w-full">
+            <UFormField :label="t('matching.step-2.min-experience')" name="minExperience" class="w-full">
               <UInput
                 v-model.number="filters.minExperience"
                 type="number"
-                placeholder="Min Experience"
+                :placeholder="t('matching.step-2.min-experience-placeholder')"
                 class="w-full"
               />
             </UFormField>
@@ -91,11 +91,11 @@
           icon="i-lucide-search"
           @click="loadCandidates"
         >
-          Load Candidates
+          {{ t('matching.step-2.load-candidates') }}
         </UButton>
 
         <div v-if="candidatesFromDatabase.length > 0" class="space-y-2">
-          <p class="text-sm font-medium">Select Candidates:</p>
+          <p class="text-sm font-medium">{{ t('matching.step-2.select-candidates') }}</p>
           <div class="space-y-2 max-h-96 overflow-y-auto">
             <div
               v-for="candidate in candidatesFromDatabase"
@@ -133,7 +133,7 @@
 
     <div v-if="selectedCandidates.length > 0" class="p-4 bg-primary-50 rounded-lg">
       <p class="text-sm font-medium mb-2">
-        Selected Candidates: {{ selectedCandidates.length }}
+        {{ t('matching.step-2.selected-candidates', { count: selectedCandidates.length }) }}
       </p>
       <div class="flex flex-wrap gap-2">
         <UBadge
@@ -156,7 +156,7 @@
         icon="i-lucide-arrow-left"
         @click="$emit('previous')"
       >
-        Previous
+        {{ t('matching.step-2.previous') }}
       </UButton>
       <div class="flex gap-2">
         <UButton
@@ -166,7 +166,7 @@
           icon="i-lucide-save"
           @click="openSaveCandidateModal"
         >
-          Save Candidates to Database
+          {{ t('matching.step-2.save-candidates') }}
         </UButton>
         <UButton
           color="primary"
@@ -175,7 +175,7 @@
           icon="i-lucide-arrow-right"
           @click="handleNext"
         >
-          {{ isProcessing ? 'Processing...' : 'Next Step' }}
+          {{ isProcessing ? t('matching.step-2.processing') : t('matching.step-2.next-step') }}
         </UButton>
       </div>
     </div>
@@ -185,6 +185,8 @@
 <script setup lang="ts">
 import type { Candidate, CandidateFilter } from '@matching/types/matching'
 import { CANDIDATE_INPUT_MODE, type CandidateInputMode } from '@matching/constants/modes'
+
+const { t } = useI18n()
 
 interface Props {
   candidates: Candidate[]
@@ -210,17 +212,17 @@ const filters = ref<CandidateFilter>({})
 const candidateText = ref('')
 const isProcessing = ref(false)
 
-const tabs = [
-  { label: 'Input', value: CANDIDATE_INPUT_MODE.INPUT, icon: 'i-lucide-pencil' },
-  { label: 'Upload CVs', value: CANDIDATE_INPUT_MODE.UPLOAD, icon: 'i-lucide-file-up' },
-  { label: 'From Database', value: CANDIDATE_INPUT_MODE.DATABASE, icon: 'i-lucide-database' },
-]
+const tabs = computed(() => [
+  { label: t('matching.step-2.input'), value: CANDIDATE_INPUT_MODE.INPUT, icon: 'i-lucide-pencil' },
+  { label: t('matching.step-2.upload-cvs-label'), value: CANDIDATE_INPUT_MODE.UPLOAD, icon: 'i-lucide-file-up' },
+  { label: t('matching.step-2.from-database'), value: CANDIDATE_INPUT_MODE.DATABASE, icon: 'i-lucide-database' },
+])
 
-const statusOptions = [
-  { label: 'Active', value: 'active' },
-  { label: 'Inactive', value: 'inactive' },
-  { label: 'Archived', value: 'archived' },
-]
+const statusOptions = computed(() => [
+  { label: t('matching.status.active'), value: 'active' },
+  { label: t('matching.status.inactive'), value: 'inactive' },
+  { label: t('matching.status.archived'), value: 'archived' },
+])
 
 const canProceed = computed(() => {
   if (selectedMode.value === CANDIDATE_INPUT_MODE.INPUT) {
@@ -291,7 +293,7 @@ const getCandidateName = (candidate: Candidate) => {
   if (candidate.firstName || candidate.lastName) {
     return `${candidate.firstName} ${candidate.lastName}`.trim()
   }
-  return candidate.email || 'Unknown'
+  return candidate.email || t('common.unknown')
 }
 
 const handleNext = async () => {

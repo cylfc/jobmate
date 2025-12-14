@@ -13,7 +13,7 @@
           variant="ghost"
           size="sm"
         >
-          Đăng nhập
+          {{ t('auth.login') }}
         </UButton>
         <UButton
           v-if="!isRegisterPage"
@@ -21,7 +21,7 @@
           color="primary"
           size="sm"
         >
-          Đăng ký
+          {{ t('auth.register') }}
         </UButton>
       </div>
     </div>
@@ -29,6 +29,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 const route = useRoute();
 
 const isLoginPage = computed(() => route.path === "/auth/login");

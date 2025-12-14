@@ -9,16 +9,19 @@
       </div>
       <div class="flex items-center gap-2">
         <!-- Locale Selector -->
-        <UDropdownMenu :items="localeMenuItems">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            icon="i-lucide-globe"
-            aria-label="Language"
-            square
-          />
-        </UDropdownMenu>
+        <ULocaleSelect
+          :model-value="locale || 'vi'"
+          :locales="availableLocales"
+          color="neutral"
+          variant="ghost"
+          class="w-auto"
+          :avatar="{
+            ui: {
+              root: 'size-6'
+            }
+          }"
+          @update:model-value="handleLocaleChange($event)"
+        />
 
         <!-- Notifications -->
         <UButton
@@ -26,7 +29,7 @@
           variant="ghost"
           size="sm"
           icon="i-lucide-bell"
-          aria-label="Notifications"
+          :aria-label="t('dashboard.notifications')"
           class="relative"
           square
           @click="isNotificationDrawerOpen = true"
@@ -35,6 +38,7 @@
             v-if="notificationCount > 0"
             :label="notificationCount > 9 ? '9+' : notificationCount.toString()"
             color="error"
+            size="sm"
             class="absolute -top-1 -right-1"
           />
         </UButton>
@@ -62,48 +66,36 @@
 
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
+import { vi, en } from '@nuxt/ui/locale';
 
+const { locale, setLocale, t } = useI18n();
 const notificationCount = ref(3);
-const selectedLocale = ref("vi");
 const isNotificationDrawerOpen = ref(false);
 
-const localeMenuItems: DropdownMenuItem[][] = [
-  [
-    {
-      label: "Tiếng Việt",
-      icon: "i-lucide-languages",
-      onSelect: () => {
-        selectedLocale.value = "vi";
-        // TODO: Implement locale change
-      },
-    },
-    {
-      label: "Tiếng Anh",
-      icon: "i-lucide-languages",
-      onSelect: () => {
-        selectedLocale.value = "en";
-        // TODO: Implement locale change
-      },
-    },
-  ],
-];
+const availableLocales = [vi, en];
+
+const handleLocaleChange = (value: string | undefined) => {
+  if (value && (value === 'vi' || value === 'en')) {
+    setLocale(value)
+  }
+}
 
 const userMenuItems: DropdownMenuItem[][] = [
   [
     {
-      label: "Hồ sơ",
+      label: t('dashboard.profile'),
       icon: "i-lucide-user",
       to: "/dashboard/profile",
     },
     {
-      label: "Cài đặt",
+      label: t('dashboard.settings'),
       icon: "i-lucide-settings",
       to: "/dashboard/settings",
     },
   ],
   [
     {
-      label: "Đăng xuất",
+      label: t('auth.logout'),
       icon: "i-lucide-log-out",
       onSelect: () => {
         // TODO: Implement logout

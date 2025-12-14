@@ -1,12 +1,14 @@
 <template>
   <div>
-    <h1>Jobs Page</h1>
-    <UButton color="primary">Job Layer</UButton>
+    <h1>{{ t('job.title') }}</h1>
+    <UButton color="primary">{{ t('job.layer') }}</UButton>
     <JobCard />
   </div>
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 definePageMeta({
   layout: 'default',
 })

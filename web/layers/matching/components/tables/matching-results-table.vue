@@ -2,8 +2,8 @@
   <div class="space-y-4">
     <div class="flex items-center justify-between">
       <div>
-        <h3 class="text-lg font-semibold">Matching Results</h3>
-        <p class="text-sm text-gray-600">Found {{ matchings.length }} matching candidates</p>
+        <h3 class="text-lg font-semibold">{{ t('matching.step-4.matching-results') }}</h3>
+        <p class="text-sm text-gray-600">{{ t('matching.step-4.found-candidates', { count: matchings.length }) }}</p>
       </div>
       <div class="flex gap-2">
         <UButton
@@ -12,7 +12,7 @@
           icon="i-lucide-download"
           @click="$emit('export')"
         >
-          Export
+          {{ t('matching.step-4.export') }}
         </UButton>
         <UButton
           color="primary"
@@ -20,7 +20,7 @@
           icon="i-lucide-filter"
           @click="showFilters = !showFilters"
         >
-          Filters
+          {{ t('matching.step-4.filters') }}
         </UButton>
       </div>
     </div>
@@ -30,17 +30,17 @@
         <USelectMenu
           v-model="sortBy"
           :options="sortOptions"
-          placeholder="Sort by"
+          :placeholder="t('matching.step-4.sort-by-placeholder')"
         />
         <UInput
           v-model="searchQuery"
-          placeholder="Search candidates..."
+          :placeholder="t('matching.step-4.search-candidates')"
           icon="i-lucide-search"
         />
         <UInput
           v-model.number="minScore"
           type="number"
-          placeholder="Min score"
+          :placeholder="t('matching.step-4.min-score-placeholder')"
         />
       </div>
     </div>
@@ -78,12 +78,12 @@
         </template>
 
         <template #status-cell="{ row }">
-          <UBadge
-            :color="getStatusColor(row.original.status)"
-            variant="subtle"
-          >
-            {{ row.original.status }}
-          </UBadge>
+            <UBadge
+              :color="getStatusColor(row.original.status)"
+              variant="subtle"
+            >
+              {{ t(`matching.status.${row.original.status}`) || row.original.status }}
+            </UBadge>
         </template>
 
         <template #action-cell="{ row }">
@@ -94,7 +94,7 @@
                 color="neutral"
                 variant="ghost"
                 size="xs"
-                aria-label="Actions"
+                :aria-label="t('common.actions')"
               />
             </UDropdownMenu>
           </div>
@@ -102,8 +102,8 @@
 
         <template #empty-state>
           <div class="text-center py-8">
-            <p class="text-gray-500">No matching candidates found</p>
-            <p class="text-sm text-gray-400 mt-2">Filtered: {{ filteredMatchings.length }}, Total: {{ props.matchings?.length || 0 }}</p>
+            <p class="text-gray-500">{{ t('matching.step-4.no-matching-found') }}</p>
+            <p class="text-sm text-gray-400 mt-2">{{ t('matching.step-4.filtered', { filtered: filteredMatchings.length }) }}, {{ t('matching.step-4.total', { total: props.matchings?.length || 0 }) }}</p>
           </div>
         </template>
       </UTable>
@@ -112,7 +112,7 @@
     <div v-if="Object.keys(rowSelection).length > 0" class="p-4 bg-primary-50 rounded-lg">
       <div class="flex items-center justify-between">
         <p class="text-sm font-medium">
-          Đã chọn {{ Object.keys(rowSelection).length }} ứng viên
+          {{ t('matching.step-4.selected-count', { count: Object.keys(rowSelection).length }) }}
         </p>
         <div class="flex gap-2">
           <UButton
@@ -122,7 +122,7 @@
             icon="i-lucide-bookmark"
             @click="handleBulkSave"
           >
-            Lưu ứng viên
+            {{ t('matching.step-4.save-candidate') }}
           </UButton>
           <UButton
             color="primary"
@@ -131,7 +131,7 @@
             icon="i-lucide-calendar"
             @click="handleBulkSchedule"
           >
-            Đặt lịch nhanh
+            {{ t('matching.step-4.quick-schedule') }}
           </UButton>
           <UButton
             color="success"
@@ -140,7 +140,7 @@
             icon="i-lucide-message-square"
             @click="handleBulkChat"
           >
-            Gửi tin nhắn
+            {{ t('matching.step-4.send-message') }}
           </UButton>
         </div>
       </div>
@@ -152,6 +152,8 @@
 import { h, resolveComponent } from 'vue'
 import type { Matching } from '@matching/types/matching'
 import type { DropdownMenuItem, TableColumn } from '@nuxt/ui'
+
+const { t } = useI18n()
 
 type MatchingWithName = Matching & { 
   candidateName?: string
@@ -191,7 +193,7 @@ const columns: TableColumn<MatchingWithName>[] = [
           : table.getIsAllPageRowsSelected(),
         'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
           table.toggleAllPageRowsSelected(!!value),
-        'aria-label': 'Select all'
+        'aria-label': t('common.select-all')
       }),
     cell: ({ row }) =>
       h(UCheckbox, {
@@ -204,29 +206,29 @@ const columns: TableColumn<MatchingWithName>[] = [
   },
   {
     accessorKey: 'candidateName',
-    header: 'Candidate',
+    header: t('matching.step-4.candidate'),
   },
   {
     accessorKey: 'score',
-    header: 'Match Score',
+    header: t('matching.step-4.match-score'),
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: t('matching.step-4.status'),
   },
   {
     id: 'action',
-    header: 'Actions',
+    header: t('common.actions'),
     enableSorting: false,
   },
 ]
 
-const sortOptions = [
-  { label: 'Score (High to Low)', value: 'score' },
-  { label: 'Score (Low to High)', value: 'score-asc' },
-  { label: 'Name (A-Z)', value: 'name' },
-  { label: 'Name (Z-A)', value: 'name-desc' },
-]
+const sortOptions = computed(() => [
+  { label: t('matching.step-4.score-high-to-low'), value: 'score' },
+  { label: t('matching.step-4.score-low-to-high'), value: 'score-asc' },
+  { label: t('matching.step-4.name-a-z'), value: 'name' },
+  { label: t('matching.step-4.name-z-a'), value: 'name-desc' },
+])
 
 const filteredMatchings = computed(() => {
   // Debug: Log matchings data
@@ -281,6 +283,7 @@ const getStatusColor = (status: string): 'neutral' | 'primary' | 'secondary' | '
     accepted: 'success',
     rejected: 'error',
   }
+  // Note: Status labels are already translated in the badge display
   return statusMap[status] || 'neutral'
 }
 
@@ -296,24 +299,24 @@ const getActionItems = (row: MatchingWithName): DropdownMenuItem[][] => {
   return [
     [
       {
-        label: 'Xem chi tiết',
+        label: t('matching.step-4.view-detail'),
         icon: 'i-lucide-eye',
         onSelect: () => emit('view-details', row),
       },
     ],
     [
       {
-        label: 'Lưu ứng viên',
+        label: t('matching.step-4.save-candidate'),
         icon: 'i-lucide-bookmark',
         onSelect: () => emit('save-candidate', row),
       },
       {
-        label: 'Đặt lịch nhanh',
+        label: t('matching.step-4.quick-schedule'),
         icon: 'i-lucide-calendar',
         onSelect: () => emit('schedule-interview', row),
       },
       {
-        label: 'Gửi tin nhắn',
+        label: t('matching.step-4.send-message'),
         icon: 'i-lucide-message-square',
         onSelect: () => emit('send-message', row),
       },

@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-2xl font-bold mb-2">Step 4: Matching Results</h2>
-      <p class="text-gray-600">Review and manage matching candidates</p>
+      <h2 class="text-2xl font-bold mb-2">{{ t('matching.step-4.title') }}</h2>
+      <p class="text-gray-600">{{ t('matching.step-4.description') }}</p>
     </div>
 
     <TablesMatchingResultsTable
@@ -26,7 +26,7 @@
         icon="i-lucide-arrow-left"
         @click="$emit('previous')"
       >
-        Previous
+        {{ t('matching.step-4.previous') }}
       </UButton>
       <div class="flex gap-2">
         <UButton
@@ -36,14 +36,14 @@
           :loading="isLoading"
           @click="handleRefresh"
         >
-          Refresh
+          {{ t('matching.step-4.refresh') }}
         </UButton>
         <UButton
           color="primary"
           icon="i-lucide-plus"
           @click="$emit('reset')"
         >
-          Start New Matching
+          {{ t('matching.step-4.start-new-matching') }}
         </UButton>
       </div>
     </div>
@@ -52,6 +52,8 @@
 
 <script setup lang="ts">
 import type { Matching } from '@matching/types/matching'
+
+const { t } = useI18n()
 
 interface Props {
   matchings: Matching[]

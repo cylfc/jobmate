@@ -2,8 +2,8 @@
 <template>
   <div class="container mx-auto p-6 space-y-6">
     <div>
-      <h1 class="text-3xl font-bold mb-2">Job Matching</h1>
-      <p class="text-gray-600">Find the best candidates for your job</p>
+      <h1 class="text-3xl font-bold mb-2">{{ t('matching.title') }}</h1>
+      <p class="text-gray-600">{{ t('matching.subtitle') }}</p>
     </div>
 
     <MatchingStepper
@@ -65,6 +65,8 @@
 
 <script setup lang="ts">
 import type { Candidate, Matching } from '@matching/types/matching'
+
+const { t } = useI18n()
 
 definePageMeta({
   layout: 'dashboard',
