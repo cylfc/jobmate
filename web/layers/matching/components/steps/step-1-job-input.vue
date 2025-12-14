@@ -6,7 +6,7 @@
     </div>
 
     <div class="space-y-4">
-      <div v-if="selectedMode === 'input'" class="space-y-4">
+      <div v-if="selectedMode === JOB_INPUT_MODE.INPUT" class="space-y-4">
         <UFormField label="Job Description" name="description" class="w-full">
           <UTextarea
             v-model="jobDescription"
@@ -17,7 +17,7 @@
         </UFormField>
       </div>
 
-      <div v-else-if="selectedMode === 'upload'" class="space-y-4">
+      <div v-else-if="selectedMode === JOB_INPUT_MODE.UPLOAD" class="space-y-4">
         <UFormField label="Upload Job Description File" name="file" class="w-full">
           <UInput
             type="file"
@@ -33,7 +33,7 @@
         </UFormField>
       </div>
 
-      <div v-else-if="selectedMode === 'link'" class="space-y-4">
+      <div v-else-if="selectedMode === JOB_INPUT_MODE.LINK" class="space-y-4">
         <UFormField label="Job Link" name="link" class="w-full">
           <UInput
             v-model="jobLink"
@@ -44,7 +44,7 @@
         </UFormField>
       </div>
 
-      <div v-else-if="selectedMode === 'database'" class="space-y-4">
+      <div v-else-if="selectedMode === JOB_INPUT_MODE.DATABASE" class="space-y-4">
         <UFormField label="Select Job from Database" name="job" class="w-full">
           <USelectMenu
             v-model="selectedJobId"
@@ -85,17 +85,19 @@
       </div>
       <UButton
         color="primary"
-        :disabled="!canProceed"
+        :disabled="!canProceed || isProcessing"
+        :loading="isProcessing"
         @click="handleNext"
       >
-        Next Step
+        {{ isProcessing ? 'Processing...' : 'Next Step' }}
       </UButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Job } from '../../types/matching'
+import type { Job } from '@matching/types/matching'
+import { JOB_INPUT_MODE, type JobInputMode } from '@matching/constants/modes'
 
 interface Props {
   job: Job | null
@@ -103,41 +105,41 @@ interface Props {
 
 interface Emits {
   (e: 'update:job', value: Job | null): void
-  (e: 'next'): void
-  (e: 'save-job'): void
+  (e: 'next' | 'save-job'): void
 }
 
 defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const { getJobsFromDatabase } = useMatching()
+const { getJobsFromDatabase, parseJobFromText } = useMatching()
 
-const selectedMode = ref<'input' | 'upload' | 'link' | 'database'>('input')
+const selectedMode = ref<JobInputMode>(JOB_INPUT_MODE.INPUT)
 const jobDescription = ref('')
 const jobLink = ref('')
 const selectedJobId = ref<string | null>(null)
 const uploadedFile = ref<File | null>(null)
 const jobsFromDatabase = ref<Job[]>([])
+const isProcessing = ref(false)
 
 const tabs = [
-  { label: 'Input', value: 'input' as const, icon: 'i-lucide-pencil' },
-  { label: 'Upload', value: 'upload' as const, icon: 'i-lucide-file-up' },
-  { label: 'Link', value: 'link' as const, icon: 'i-lucide-link' },
-  { label: 'Database', value: 'database' as const, icon: 'i-lucide-database' },
+  { label: 'Input', value: JOB_INPUT_MODE.INPUT, icon: 'i-lucide-pencil' },
+  { label: 'Upload', value: JOB_INPUT_MODE.UPLOAD, icon: 'i-lucide-file-up' },
+  { label: 'Link', value: JOB_INPUT_MODE.LINK, icon: 'i-lucide-link' },
+  { label: 'Database', value: JOB_INPUT_MODE.DATABASE, icon: 'i-lucide-database' },
 ]
 
 const jobOptions = computed(() => {
-  return jobsFromDatabase.value.map(job => ({
+  return jobsFromDatabase.value.map((job: Job) => ({
     label: job.title,
     value: job.id || '',
   }))
 })
 
 const canProceed = computed(() => {
-  if (selectedMode.value === 'input') return jobDescription.value.trim().length > 0
-  if (selectedMode.value === 'upload') return uploadedFile.value !== null
-  if (selectedMode.value === 'link') return jobLink.value.trim().length > 0
-  if (selectedMode.value === 'database') return selectedJobId.value !== null
+  if (selectedMode.value === JOB_INPUT_MODE.INPUT) return jobDescription.value.trim().length > 0
+  if (selectedMode.value === JOB_INPUT_MODE.UPLOAD) return uploadedFile.value !== null
+  if (selectedMode.value === JOB_INPUT_MODE.LINK) return jobLink.value.trim().length > 0
+  if (selectedMode.value === JOB_INPUT_MODE.DATABASE) return selectedJobId.value !== null
   return false
 })
 
@@ -152,17 +154,10 @@ const handleFileUpload = (event: Event) => {
   }
 }
 
-const handleNext = () => {
-  const job: Job = {
-    title: '',
-    description: jobDescription.value,
-    link: jobLink.value || undefined,
-    file: uploadedFile.value || undefined,
-    status: 'draft',
-  }
-
-  if (selectedMode.value === 'database' && selectedJobId.value) {
-    const selectedJob = jobsFromDatabase.value.find(j => j.id === selectedJobId.value)
+const handleNext = async () => {
+  // Handle database selection
+  if (selectedMode.value === JOB_INPUT_MODE.DATABASE && selectedJobId.value) {
+    const selectedJob = jobsFromDatabase.value.find((j: Job) => j.id === selectedJobId.value)
     if (selectedJob) {
       emit('update:job', selectedJob)
       emit('next')
@@ -170,6 +165,63 @@ const handleNext = () => {
     }
   }
 
+  // Handle upload mode
+  if (selectedMode.value === JOB_INPUT_MODE.UPLOAD && uploadedFile.value) {
+    const job: Job = {
+      title: '',
+      description: '',
+      file: uploadedFile.value,
+      status: 'draft',
+    }
+    emit('update:job', job)
+    emit('next')
+    return
+  }
+
+  // Handle input or link mode - parse job from text
+  if ((selectedMode.value === JOB_INPUT_MODE.INPUT && jobDescription.value.trim()) ||
+      (selectedMode.value === JOB_INPUT_MODE.LINK && jobLink.value.trim())) {
+    isProcessing.value = true
+    try {
+      const parsedJob = await parseJobFromText(
+        jobDescription.value || jobLink.value,
+        selectedMode.value === JOB_INPUT_MODE.LINK ? jobLink.value : undefined
+      )
+      
+      if (parsedJob) {
+        // Merge with uploaded file if exists
+        if (uploadedFile.value) {
+          parsedJob.file = uploadedFile.value
+        }
+        emit('update:job', parsedJob)
+        emit('next')
+      }
+    } catch (error) {
+      console.error('Error parsing job:', error)
+      // Fallback to basic job object
+      const job: Job = {
+        title: '',
+        description: jobDescription.value,
+        link: jobLink.value || undefined,
+        file: uploadedFile.value || undefined,
+        status: 'draft',
+      }
+      emit('update:job', job)
+      emit('next')
+    } finally {
+      isProcessing.value = false
+    }
+    return
+  }
+
+  // Fallback
+  const job: Job = {
+    title: '',
+    description: jobDescription.value,
+    link: jobLink.value || undefined,
+    file: uploadedFile.value || undefined,
+    status: 'draft',
+  }
   emit('update:job', job)
   emit('next')
 }

@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Candidate, CreateCandidateInput } from '../../types/matching'
+import type { Candidate, CreateCandidateInput } from '@matching/types/matching'
 
 interface Props {
   modelValue: boolean
