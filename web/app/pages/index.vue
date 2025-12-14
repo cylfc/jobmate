@@ -2,14 +2,12 @@
 import { definePageMeta } from "#imports";
 
 definePageMeta({
-  layout: "dashboard",
+  layout: "default",
 });
 </script>
 
 <template>
-  <LayoutPanel>
-    <template #body>
-      <LayoutChat />
-    </template>
-  </LayoutPanel>
+  <div>
+
+  </div>
 </template>

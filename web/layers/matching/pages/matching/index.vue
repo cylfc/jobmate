@@ -67,7 +67,7 @@
 import type { Candidate, Matching } from '@matching/types/matching'
 
 definePageMeta({
-  layout: 'default',
+  layout: 'dashboard',
 })
 
 const {
