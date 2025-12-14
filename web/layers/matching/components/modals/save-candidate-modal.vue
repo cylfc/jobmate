@@ -1,5 +1,5 @@
 <template>
-  <UModal v-model="isOpen">
+  <UModal v-model:open="modelValue">
     <template #content>
       <UCard>
         <template #header>
@@ -70,24 +70,18 @@ import type { Candidate, CreateCandidateInput } from '@matching/types/matching'
 const { t } = useI18n()
 
 interface Props {
-  modelValue: boolean
   candidate?: Candidate | null
 }
 
 interface Emits {
-  (e: 'update:modelValue', value: boolean): void
   (e: 'save', value: CreateCandidateInput): void
 }
 
+const modelValue = defineModel<boolean>({ default: false })
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const { saveCandidate } = useMatching()
-
-const isOpen = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value),
-})
 
 const isSaving = ref(false)
 const skillsText = ref('')
@@ -142,7 +136,7 @@ const handleSave = async () => {
 }
 
 const close = () => {
-  isOpen.value = false
+  modelValue.value = false
 }
 </script>
 

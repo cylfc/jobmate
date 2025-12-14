@@ -22,6 +22,7 @@
     "refresh": "Refresh",
     "unknown": "Unknown",
     "select-all": "Select all",
+    "select-row": "Select row",
     "actions": "Actions"
   },
   "nav": {
@@ -307,7 +308,95 @@
     "layer": "Job Layer"
   },
   "candidate": {
-    "title": "Candidates Page",
-    "layer": "Candidate Layer"
+    "title": "Manage Candidates",
+    "subtitle": "Manage your candidate list",
+    "layer": "Candidate Layer",
+    "name": "Name",
+    "skills": "Skills",
+    "experience": "Experience",
+    "status-label": "Status",
+    "years": "years",
+    "no-candidates-found": "No candidates found",
+    "selected-count": "Selected {count} candidates",
+    "view-detail": "View Detail",
+    "invite": "Invite",
+    "delete": "Delete",
+    "bulk-invite": "Invite",
+    "bulk-delete": "Delete",
+    "create-new": "Create New Candidate",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "archived": "Archived"
+    },
+    "filter": {
+      "search": "Search",
+      "search-placeholder": "Search by name or email...",
+      "status": "Status",
+      "status-placeholder": "Select status...",
+      "min-experience": "Min Experience",
+      "min-experience-placeholder": "Years",
+      "max-experience": "Max Experience",
+      "max-experience-placeholder": "Years",
+      "reset": "Reset",
+      "apply": "Apply"
+    },
+    "create": {
+      "title": "Create New Candidate",
+      "phone": "Phone",
+      "phone-placeholder": "Enter phone number",
+      "skills": "Skills",
+      "skills-placeholder": "Enter skills (one per line or comma-separated)",
+      "experience": "Experience (years)",
+      "experience-placeholder": "Enter years of experience",
+      "submit-button": "Create Candidate",
+      "mode": {
+        "input": "Text Input",
+        "upload": "Upload CV",
+        "database": "From Database",
+        "form": "Manual Input"
+      },
+      "input": {
+        "candidate-information": "Candidate Information",
+        "placeholder": "Enter or paste candidate information (CV, profile, etc.)",
+        "hint": "You can enter or paste candidate information, the system will automatically extract data",
+        "extract-data": "Extract Data with AI"
+      },
+      "upload": {
+        "label": "Upload CV",
+        "supported-formats": "Supported formats: PDF, DOC, DOCX, TXT",
+        "extract-data": "Extract Data from CV"
+      },
+      "database": {
+        "select-candidate": "Select candidate from database",
+        "placeholder": "Select candidate..."
+      }
+    },
+    "success": {
+      "create-success": "Candidate created successfully",
+      "create-success-description": "Candidate has been created successfully",
+      "invite-success": "Invitation sent successfully",
+      "invite-success-description": "Invitation sent to {name}",
+      "delete-success": "Candidate deleted successfully",
+      "delete-success-description": "Candidate has been deleted",
+      "bulk-invite-success": "Bulk invite successful",
+      "bulk-invite-success-description": "Invitations sent to {count} candidates",
+      "bulk-delete-success": "Bulk delete successful",
+      "bulk-delete-success-description": "{count} candidates deleted"
+    },
+    "error": {
+      "load-failed": "Failed to load candidates",
+      "load-failed-description": "Unable to load candidate list",
+      "create-failed": "Failed to create candidate",
+      "create-failed-description": "Unable to create new candidate",
+      "invite-failed": "Failed to send invitation",
+      "invite-failed-description": "Unable to send invitation",
+      "delete-failed": "Failed to delete candidate",
+      "delete-failed-description": "Unable to delete candidate",
+      "bulk-invite-failed": "Bulk invite failed",
+      "bulk-invite-failed-description": "Unable to send invitations to some candidates",
+      "bulk-delete-failed": "Bulk delete failed",
+      "bulk-delete-failed-description": "Unable to delete some candidates"
+    }
   }
 }

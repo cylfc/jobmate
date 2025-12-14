@@ -25,7 +25,7 @@
           <div class="h-16" />
         </template>
         <main class="flex-1 overflow-y-auto">
-          <div class="mt-16">
+          <div class="p-6 mt-16">
             <slot />
           </div>
         </main>
