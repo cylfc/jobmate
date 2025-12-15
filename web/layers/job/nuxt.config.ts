@@ -1,4 +1,8 @@
+import { fileURLToPath } from 'node:url'
+
 export default defineNuxtConfig({
-  // Job layer configuration
+  alias: {
+    '@job': fileURLToPath(new URL('.', import.meta.url)),
+  },
 })
 

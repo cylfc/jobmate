@@ -304,8 +304,114 @@
     }
   },
   "job": {
-    "title": "Jobs Page",
-    "layer": "Job Layer"
+    "title": "Manage Jobs",
+    "subtitle": "Manage your job listings",
+    "layer": "Job Layer",
+    "name": "Name",
+    "title-label": "Title",
+    "company": "Company",
+    "location": "Location",
+    "requirements": "Requirements",
+    "salary": "Salary",
+    "salary-not-specified": "Not specified",
+    "status-label": "Status",
+    "no-jobs-found": "No jobs found",
+    "selected-count": "Selected {count} jobs",
+    "view-detail": "View Detail",
+    "delete": "Delete",
+    "match-candidates": "Match Candidates",
+    "bulk-delete": "Delete",
+    "create-new": "Create New Job",
+    "status": {
+      "draft": "Draft",
+      "published": "Published",
+      "closed": "Closed"
+    },
+    "candidates": {
+      "label": "Candidates",
+      "applying": "Applying",
+      "total": "Total Applied"
+    },
+    "filter": {
+      "search": "Search",
+      "search-placeholder": "Search by title, description, company...",
+      "status": "Status",
+      "status-placeholder": "Select status...",
+      "company": "Company",
+      "company-placeholder": "Search by company...",
+      "location": "Location",
+      "location-placeholder": "Search by location...",
+      "reset": "Reset",
+      "apply": "Apply"
+    },
+    "create": {
+      "title": "Create New Job",
+      "submit-button": "Create Job",
+      "mode": {
+        "input": "Text Input",
+        "upload": "Upload JD",
+        "form": "Manual Input"
+      },
+      "input": {
+        "job-information": "Job Information",
+        "placeholder": "Enter or paste job information (JD, description, etc.)",
+        "hint": "You can enter or paste job information, the system will automatically extract data",
+        "extract-data": "Extract Data with AI"
+      },
+      "upload": {
+        "label": "Upload JD",
+        "supported-formats": "Supported formats: PDF, DOC, DOCX, TXT",
+        "extract-data": "Extract Data from JD"
+      },
+      "form": {
+        "title": "Title",
+        "title-placeholder": "Enter job title",
+        "company": "Company",
+        "company-placeholder": "Enter company name",
+        "domain": "Domain",
+        "domain-placeholder": "Enter domain",
+        "location": "Location",
+        "location-placeholder": "Enter location",
+        "description": "Description",
+        "description-placeholder": "Enter job description",
+        "requirements": "Requirements",
+        "requirements-placeholder": "Enter requirements (one per line or comma-separated)",
+        "min-salary": "Min Salary",
+        "min-salary-placeholder": "Min salary",
+        "max-salary": "Max Salary",
+        "max-salary-placeholder": "Max salary",
+        "link": "Link",
+        "link-placeholder": "Enter job link"
+      }
+    },
+    "validation": {
+      "title-required": "Title is required",
+      "title-min": "Title must be at least 2 characters",
+      "description-required": "Description is required",
+      "description-min": "Description must be at least 10 characters",
+      "company-required": "Company is required",
+      "company-min": "Company name must be at least 2 characters",
+      "location-required": "Location is required",
+      "location-min": "Location must be at least 2 characters"
+    },
+    "success": {
+      "create-success": "Job created successfully",
+      "create-success-description": "Job has been created successfully",
+      "delete-success": "Job deleted successfully",
+      "delete-success-description": "Job has been deleted",
+      "bulk-delete-success": "Bulk delete successful",
+      "bulk-delete-success-description": "{count} jobs deleted"
+    },
+    "error": {
+      "load-failed": "Failed to load jobs",
+      "load-failed-description": "Unable to load job list",
+      "create-failed": "Failed to create job",
+      "create-failed-description": "Unable to create new job",
+      "delete-failed": "Failed to delete job",
+      "delete-failed-description": "Unable to delete job",
+      "bulk-delete-failed": "Bulk delete failed",
+      "bulk-delete-failed-description": "Unable to delete some jobs"
+    }
   },
   "candidate": {
     "title": "Manage Candidates",
@@ -321,8 +427,10 @@
     "view-detail": "View Detail",
     "invite": "Invite",
     "delete": "Delete",
+    "match-jobs": "Match Jobs",
     "bulk-invite": "Invite",
     "bulk-delete": "Delete",
+    "bulk-match-jobs": "Match Jobs",
     "create-new": "Create New Candidate",
     "status": {
       "active": "Active",

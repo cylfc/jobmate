@@ -34,8 +34,10 @@
         @view-detail="handleViewDetail"
         @invite="handleInvite"
         @delete="handleDelete"
+        @match-jobs="handleMatchJobs"
         @bulk-invite="handleBulkInvite"
         @bulk-delete="handleBulkDelete"
+        @bulk-match-jobs="handleBulkMatchJobs"
       />
     </UCard>
 
@@ -52,6 +54,7 @@ import type { Candidate, CreateCandidateInput, CandidateFilter } from '@candidat
 
 const { t } = useI18n()
 const toast = useToast()
+const router = useRouter()
 
 definePageMeta({
   layout: 'dashboard',
@@ -208,6 +211,17 @@ const handleBulkInvite = async (candidateIds: string[]) => {
   }
 }
 
+const handleMatchJobs = (candidate: Candidate) => {
+  // Navigate to matching page with prefill candidate
+  router.push({
+    path: '/matching',
+    query: {
+      prefill: 'candidate',
+      candidateId: candidate.id,
+    },
+  })
+}
+
 const handleBulkDelete = async (candidateIds: string[]) => {
   // TODO: Add confirmation dialog
   try {
@@ -223,6 +237,19 @@ const handleBulkDelete = async (candidateIds: string[]) => {
       title: t('candidate.error.bulk-delete-failed'),
       description: t('candidate.error.bulk-delete-failed-description'),
       color: 'error',
+    })
+  }
+}
+
+const handleBulkMatchJobs = (candidateIds: string[]) => {
+  // Navigate to matching page with prefill candidates (use first candidate for now)
+  if (candidateIds.length > 0) {
+    router.push({
+      path: '/matching',
+      query: {
+        prefill: 'candidate',
+        candidateId: candidateIds[0],
+      },
     })
   }
 }

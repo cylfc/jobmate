@@ -32,7 +32,7 @@
               :key="index"
               color="neutral"
               variant="subtle"
-              size="xs"
+              size="md"
             >
               {{ skill }}
             </UBadge>
@@ -40,7 +40,7 @@
               v-if="row.original.skills.length > 3"
               color="neutral"
               variant="subtle"
-              size="xs"
+              size="md"
             >
               +{{ row.original.skills.length - 3 }}
             </UBadge>
@@ -98,6 +98,15 @@
             {{ t('candidate.bulk-invite') }}
           </UButton>
           <UButton
+            color="primary"
+            variant="outline"
+            size="sm"
+            icon="i-lucide-briefcase"
+            @click="handleBulkMatchJobs"
+          >
+            {{ t('candidate.bulk-match-jobs') }}
+          </UButton>
+          <UButton
             color="error"
             variant="outline"
             size="sm"
@@ -129,8 +138,10 @@ interface Emits {
   (e: 'view-detail', candidate: Candidate): void
   (e: 'invite', candidate: Candidate): void
   (e: 'delete', candidate: Candidate): void
+  (e: 'match-jobs', candidate: Candidate): void
   (e: 'bulk-invite', candidateIds: string[]): void
   (e: 'bulk-delete', candidateIds: string[]): void
+  (e: 'bulk-match-jobs', candidateIds: string[]): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -241,6 +252,11 @@ const getActionItems = (candidate: Candidate): DropdownMenuItem[][] => {
         onSelect: () => emit('invite', candidate),
       },
       {
+        label: t('candidate.match-jobs'),
+        icon: 'i-lucide-briefcase',
+        onSelect: () => emit('match-jobs', candidate),
+      },
+      {
         label: t('candidate.delete'),
         icon: 'i-lucide-trash',
         onSelect: () => emit('delete', candidate),
@@ -261,6 +277,11 @@ const handleBulkInvite = () => {
 const handleBulkDelete = () => {
   const selectedIds = getSelectedIds()
   emit('bulk-delete', selectedIds)
+}
+
+const handleBulkMatchJobs = () => {
+  const selectedIds = getSelectedIds()
+  emit('bulk-match-jobs', selectedIds)
 }
 
 defineExpose({

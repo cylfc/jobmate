@@ -7,6 +7,7 @@ export interface Job {
   title: string
   description: string
   company: string
+  domain?: string
   location: string
   requirements: string[]
   salary?: {
@@ -14,7 +15,12 @@ export interface Job {
     max: number
     currency: string
   }
+  link?: string
   status: JobStatus
+  candidates?: {
+    active: number // Số ứng viên đang ứng tuyển
+    total: number // Tổng số đã nộp hồ sơ
+  }
   createdAt: Date
   updatedAt: Date
 }
@@ -25,6 +31,7 @@ export interface CreateJobInput {
   title: string
   description: string
   company: string
+  domain?: string
   location: string
   requirements: string[]
   salary?: {
@@ -32,5 +39,12 @@ export interface CreateJobInput {
     max: number
     currency: string
   }
+  link?: string
 }
 
+export interface JobFilter {
+  search?: string
+  status?: JobStatus
+  company?: string
+  location?: string
+}
