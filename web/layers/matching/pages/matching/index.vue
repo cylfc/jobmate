@@ -90,6 +90,9 @@ const {
 const showSaveJobModal = ref(false)
 const showSaveCandidateModal = ref(false)
 const selectedCandidateForSave = ref<Candidate | null>(null)
+const route = useRoute()
+const { getJobById } = useJob()
+const { getCandidateById } = useCandidate()
 
 const handleNext = async () => {
   if (currentStep.value === 2) {
@@ -140,4 +143,49 @@ const handleRefreshMatchings = async () => {
     }
   }
 }
+
+// Handle prefill from query params
+onMounted(async () => {
+  const prefill = route.query.prefill as string | undefined
+  const jobId = route.query.jobId as string | undefined
+  const candidateId = route.query.candidateId as string | undefined
+
+  if (prefill === 'job' && jobId) {
+    // Prefill job from job layer
+    const job = await getJobById(jobId)
+    if (job) {
+      selectedJob.value = {
+        id: job.id,
+        title: job.title,
+        description: job.description,
+        company: job.company,
+        domain: job.domain,
+        location: job.location,
+        requirements: job.requirements,
+        salary: job.salary,
+        link: job.link,
+        status: job.status,
+      }
+      // Navigate to step 2 to continue with candidate selection
+      goToStep(2)
+    }
+  } else if (prefill === 'candidate' && candidateId) {
+    // Prefill candidate from candidate layer
+    const candidate = await getCandidateById(candidateId)
+    if (candidate) {
+      selectedCandidates.value = [{
+        id: candidate.id,
+        firstName: candidate.firstName,
+        lastName: candidate.lastName,
+        email: candidate.email,
+        phone: candidate.phone,
+        skills: candidate.skills,
+        experience: candidate.experience,
+        status: candidate.status,
+      }]
+      // Stay at step 1 to select job, then candidate is already selected
+      goToStep(1)
+    }
+  }
+})
 </script>

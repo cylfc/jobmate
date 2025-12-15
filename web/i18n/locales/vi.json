@@ -304,8 +304,114 @@
     }
   },
   "job": {
-    "title": "Trang Việc làm",
-    "layer": "Job Layer"
+    "title": "Quản lý việc làm",
+    "subtitle": "Quản lý danh sách việc làm của bạn",
+    "layer": "Job Layer",
+    "name": "Tên",
+    "title-label": "Tiêu đề",
+    "company": "Công ty",
+    "location": "Địa điểm",
+    "requirements": "Yêu cầu",
+    "salary": "Lương",
+    "salary-not-specified": "Không xác định",
+    "status-label": "Trạng thái",
+    "no-jobs-found": "Không tìm thấy việc làm nào",
+    "selected-count": "Đã chọn {count} việc làm",
+    "view-detail": "Xem chi tiết",
+    "delete": "Xóa",
+    "match-candidates": "Lọc CV matching",
+    "bulk-delete": "Xóa",
+    "create-new": "Tạo mới việc làm",
+    "status": {
+      "draft": "Bản nháp",
+      "published": "Đã đăng",
+      "closed": "Đã đóng"
+    },
+    "candidates": {
+      "label": "Ứng viên",
+      "applying": "Đang ứng tuyển",
+      "total": "Tổng đã nộp"
+    },
+    "filter": {
+      "search": "Tìm kiếm",
+      "search-placeholder": "Tìm kiếm theo tiêu đề, mô tả, công ty...",
+      "status": "Trạng thái",
+      "status-placeholder": "Chọn trạng thái...",
+      "company": "Công ty",
+      "company-placeholder": "Tìm kiếm theo công ty...",
+      "location": "Địa điểm",
+      "location-placeholder": "Tìm kiếm theo địa điểm...",
+      "reset": "Đặt lại",
+      "apply": "Áp dụng"
+    },
+    "create": {
+      "title": "Tạo mới việc làm",
+      "submit-button": "Tạo việc làm",
+      "mode": {
+        "input": "Nhập text",
+        "upload": "Tải JD",
+        "form": "Nhập thủ công"
+      },
+      "input": {
+        "job-information": "Thông tin việc làm",
+        "placeholder": "Nhập hoặc dán thông tin việc làm (JD, mô tả, v.v.)",
+        "hint": "Bạn có thể nhập hoặc dán thông tin việc làm, hệ thống sẽ tự động trích xuất dữ liệu",
+        "extract-data": "Trích xuất dữ liệu bằng AI"
+      },
+      "upload": {
+        "label": "Tải lên JD",
+        "supported-formats": "Hỗ trợ định dạng: PDF, DOC, DOCX, TXT",
+        "extract-data": "Trích xuất dữ liệu từ JD"
+      },
+      "form": {
+        "title": "Tiêu đề",
+        "title-placeholder": "Nhập tiêu đề việc làm",
+        "company": "Công ty",
+        "company-placeholder": "Nhập tên công ty",
+        "domain": "Lĩnh vực",
+        "domain-placeholder": "Nhập lĩnh vực",
+        "location": "Địa điểm",
+        "location-placeholder": "Nhập địa điểm",
+        "description": "Mô tả",
+        "description-placeholder": "Nhập mô tả việc làm",
+        "requirements": "Yêu cầu",
+        "requirements-placeholder": "Nhập yêu cầu (mỗi yêu cầu một dòng hoặc cách nhau bằng dấu phẩy)",
+        "min-salary": "Lương tối thiểu",
+        "min-salary-placeholder": "Lương tối thiểu",
+        "max-salary": "Lương tối đa",
+        "max-salary-placeholder": "Lương tối đa",
+        "link": "Link",
+        "link-placeholder": "Nhập link việc làm"
+      }
+    },
+    "validation": {
+      "title-required": "Tiêu đề là bắt buộc",
+      "title-min": "Tiêu đề phải có ít nhất 2 ký tự",
+      "description-required": "Mô tả là bắt buộc",
+      "description-min": "Mô tả phải có ít nhất 10 ký tự",
+      "company-required": "Công ty là bắt buộc",
+      "company-min": "Tên công ty phải có ít nhất 2 ký tự",
+      "location-required": "Địa điểm là bắt buộc",
+      "location-min": "Địa điểm phải có ít nhất 2 ký tự"
+    },
+    "success": {
+      "create-success": "Tạo việc làm thành công",
+      "create-success-description": "Việc làm đã được tạo thành công",
+      "delete-success": "Xóa việc làm thành công",
+      "delete-success-description": "Việc làm đã được xóa",
+      "bulk-delete-success": "Xóa hàng loạt thành công",
+      "bulk-delete-success-description": "Đã xóa {count} việc làm"
+    },
+    "error": {
+      "load-failed": "Tải danh sách thất bại",
+      "load-failed-description": "Không thể tải danh sách việc làm",
+      "create-failed": "Tạo việc làm thất bại",
+      "create-failed-description": "Không thể tạo việc làm mới",
+      "delete-failed": "Xóa việc làm thất bại",
+      "delete-failed-description": "Không thể xóa việc làm",
+      "bulk-delete-failed": "Xóa hàng loạt thất bại",
+      "bulk-delete-failed-description": "Không thể xóa một số việc làm"
+    }
   },
   "candidate": {
     "title": "Quản lý ứng viên",
@@ -321,8 +427,10 @@
     "view-detail": "Xem chi tiết",
     "invite": "Mời ứng tuyển",
     "delete": "Xóa",
+    "match-jobs": "Lọc Job matching",
     "bulk-invite": "Mời ứng tuyển",
     "bulk-delete": "Xóa",
+    "bulk-match-jobs": "Lọc Job matching",
     "create-new": "Tạo mới ứng viên",
     "status": {
       "active": "Hoạt động",

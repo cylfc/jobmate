@@ -14,7 +14,7 @@ withDefaults(defineProps<Props>(), {
 const { t } = useI18n()
 const route = useRoute()
 
-const menuItems: NavigationMenuItem[] = [
+const menuItems = computed<NavigationMenuItem[]>(() => [
   {
     label: t('nav.dashboard'),
     icon: 'i-lucide-layout-dashboard',
@@ -39,7 +39,7 @@ const menuItems: NavigationMenuItem[] = [
     to: '/candidates',
     active: route.path.startsWith('/candidates'),
   },
-]
+])
 </script>
 
 <template>
