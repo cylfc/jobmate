@@ -30,7 +30,8 @@
     "jobs": "Việc làm",
     "candidates": "Ứng viên",
     "matching": "Matching",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "settings": "Cài đặt"
   },
   "auth": {
     "login": "Đăng nhập",
@@ -411,6 +412,72 @@
       "delete-failed-description": "Không thể xóa việc làm",
       "bulk-delete-failed": "Xóa hàng loạt thất bại",
       "bulk-delete-failed-description": "Không thể xóa một số việc làm"
+    }
+  },
+  "setting": {
+    "title": "Cài đặt",
+    "subtitle": "Quản lý thông tin và cấu hình tài khoản của bạn",
+    "profile": {
+      "title": "Cài đặt hồ sơ",
+      "subtitle": "Cập nhật thông tin cá nhân và hiển thị của bạn",
+      "description": "Khu vực này sẽ cho phép bạn chỉnh sửa thông tin hồ sơ, avatar, ngôn ngữ mặc định và các tùy chọn liên quan khác.",
+      "phone": "Số điện thoại",
+      "phone-placeholder": "Nhập số điện thoại",
+      "bio": "Giới thiệu",
+      "bio-placeholder": "Nhập giới thiệu về bản thân",
+      "save-button": "Lưu thay đổi",
+      "success": {
+        "title": "Cập nhật hồ sơ thành công",
+        "description": "Thông tin hồ sơ của bạn đã được cập nhật"
+      },
+      "error": {
+        "title": "Cập nhật hồ sơ thất bại",
+        "description": "Không thể cập nhật thông tin hồ sơ"
+      }
+    },
+    "security": {
+      "title": "Bảo mật",
+      "subtitle": "Quản lý mật khẩu và cài đặt bảo mật",
+      "save-button": "Đổi mật khẩu",
+      "success": {
+        "title": "Đổi mật khẩu thành công",
+        "description": "Mật khẩu của bạn đã được thay đổi"
+      },
+      "error": {
+        "title": "Đổi mật khẩu thất bại",
+        "description": "Không thể thay đổi mật khẩu. Vui lòng kiểm tra lại mật khẩu hiện tại."
+      }
+    },
+    "notification": {
+      "title": "Thông báo",
+      "subtitle": "Quản lý cài đặt thông báo của bạn",
+      "save-button": "Lưu cài đặt",
+      "email": {
+        "title": "Thông báo qua Email",
+        "job-matches": "Nhận thông báo khi có job matching mới",
+        "new-candidates": "Nhận thông báo khi có ứng viên mới",
+        "weekly-digest": "Nhận bản tóm tắt hàng tuần"
+      },
+      "push": {
+        "title": "Thông báo Push",
+        "job-matches": "Thông báo job matching",
+        "new-candidates": "Thông báo ứng viên mới",
+        "messages": "Thông báo tin nhắn"
+      },
+      "in-app": {
+        "title": "Thông báo trong ứng dụng",
+        "job-matches": "Thông báo job matching",
+        "new-candidates": "Thông báo ứng viên mới",
+        "messages": "Thông báo tin nhắn"
+      },
+      "success": {
+        "title": "Cập nhật cài đặt thông báo thành công",
+        "description": "Cài đặt thông báo của bạn đã được cập nhật"
+      },
+      "error": {
+        "title": "Cập nhật cài đặt thông báo thất bại",
+        "description": "Không thể cập nhật cài đặt thông báo"
+      }
     }
   },
   "candidate": {

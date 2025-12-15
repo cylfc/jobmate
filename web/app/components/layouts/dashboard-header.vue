@@ -80,17 +80,12 @@ const handleLocaleChange = (value: string | undefined) => {
   }
 }
 
-const userMenuItems: DropdownMenuItem[][] = [
+const userMenuItems = computed<DropdownMenuItem[][]>(() => [
   [
     {
-      label: t('dashboard.profile'),
-      icon: "i-lucide-user",
-      to: "/dashboard/profile",
-    },
-    {
-      label: t('dashboard.settings'),
+      label: t('setting.title'),
       icon: "i-lucide-settings",
-      to: "/dashboard/settings",
+      to: "/settings",
     },
   ],
   [
@@ -103,5 +98,5 @@ const userMenuItems: DropdownMenuItem[][] = [
       },
     },
   ],
-];
+]);
 </script>

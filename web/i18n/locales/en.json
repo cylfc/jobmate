@@ -30,7 +30,8 @@
     "jobs": "Jobs",
     "candidates": "Candidates",
     "matching": "Matching",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "settings": "Settings"
   },
   "auth": {
     "login": "Login",
@@ -411,6 +412,72 @@
       "delete-failed-description": "Unable to delete job",
       "bulk-delete-failed": "Bulk delete failed",
       "bulk-delete-failed-description": "Unable to delete some jobs"
+    }
+  },
+  "setting": {
+    "title": "Settings",
+    "subtitle": "Manage your account information and configuration",
+    "profile": {
+      "title": "Profile Settings",
+      "subtitle": "Update your personal information and display settings",
+      "description": "This area will allow you to edit your profile information, avatar, default language and other related options.",
+      "phone": "Phone",
+      "phone-placeholder": "Enter phone number",
+      "bio": "Bio",
+      "bio-placeholder": "Tell us about yourself",
+      "save-button": "Save Changes",
+      "success": {
+        "title": "Profile updated successfully",
+        "description": "Your profile information has been updated"
+      },
+      "error": {
+        "title": "Failed to update profile",
+        "description": "Unable to update profile information"
+      }
+    },
+    "security": {
+      "title": "Security",
+      "subtitle": "Manage your password and security settings",
+      "save-button": "Change Password",
+      "success": {
+        "title": "Password changed successfully",
+        "description": "Your password has been changed"
+      },
+      "error": {
+        "title": "Failed to change password",
+        "description": "Unable to change password. Please check your current password."
+      }
+    },
+    "notification": {
+      "title": "Notifications",
+      "subtitle": "Manage your notification settings",
+      "save-button": "Save Settings",
+      "email": {
+        "title": "Email Notifications",
+        "job-matches": "Receive notifications for new job matches",
+        "new-candidates": "Receive notifications for new candidates",
+        "weekly-digest": "Receive weekly digest"
+      },
+      "push": {
+        "title": "Push Notifications",
+        "job-matches": "Job match notifications",
+        "new-candidates": "New candidate notifications",
+        "messages": "Message notifications"
+      },
+      "in-app": {
+        "title": "In-App Notifications",
+        "job-matches": "Job match notifications",
+        "new-candidates": "New candidate notifications",
+        "messages": "Message notifications"
+      },
+      "success": {
+        "title": "Notification settings updated successfully",
+        "description": "Your notification settings have been updated"
+      },
+      "error": {
+        "title": "Failed to update notification settings",
+        "description": "Unable to update notification settings"
+      }
     }
   },
   "candidate": {
