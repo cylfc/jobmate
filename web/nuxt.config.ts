@@ -6,9 +6,11 @@ export default defineNuxtConfig({
     "./layers/matching",
     "./layers/candidate",
     "./layers/job",
+    "./layers/auth",
   ],
   alias: {
     '@matching': fileURLToPath(new URL('./layers/matching', import.meta.url)),
+    '@auth': fileURLToPath(new URL('./layers/auth', import.meta.url)),
   },
   devtools: { enabled: true },
   modules: [
