@@ -10,9 +10,12 @@ export interface Candidate {
   phone?: string
   skills: string[]
   experience: number
+  status?: CandidateStatus
   createdAt: Date
   updatedAt: Date
 }
+
+export type CandidateStatus = 'active' | 'inactive' | 'archived'
 
 export interface CreateCandidateInput {
   firstName: string
@@ -20,5 +23,13 @@ export interface CreateCandidateInput {
   email: string
   phone?: string
   skills: string[]
+  experience?: number
+}
+
+export interface CandidateFilter {
+  search?: string
+  status?: CandidateStatus
+  minExperience?: number
+  maxExperience?: number
 }
 

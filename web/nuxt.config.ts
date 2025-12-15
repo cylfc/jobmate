@@ -11,6 +11,7 @@ export default defineNuxtConfig({
   alias: {
     '@matching': fileURLToPath(new URL('./layers/matching', import.meta.url)),
     '@auth': fileURLToPath(new URL('./layers/auth', import.meta.url)),
+    '@candidate': fileURLToPath(new URL('./layers/candidate', import.meta.url)),
   },
   devtools: { enabled: true },
   modules: [

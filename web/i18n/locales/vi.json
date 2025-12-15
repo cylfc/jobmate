@@ -22,6 +22,7 @@
     "refresh": "Làm mới",
     "unknown": "Không xác định",
     "select-all": "Chọn tất cả",
+    "select-row": "Chọn dòng",
     "actions": "Hành động"
   },
   "nav": {
@@ -307,7 +308,95 @@
     "layer": "Job Layer"
   },
   "candidate": {
-    "title": "Trang Ứng viên",
-    "layer": "Candidate Layer"
+    "title": "Quản lý ứng viên",
+    "subtitle": "Quản lý danh sách ứng viên của bạn",
+    "layer": "Candidate Layer",
+    "name": "Tên",
+    "skills": "Kỹ năng",
+    "experience": "Kinh nghiệm",
+    "status-label": "Trạng thái",
+    "years": "năm",
+    "no-candidates-found": "Không tìm thấy ứng viên nào",
+    "selected-count": "Đã chọn {count} ứng viên",
+    "view-detail": "Xem chi tiết",
+    "invite": "Mời ứng tuyển",
+    "delete": "Xóa",
+    "bulk-invite": "Mời ứng tuyển",
+    "bulk-delete": "Xóa",
+    "create-new": "Tạo mới ứng viên",
+    "status": {
+      "active": "Hoạt động",
+      "inactive": "Không hoạt động",
+      "archived": "Đã lưu trữ"
+    },
+    "filter": {
+      "search": "Tìm kiếm",
+      "search-placeholder": "Tìm kiếm theo tên hoặc email...",
+      "status": "Trạng thái",
+      "status-placeholder": "Chọn trạng thái...",
+      "min-experience": "Kinh nghiệm tối thiểu",
+      "min-experience-placeholder": "Số năm",
+      "max-experience": "Kinh nghiệm tối đa",
+      "max-experience-placeholder": "Số năm",
+      "reset": "Đặt lại",
+      "apply": "Áp dụng"
+    },
+    "create": {
+      "title": "Tạo mới ứng viên",
+      "phone": "Số điện thoại",
+      "phone-placeholder": "Nhập số điện thoại",
+      "skills": "Kỹ năng",
+      "skills-placeholder": "Nhập kỹ năng (mỗi kỹ năng một dòng hoặc cách nhau bằng dấu phẩy)",
+      "experience": "Kinh nghiệm (năm)",
+      "experience-placeholder": "Nhập số năm kinh nghiệm",
+      "submit-button": "Tạo ứng viên",
+      "mode": {
+        "input": "Nhập text",
+        "upload": "Tải CV",
+        "database": "Từ database",
+        "form": "Nhập thủ công"
+      },
+      "input": {
+        "candidate-information": "Thông tin ứng viên",
+        "placeholder": "Nhập hoặc dán thông tin ứng viên (CV, profile, v.v.)",
+        "hint": "Bạn có thể nhập hoặc dán thông tin ứng viên, hệ thống sẽ tự động trích xuất dữ liệu",
+        "extract-data": "Trích xuất dữ liệu bằng AI"
+      },
+      "upload": {
+        "label": "Tải lên CV",
+        "supported-formats": "Hỗ trợ định dạng: PDF, DOC, DOCX, TXT",
+        "extract-data": "Trích xuất dữ liệu từ CV"
+      },
+      "database": {
+        "select-candidate": "Chọn ứng viên từ cơ sở dữ liệu",
+        "placeholder": "Chọn ứng viên..."
+      }
+    },
+    "success": {
+      "create-success": "Tạo ứng viên thành công",
+      "create-success-description": "Ứng viên đã được tạo thành công",
+      "invite-success": "Mời ứng tuyển thành công",
+      "invite-success-description": "Đã gửi lời mời ứng tuyển đến {name}",
+      "delete-success": "Xóa ứng viên thành công",
+      "delete-success-description": "Ứng viên đã được xóa",
+      "bulk-invite-success": "Mời ứng tuyển hàng loạt thành công",
+      "bulk-invite-success-description": "Đã gửi lời mời đến {count} ứng viên",
+      "bulk-delete-success": "Xóa hàng loạt thành công",
+      "bulk-delete-success-description": "Đã xóa {count} ứng viên"
+    },
+    "error": {
+      "load-failed": "Tải danh sách thất bại",
+      "load-failed-description": "Không thể tải danh sách ứng viên",
+      "create-failed": "Tạo ứng viên thất bại",
+      "create-failed-description": "Không thể tạo ứng viên mới",
+      "invite-failed": "Mời ứng tuyển thất bại",
+      "invite-failed-description": "Không thể gửi lời mời ứng tuyển",
+      "delete-failed": "Xóa ứng viên thất bại",
+      "delete-failed-description": "Không thể xóa ứng viên",
+      "bulk-invite-failed": "Mời ứng tuyển hàng loạt thất bại",
+      "bulk-invite-failed-description": "Không thể gửi lời mời đến một số ứng viên",
+      "bulk-delete-failed": "Xóa hàng loạt thất bại",
+      "bulk-delete-failed-description": "Không thể xóa một số ứng viên"
+    }
   }
 }

@@ -1,4 +1,8 @@
+import { fileURLToPath } from 'node:url'
+
 export default defineNuxtConfig({
-  // Candidate layer configuration
+  alias: {
+    '@candidate': fileURLToPath(new URL('.', import.meta.url)),
+  },
 })
 
