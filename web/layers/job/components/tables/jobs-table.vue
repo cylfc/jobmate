@@ -19,7 +19,7 @@
         <template #company-cell="{ row }">
           <div class="flex flex-col">
             <span>{{ row.original.company }}</span>
-            <span v-if="row.original.location" class="text-xs text-gray-500">
+            <span v-if="row.original.location" class="text-xs text-muted">
               {{ row.original.location }}
             </span>
           </div>
@@ -51,7 +51,7 @@
           <span v-if="row.original.salary" class="text-sm">
             {{ formatSalary(row.original.salary) }}
           </span>
-          <span v-else class="text-sm text-gray-400">{{ t('job.salary-not-specified') }}</span>
+          <span v-else class="text-sm text-dimmed">{{ t('job.salary-not-specified') }}</span>
         </template>
 
         <template #status-cell="{ row }">
@@ -68,7 +68,7 @@
             <span class="text-sm font-medium">
               {{ row.original.candidates?.active || 0 }} / {{ row.original.candidates?.total || 0 }}
             </span>
-            <span class="text-xs text-gray-500">
+            <span class="text-xs text-muted">
               {{ t('job.candidates.applying') }} / {{ t('job.candidates.total') }}
             </span>
           </div>
@@ -90,13 +90,13 @@
 
         <template #empty-state>
           <div class="text-center py-8">
-            <p class="text-gray-500">{{ t('job.no-jobs-found') }}</p>
+            <p class="text-muted">{{ t('job.no-jobs-found') }}</p>
           </div>
         </template>
       </UTable>
     </div>
 
-    <div v-if="Object.keys(rowSelection).length > 0" class="p-4 bg-primary-50 rounded-lg">
+    <div v-if="Object.keys(rowSelection).length > 0" class="p-4 bg-muted rounded-lg">
       <div class="flex items-center justify-between">
         <p class="text-sm font-medium">
           {{ t('job.selected-count', { count: Object.keys(rowSelection).length }) }}

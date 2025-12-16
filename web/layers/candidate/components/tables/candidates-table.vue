@@ -15,10 +15,10 @@
           <div class="flex flex-col">
             <span class="font-medium">{{ getCandidateName(row.original) }}</span>
             <div class="flex flex-col gap-1 mt-1">
-              <span v-if="row.original.email" class="text-xs text-gray-500">
+              <span v-if="row.original.email" class="text-xs text-muted">
                 {{ row.original.email }}
               </span>
-              <span v-if="row.original.phone" class="text-xs text-gray-500">
+              <span v-if="row.original.phone" class="text-xs text-muted">
                 {{ row.original.phone }}
               </span>
             </div>
@@ -51,6 +51,17 @@
           <span class="text-sm">{{ row.original.experience }} {{ t('candidate.years') }}</span>
         </template>
 
+        <template #current-company-cell="{ row }">
+          <span class="text-sm">{{ row.original.currentCompany || '-' }}</span>
+        </template>
+
+        <template #expected-salary-cell="{ row }">
+          <span v-if="row.original.expectedSalary" class="text-sm">
+            {{ formatSalary(row.original.expectedSalary) }}
+          </span>
+          <span v-else class="text-sm text-dimmed">-</span>
+        </template>
+
         <template #status-cell="{ row }">
           <UBadge
             :color="getStatusColor(row.original.status)"
@@ -76,13 +87,13 @@
 
         <template #empty-state>
           <div class="text-center py-8">
-            <p class="text-gray-500">{{ t('candidate.no-candidates-found') }}</p>
+            <p class="text-muted">{{ t('candidate.no-candidates-found') }}</p>
           </div>
         </template>
       </UTable>
     </div>
 
-    <div v-if="Object.keys(rowSelection).length > 0" class="p-4 bg-primary-50 rounded-lg">
+    <div v-if="Object.keys(rowSelection).length > 0" class="p-4 bg-muted rounded-lg">
       <div class="flex items-center justify-between">
         <p class="text-sm font-medium">
           {{ t('candidate.selected-count', { count: Object.keys(rowSelection).length }) }}
@@ -135,13 +146,8 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'view-detail', candidate: Candidate): void
-  (e: 'invite', candidate: Candidate): void
-  (e: 'delete', candidate: Candidate): void
-  (e: 'match-jobs', candidate: Candidate): void
-  (e: 'bulk-invite', candidateIds: string[]): void
-  (e: 'bulk-delete', candidateIds: string[]): void
-  (e: 'bulk-match-jobs', candidateIds: string[]): void
+  (e: 'view-detail' | 'invite' | 'delete' | 'match-jobs', candidate: Candidate): void
+  (e: 'bulk-invite' | 'bulk-delete' | 'bulk-match-jobs', candidateIds: string[]): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -188,6 +194,14 @@ const columns: TableColumn<Candidate>[] = [
     header: t('candidate.experience'),
   },
   {
+    accessorKey: 'currentCompany',
+    header: t('candidate.current-company'),
+  },
+  {
+    accessorKey: 'expectedSalary',
+    header: t('candidate.expected-salary'),
+  },
+  {
     accessorKey: 'status',
     header: t('candidate.status-label'),
   },
@@ -199,7 +213,7 @@ const columns: TableColumn<Candidate>[] = [
 ]
 
 const filteredCandidates = computed(() => {
-  let filtered = [...props.candidates]
+  const filtered = [...props.candidates]
 
   // Apply sorting
   if (sortBy.value === 'name') {
@@ -225,6 +239,10 @@ const filteredCandidates = computed(() => {
 
 const getCandidateName = (candidate: Candidate) => {
   return `${candidate.firstName} ${candidate.lastName}`.trim()
+}
+
+const formatSalary = (salary: { min: number; max: number; currency: string }) => {
+  return `${salary.min.toLocaleString()} - ${salary.max.toLocaleString()} ${salary.currency}`
 }
 
 const getStatusColor = (status?: string): 'neutral' | 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' => {

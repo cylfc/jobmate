@@ -6,7 +6,7 @@
           <h2 class="text-lg font-semibold">
             {{ t('setting.profile.title') }}
           </h2>
-          <p class="mt-1 text-xs text-gray-500">
+          <p class="mt-1 text-xs text-muted">
             {{ t('setting.profile.subtitle') }}
           </p>
         </div>

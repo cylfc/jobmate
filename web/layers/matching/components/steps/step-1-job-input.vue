@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <div>
       <h2 class="text-2xl font-bold mb-2">{{ t('matching.step-1.title') }}</h2>
-      <p class="text-gray-600">{{ t('matching.step-1.description') }}</p>
+      <p class="text-muted">{{ t('matching.step-1.description') }}</p>
     </div>
 
     <div class="space-y-4">
@@ -26,7 +26,7 @@
             @change="handleFileUpload"
           />
           <template #hint>
-            <p class="text-sm text-gray-500 mt-1">
+            <p class="text-sm text-muted mt-1">
               {{ t('matching.step-1.supported-formats') }}
             </p>
           </template>

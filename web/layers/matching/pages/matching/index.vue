@@ -3,7 +3,7 @@
   <div class="container mx-auto space-y-6">
     <div>
       <h1 class="text-3xl font-bold mb-2">{{ t('matching.title') }}</h1>
-      <p class="text-gray-600">{{ t('matching.subtitle') }}</p>
+      <p class="text-muted">{{ t('matching.subtitle') }}</p>
     </div>
 
     <MatchingStepper
@@ -11,7 +11,7 @@
       @update:current-step="goToStep"
     />
 
-    <div class="bg-white rounded-lg shadow-sm p-6">
+    <div class="bg-default rounded-lg shadow-sm p-6">
       <StepsStep1JobInput
         v-if="currentStep === 1"
         :job="selectedJob"

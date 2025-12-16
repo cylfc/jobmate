@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <div>
       <h2 class="text-2xl font-bold mb-2">{{ t('matching.step-2.title') }}</h2>
-      <p class="text-gray-600">{{ t('matching.step-2.description') }}</p>
+      <p class="text-muted">{{ t('matching.step-2.description') }}</p>
     </div>
 
     <div class="space-y-4">
@@ -15,7 +15,7 @@
             class="w-full"
           />
           <template #hint>
-            <p class="text-sm text-gray-500 mt-1">
+            <p class="text-sm text-muted mt-1">
               {{ t('matching.step-2.candidate-hint') }}
             </p>
           </template>
@@ -32,7 +32,7 @@
             @change="handleFileUpload"
           />
           <template #hint>
-            <p class="text-sm text-gray-500 mt-1">
+            <p class="text-sm text-muted mt-1">
               {{ t('matching.step-2.upload-hint') }}
             </p>
           </template>
@@ -44,10 +44,10 @@
             <div
               v-for="(file, index) in uploadedFiles"
               :key="index"
-              class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+              class="flex items-center justify-between p-3 bg-muted rounded-lg"
             >
               <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-file" class="w-5 h-5 text-gray-500" />
+                <UIcon name="i-lucide-file" class="w-5 h-5 text-muted" />
                 <span class="text-sm">{{ file.name }}</span>
               </div>
               <UButton
@@ -100,11 +100,11 @@
             <div
               v-for="candidate in candidatesFromDatabase"
               :key="candidate.id"
-              class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+              class="flex items-center justify-between p-3 bg-muted rounded-lg hover:bg-elevated transition-colors"
             >
               <div>
                 <p class="font-medium">{{ `${candidate.firstName} ${candidate.lastName}` }}</p>
-                <p class="text-sm text-gray-500">{{ candidate.email }}</p>
+                <p class="text-sm text-muted">{{ candidate.email }}</p>
               </div>
               <UCheckbox
                 :model-value="isSelected(candidate.id)"
@@ -131,7 +131,7 @@
       </div>
     </div>
 
-    <div v-if="selectedCandidates.length > 0" class="p-4 bg-primary-50 rounded-lg">
+    <div v-if="selectedCandidates.length > 0" class="p-4 bg-muted rounded-lg">
       <p class="text-sm font-medium mb-2">
         {{ t('matching.step-2.selected-candidates', { count: selectedCandidates.length }) }}
       </p>

@@ -2,16 +2,16 @@
   <div class="space-y-6">
     <div>
       <h2 class="text-2xl font-bold mb-2">{{ t('matching.step-3.title') }}</h2>
-      <p class="text-gray-600">{{ t('matching.step-3.description') }}</p>
+      <p class="text-muted">{{ t('matching.step-3.description') }}</p>
     </div>
 
     <div v-if="isAnalyzing" class="space-y-4">
-      <div class="p-6 bg-gray-50 rounded-lg">
+      <div class="p-6 bg-muted rounded-lg">
         <div class="space-y-4">
           <div>
             <div class="flex items-center justify-between mb-2">
               <p class="text-sm font-medium">{{ t('matching.step-3.processing-data') }}</p>
-              <span class="text-sm text-gray-500">{{ analysisProgress }}%</span>
+              <span class="text-sm text-muted">{{ analysisProgress }}%</span>
             </div>
             <UProgress :value="analysisProgress" :max="100" />
           </div>
@@ -25,12 +25,12 @@
               <UIcon
                 :name="step.completed ? 'i-lucide-check-circle' : step.active ? 'i-lucide-loader-2' : 'i-lucide-circle'"
                 :class="[
-                  step.completed ? 'text-green-500' : step.active ? 'text-primary-500 animate-spin' : 'text-gray-300',
+                  step.completed ? 'text-success' : step.active ? 'text-primary animate-spin' : 'text-dimmed',
                   'w-5 h-5'
                 ]"
               />
               <span
-                :class="step.completed ? 'text-gray-900' : step.active ? 'text-primary-600' : 'text-gray-400'"
+                :class="step.completed ? 'text-default' : step.active ? 'text-primary' : 'text-dimmed'"
               >
                 {{ step.label }}
               </span>
@@ -40,12 +40,12 @@
       </div>
     </div>
 
-    <div v-else-if="analysisComplete" class="p-6 bg-green-50 rounded-lg">
+    <div v-else-if="analysisComplete" class="p-6 bg-success/10 rounded-lg border border-success/20">
       <div class="flex items-center gap-2 mb-4">
-        <UIcon name="i-lucide-check-circle" class="w-6 h-6 text-green-500" />
-        <p class="text-lg font-semibold text-green-900">{{ t('matching.step-3.analysis-complete') }}</p>
+        <UIcon name="i-lucide-check-circle" class="w-6 h-6 text-success" />
+        <p class="text-lg font-semibold text-success">{{ t('matching.step-3.analysis-complete') }}</p>
       </div>
-      <p class="text-sm text-green-700">
+      <p class="text-sm text-success/80">
         {{ t('matching.step-3.found-matching', { count: matchingsCount }) }}
       </p>
     </div>

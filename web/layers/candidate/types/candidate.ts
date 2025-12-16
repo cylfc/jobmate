@@ -10,6 +10,12 @@ export interface Candidate {
   phone?: string
   skills: string[]
   experience: number
+  currentCompany?: string
+  expectedSalary?: {
+    min: number
+    max: number
+    currency: string
+  }
   status?: CandidateStatus
   createdAt: Date
   updatedAt: Date
@@ -24,6 +30,12 @@ export interface CreateCandidateInput {
   phone?: string
   skills: string[]
   experience?: number
+  currentCompany?: string
+  expectedSalary?: {
+    min: number
+    max: number
+    currency: string
+  }
 }
 
 export interface CandidateFilter {

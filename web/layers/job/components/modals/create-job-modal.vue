@@ -33,7 +33,7 @@
                 class="w-full"
               />
               <template #hint>
-                <p class="text-sm text-gray-500 mt-1">
+                <p class="text-sm text-muted mt-1">
                   {{ t('job.create.input.hint') }}
                 </p>
               </template>
@@ -60,7 +60,7 @@
                 @change="handleFileUpload"
               />
               <template #hint>
-                <p class="text-sm text-gray-500 mt-1">
+                <p class="text-sm text-muted mt-1">
                   {{ t('job.create.upload.supported-formats') }}
                 </p>
               </template>

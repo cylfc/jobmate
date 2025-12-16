@@ -6,7 +6,7 @@
           <h2 class="text-lg font-semibold">
             {{ t('setting.notification.title') }}
           </h2>
-          <p class="mt-1 text-xs text-gray-500">
+          <p class="mt-1 text-xs text-muted">
             {{ t('setting.notification.subtitle') }}
           </p>
         </div>
@@ -16,7 +16,7 @@
     <div class="space-y-6">
       <!-- Email Notifications -->
       <div class="space-y-4">
-        <h3 class="text-sm font-semibold text-gray-900">
+        <h3 class="text-sm font-semibold text-default">
           {{ t('setting.notification.email.title') }}
         </h3>
         <div class="space-y-3">
@@ -39,7 +39,7 @@
 
       <!-- Push Notifications -->
       <div class="space-y-4">
-        <h3 class="text-sm font-semibold text-gray-900">
+        <h3 class="text-sm font-semibold text-default">
           {{ t('setting.notification.push.title') }}
         </h3>
         <div class="space-y-3">
@@ -62,7 +62,7 @@
 
       <!-- In-App Notifications -->
       <div class="space-y-4">
-        <h3 class="text-sm font-semibold text-gray-900">
+        <h3 class="text-sm font-semibold text-default">
           {{ t('setting.notification.in-app.title') }}
         </h3>
         <div class="space-y-3">

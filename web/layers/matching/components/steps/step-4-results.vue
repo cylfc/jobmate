@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <div>
       <h2 class="text-2xl font-bold mb-2">{{ t('matching.step-4.title') }}</h2>
-      <p class="text-gray-600">{{ t('matching.step-4.description') }}</p>
+      <p class="text-muted">{{ t('matching.step-4.description') }}</p>
     </div>
 
     <TablesMatchingResultsTable

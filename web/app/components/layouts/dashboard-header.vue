@@ -1,10 +1,10 @@
 <template>
-  <header class="border-b border-gray-200 bg-white sticky top-0 z-50 px-4">
+  <header class="border-b border-default bg-default sticky top-0 z-50 px-4">
     <div class="flex items-center justify-between h-16">
       <div class="flex items-center gap-4">
         <NuxtLink to="/dashboard" class="flex items-center gap-2">
-          <UIcon name="i-lucide-briefcase" class="w-8 h-8 text-primary-600" />
-          <span class="text-xl font-bold text-gray-900">JobMate</span>
+          <UIcon name="i-lucide-briefcase" class="w-8 h-8 text-primary" />
+            <span class="text-xl font-bold text-default">JobMate</span>
         </NuxtLink>
       </div>
       <div class="flex items-center gap-2">
@@ -21,6 +21,14 @@
             }
           }"
           @update:model-value="handleLocaleChange($event)"
+        />
+
+        <!-- Color Mode Button -->
+        <UColorModeButton
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          square
         />
 
         <!-- Notifications -->

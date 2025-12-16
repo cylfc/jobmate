@@ -2,8 +2,8 @@
   <UCard>
     <template #header>
       <div class="text-center">
-        <h1 class="text-2xl font-bold text-gray-900">{{ t('auth.register-form.title') }}</h1>
-        <p class="mt-2 text-sm text-gray-600">
+        <h1 class="text-2xl font-bold text-default">{{ t('auth.register-form.title') }}</h1>
+        <p class="mt-2 text-sm text-muted">
           {{ t('auth.register-form.subtitle') }}
         </p>
       </div>
@@ -87,11 +87,11 @@
     </UForm>
 
     <template #footer>
-      <div class="text-center text-sm text-gray-600">
+      <div class="text-center text-sm text-muted">
         {{ t('auth.register-form.has-account') }}
         <NuxtLink
           to="/auth/login"
-          class="font-medium text-primary-600 hover:text-primary-700"
+          class="font-medium text-primary hover:text-primary"
         >
           {{ t('auth.register-form.login-link') }}
         </NuxtLink>

@@ -1,23 +1,23 @@
 <template>
-  <header class="border-b border-gray-200 bg-white">
+  <header class="border-b border-default bg-default">
     <UContainer>
       <div class="flex items-center justify-between h-16">
         <div class="flex items-center gap-8">
           <NuxtLink to="/" class="flex items-center gap-2">
-            <UIcon name="i-lucide-briefcase" class="w-8 h-8 text-primary-600" />
-            <span class="text-xl font-bold text-gray-900">JobMate</span>
+            <UIcon name="i-lucide-briefcase" class="w-8 h-8 text-primary" />
+            <span class="text-xl font-bold text-default">JobMate</span>
           </NuxtLink>
           <nav class="hidden md:flex items-center gap-6">
-            <NuxtLink to="/" class="text-sm font-medium text-gray-700 hover:text-primary-600">
+            <NuxtLink to="/" class="text-sm font-medium text-toned hover:text-primary">
               {{ t('nav.home') }}
             </NuxtLink>
-            <NuxtLink to="/jobs" class="text-sm font-medium text-gray-700 hover:text-primary-600">
+            <NuxtLink to="/jobs" class="text-sm font-medium text-toned hover:text-primary">
               {{ t('nav.jobs') }}
             </NuxtLink>
-            <NuxtLink to="/candidates" class="text-sm font-medium text-gray-700 hover:text-primary-600">
+            <NuxtLink to="/candidates" class="text-sm font-medium text-toned hover:text-primary">
               {{ t('nav.candidates') }}
             </NuxtLink>
-            <NuxtLink to="/matching" class="text-sm font-medium text-gray-700 hover:text-primary-600">
+            <NuxtLink to="/matching" class="text-sm font-medium text-toned hover:text-primary">
               {{ t('nav.matching') }}
             </NuxtLink>
           </nav>

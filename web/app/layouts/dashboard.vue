@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-gray-50">
+  <div class="min-h-screen flex flex-col bg-muted dark:bg-default">
     <LayoutsDashboardHeader />
     <UDashboardGroup storage-key="dashboard-sidebar">
       <UDashboardSidebar
@@ -9,7 +9,7 @@
         :min-size="16"
         :max-size="30"
         :collapsed-size="0"
-        class="bg-white"
+        class="bg-default"
       >
         <template #header="{ collapsed }">
           <LayoutsDashboardSidebar :collapsed="collapsed" type="header" />
