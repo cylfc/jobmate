@@ -46,11 +46,11 @@ const menuItems = computed<NavigationMenuItem[]>(() => [
   <!-- Header content -->
   <div v-if="type === 'header'">
     <div v-if="!collapsed" class="flex items-center gap-2 px-4">
-      <UIcon name="i-lucide-briefcase" class="w-6 h-6 text-primary-600" />
-      <span class="text-lg font-bold text-gray-900">JobMate</span>
+              <UIcon name="i-lucide-briefcase" class="w-6 h-6 text-primary" />
+      <span class="text-lg font-bold text-default">JobMate</span>
     </div>
     <div v-else class="flex items-center justify-center">
-      <UIcon name="i-lucide-briefcase" class="w-5 h-5 text-primary-600" />
+              <UIcon name="i-lucide-briefcase" class="w-5 h-5 text-primary" />
     </div>
   </div>
 

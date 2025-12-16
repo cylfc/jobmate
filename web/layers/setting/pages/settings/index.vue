@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h1 class="text-3xl font-bold text-gray-900">
+      <h1 class="text-3xl font-bold text-default">
         {{ t('setting.title') }}
       </h1>
-      <p class="mt-2 text-sm text-gray-600">
+      <p class="mt-2 text-sm text-muted">
         {{ t('setting.subtitle') }}
       </p>
     </div>
@@ -25,6 +25,7 @@
         <SettingsProfile v-if="selectedTab === 'profile'" />
         <SettingsSecurity v-else-if="selectedTab === 'security'" />
         <SettingsNotification v-else-if="selectedTab === 'notification'" />
+        <SettingsSystemConfig v-else-if="selectedTab === 'system'" />
       </div>
     </div>
   </div>
@@ -74,6 +75,11 @@ const tabs = computed(() => [
     label: t('setting.notification.title'),
     value: 'notification',
     icon: 'i-lucide-bell',
+  },
+  {
+    label: t('setting.system-config.title'),
+    value: 'system',
+    icon: 'i-lucide-settings',
   },
 ])
 </script>

@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between">
       <div>
         <h3 class="text-lg font-semibold">{{ t('matching.step-4.matching-results') }}</h3>
-        <p class="text-sm text-gray-600">{{ t('matching.step-4.found-candidates', { count: matchings.length }) }}</p>
+        <p class="text-sm text-muted">{{ t('matching.step-4.found-candidates', { count: matchings.length }) }}</p>
       </div>
       <div class="flex gap-2">
         <UButton
@@ -25,7 +25,7 @@
       </div>
     </div>
 
-    <div v-if="showFilters" class="p-4 bg-gray-50 rounded-lg">
+    <div v-if="showFilters" class="p-4 bg-muted rounded-lg">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <USelectMenu
           v-model="sortBy"
@@ -60,10 +60,10 @@
           <div class="flex flex-col">
             <span class="font-medium">{{ row.original.candidateName || `Candidate ${row.original.candidateId}` }}</span>
             <div class="flex flex-col gap-1 mt-1">
-              <span v-if="getCandidateEmail(row.original)" class="text-xs text-gray-500">
+              <span v-if="getCandidateEmail(row.original)" class="text-xs text-muted">
                 {{ getCandidateEmail(row.original) }}
               </span>
-              <span v-if="getCandidatePhone(row.original)" class="text-xs text-gray-500">
+              <span v-if="getCandidatePhone(row.original)" class="text-xs text-muted">
                 {{ getCandidatePhone(row.original) }}
               </span>
             </div>
@@ -102,14 +102,14 @@
 
         <template #empty-state>
           <div class="text-center py-8">
-            <p class="text-gray-500">{{ t('matching.step-4.no-matching-found') }}</p>
-            <p class="text-sm text-gray-400 mt-2">{{ t('matching.step-4.filtered', { filtered: filteredMatchings.length }) }}, {{ t('matching.step-4.total', { total: props.matchings?.length || 0 }) }}</p>
+            <p class="text-muted">{{ t('matching.step-4.no-matching-found') }}</p>
+            <p class="text-sm text-dimmed mt-2">{{ t('matching.step-4.filtered', { filtered: filteredMatchings.length }) }}, {{ t('matching.step-4.total', { total: props.matchings?.length || 0 }) }}</p>
           </div>
         </template>
       </UTable>
     </div>
 
-    <div v-if="Object.keys(rowSelection).length > 0" class="p-4 bg-primary-50 rounded-lg">
+    <div v-if="Object.keys(rowSelection).length > 0" class="p-4 bg-muted rounded-lg">
       <div class="flex items-center justify-between">
         <p class="text-sm font-medium">
           {{ t('matching.step-4.selected-count', { count: Object.keys(rowSelection).length }) }}

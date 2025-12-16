@@ -9,7 +9,7 @@
   >
     <template #header>
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold text-gray-900">{{ t('notification.title') }}</h2>
+        <h2 class="text-lg font-semibold text-default">{{ t('notification.title') }}</h2>
         <UButton
           color="neutral"
           variant="ghost"
@@ -31,17 +31,17 @@
           >
             <UIcon
               name="i-lucide-bell-off"
-              class="w-12 h-12 text-gray-400 mb-4"
+              class="w-12 h-12 text-dimmed mb-4"
             />
-            <p class="text-sm text-gray-500">{{ t('notification.no-notifications') }}</p>
+            <p class="text-sm text-muted">{{ t('notification.no-notifications') }}</p>
           </div>
 
-          <div v-else class="divide-y divide-gray-200">
+          <div v-else class="divide-y divide-default">
             <div
               v-for="notification in notifications"
               :key="notification.id"
-              class="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
-              :class="{ 'bg-primary-50': !notification.read }"
+              class="p-4 hover:bg-muted transition-colors cursor-pointer"
+              :class="{ 'bg-muted': !notification.read }"
               @click="handleNotificationClick(notification)"
             >
               <div class="flex items-start gap-3">
@@ -55,18 +55,18 @@
                   />
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="text-sm font-medium text-gray-900">
+                  <p class="text-sm font-medium text-default">
                     {{ notification.title }}
                   </p>
-                  <p class="text-sm text-gray-500 mt-1">
+                  <p class="text-sm text-muted mt-1">
                     {{ notification.message }}
                   </p>
-                  <p class="text-xs text-gray-400 mt-2">
+                  <p class="text-xs text-dimmed mt-2">
                     {{ formatTime(notification.createdAt) }}
                   </p>
                 </div>
                 <div v-if="!notification.read" class="flex-shrink-0">
-                  <div class="w-2 h-2 bg-primary-600 rounded-full"></div>
+                  <div class="w-2 h-2 bg-primary rounded-full"></div>
                 </div>
               </div>
             </div>
@@ -76,7 +76,7 @@
         <!-- Footer Actions -->
         <div
           v-if="notifications.length > 0"
-          class="border-t border-gray-200 p-4"
+          class="border-t border-default p-4"
         >
           <UButton
             color="neutral"
@@ -166,10 +166,10 @@ const getNotificationIcon = (type: Notification["type"]) => {
 
 const getNotificationIconClass = (type: Notification["type"]) => {
   const classes = {
-    info: "bg-blue-100 text-blue-600",
-    success: "bg-green-100 text-green-600",
-    warning: "bg-yellow-100 text-yellow-600",
-    error: "bg-red-100 text-red-600",
+    info: "bg-info/10 text-info",
+    success: "bg-success/10 text-success",
+    warning: "bg-warning/10 text-warning",
+    error: "bg-error/10 text-error",
   };
   return classes[type];
 };

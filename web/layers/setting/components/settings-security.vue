@@ -6,7 +6,7 @@
           <h2 class="text-lg font-semibold">
             {{ t('setting.security.title') }}
           </h2>
-          <p class="mt-1 text-xs text-gray-500">
+          <p class="mt-1 text-xs text-muted">
             {{ t('setting.security.subtitle') }}
           </p>
         </div>
@@ -36,7 +36,7 @@
           class="w-full"
         />
         <template #hint>
-          <p class="text-sm text-gray-500 mt-1">
+          <p class="text-sm text-muted mt-1">
             {{ t('auth.change-password-form.password-hint') }}
           </p>
         </template>

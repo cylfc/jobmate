@@ -478,6 +478,38 @@
         "title": "Failed to update notification settings",
         "description": "Unable to update notification settings"
       }
+    },
+    "system-config": {
+      "title": "System Configuration",
+      "subtitle": "Manage system settings such as timezone, date and time formats",
+      "save-button": "Save Settings",
+      "color-mode": {
+        "title": "Color Mode",
+        "description": "Switch between light and dark mode"
+      },
+      "timezone": {
+        "title": "Timezone",
+        "placeholder": "Select timezone",
+        "hint": "Timezone is used to display accurate time"
+      },
+      "date-format": {
+        "title": "Date Format",
+        "placeholder": "Select date format"
+      },
+      "time-format": {
+        "title": "Time Format",
+        "placeholder": "Select time format",
+        "24h": "24 hours",
+        "12h": "12 hours (AM/PM)"
+      },
+      "success": {
+        "title": "System configuration updated successfully",
+        "description": "Your system configuration has been updated"
+      },
+      "error": {
+        "title": "Failed to update system configuration",
+        "description": "Unable to update system configuration"
+      }
     }
   },
   "candidate": {
@@ -487,6 +519,8 @@
     "name": "Name",
     "skills": "Skills",
     "experience": "Experience",
+    "current-company": "Current Company",
+    "expected-salary": "Expected Salary",
     "status-label": "Status",
     "years": "years",
     "no-candidates-found": "No candidates found",

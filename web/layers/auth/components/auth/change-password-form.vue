@@ -2,8 +2,8 @@
   <UCard>
     <template #header>
       <div class="text-center">
-        <h1 class="text-2xl font-bold text-gray-900">{{ t('auth.change-password-form.title') }}</h1>
-        <p class="mt-2 text-sm text-gray-600">
+        <h1 class="text-2xl font-bold text-default">{{ t('auth.change-password-form.title') }}</h1>
+        <p class="mt-2 text-sm text-muted">
           {{ t('auth.change-password-form.subtitle') }}
         </p>
       </div>

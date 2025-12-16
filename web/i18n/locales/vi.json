@@ -478,6 +478,38 @@
         "title": "Cập nhật cài đặt thông báo thất bại",
         "description": "Không thể cập nhật cài đặt thông báo"
       }
+    },
+    "system-config": {
+      "title": "Cấu hình hệ thống",
+      "subtitle": "Quản lý cài đặt hệ thống như timezone, định dạng ngày giờ",
+      "save-button": "Lưu cài đặt",
+      "color-mode": {
+        "title": "Chế độ màu",
+        "description": "Chuyển đổi giữa chế độ sáng và tối"
+      },
+      "timezone": {
+        "title": "Múi giờ",
+        "placeholder": "Chọn múi giờ",
+        "hint": "Múi giờ được sử dụng để hiển thị thời gian chính xác"
+      },
+      "date-format": {
+        "title": "Định dạng ngày",
+        "placeholder": "Chọn định dạng ngày"
+      },
+      "time-format": {
+        "title": "Định dạng giờ",
+        "placeholder": "Chọn định dạng giờ",
+        "24h": "24 giờ",
+        "12h": "12 giờ (AM/PM)"
+      },
+      "success": {
+        "title": "Cập nhật cấu hình hệ thống thành công",
+        "description": "Cấu hình hệ thống của bạn đã được cập nhật"
+      },
+      "error": {
+        "title": "Cập nhật cấu hình hệ thống thất bại",
+        "description": "Không thể cập nhật cấu hình hệ thống"
+      }
     }
   },
   "candidate": {
@@ -487,6 +519,8 @@
     "name": "Tên",
     "skills": "Kỹ năng",
     "experience": "Kinh nghiệm",
+    "current-company": "Công ty đang làm việc",
+    "expected-salary": "Mức lương mong muốn",
     "status-label": "Trạng thái",
     "years": "năm",
     "no-candidates-found": "Không tìm thấy ứng viên nào",
