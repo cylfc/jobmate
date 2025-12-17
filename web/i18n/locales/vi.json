@@ -33,6 +33,113 @@
     "dashboard": "Dashboard",
     "settings": "Cài đặt"
   },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Tổng quan tuyển dụng và các việc cần làm tiếp theo.",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt",
+    "notifications": "Thông báo",
+    "role": {
+      "recruiter": "Recruiter",
+      "hiring-manager": "Hiring manager",
+      "admin": "Admin"
+    },
+    "kpi": {
+      "title": "Tổng quan KPI",
+      "subtitle": "Chỉ số hiệu suất cho jobs, candidates và matching.",
+      "open-jobs": "Job đang mở",
+      "new-candidates": "Ứng viên mới",
+      "avg-match": "Điểm matching trung bình",
+      "time-to-hire": "Thời gian tuyển",
+      "delta-week": "{value} so với tuần trước"
+    },
+    "active-jobs": {
+      "title": "Job đang hoạt động",
+      "subtitle": "Theo dõi job và hiệu suất matching.",
+      "view-all": "Xem tất cả",
+      "count": "{count} job",
+      "columns": {
+        "title": "Job",
+        "status": "Trạng thái",
+        "applicants": "Ứng tuyển",
+        "matched": "Matched",
+        "updated-at": "Cập nhật"
+      },
+      "status": {
+        "published": "Đang đăng",
+        "draft": "Nháp",
+        "closed": "Đã đóng"
+      }
+    },
+    "tasks": {
+      "title": "Công việc & cảnh báo",
+      "subtitle": "Ưu tiên việc quan trọng và xử lý blocker.",
+      "view-all": "Xem tất cả",
+      "empty": "Hiện chưa có công việc nào.",
+      "due": "Hạn: {due}",
+      "cta": {
+        "review": "Xem",
+        "send": "Gửi",
+        "fix": "Sửa"
+      },
+      "severity": {
+        "info": "Thông tin",
+        "warning": "Cần chú ý",
+        "error": "Cảnh báo",
+        "success": "Thành công"
+      },
+      "items": {
+        "review-shortlist": "Duyệt shortlist",
+        "review-shortlist-desc": "{count} ứng viên sẵn sàng để duyệt.",
+        "follow-up": "Follow up ứng viên",
+        "follow-up-desc": "{count} cuộc trò chuyện cần phản hồi.",
+        "stale-jobs": "Job bị cũ",
+        "stale-jobs-desc": "{count} job lâu chưa được cập nhật."
+      }
+    },
+    "matching-health": {
+      "title": "Sức khoẻ matching",
+      "subtitle": "Tín hiệu chất lượng cho extraction và độ tin cậy matching.",
+      "metrics": {
+        "coverage": "Mức độ đầy đủ JD",
+        "extraction": "Chất lượng extraction CV/JD",
+        "response-time": "Tốc độ phân tích",
+        "feedback": "Tỉ lệ feedback"
+      },
+      "hints": {
+        "coverage": "Mức độ đầy đủ của yêu cầu job.",
+        "extraction": "Khả năng AI trích xuất dữ liệu có cấu trúc.",
+        "response-time": "Tốc độ phản hồi của phân tích.",
+        "feedback": "Mức độ thường xuyên review và đánh giá kết quả."
+      }
+    },
+    "pipeline": {
+      "title": "Pipeline ứng viên",
+      "subtitle": "Snapshot của funnel hiện tại.",
+      "stages": {
+        "applied": "Ứng tuyển",
+        "screening": "Sàng lọc",
+        "interview": "Phỏng vấn",
+        "offer": "Offer",
+        "hired": "Đã tuyển",
+        "rejected": "Loại"
+      }
+    },
+    "activity": {
+      "title": "Hoạt động gần đây",
+      "subtitle": "Cập nhật mới nhất trong workspace.",
+      "view-all": "Xem tất cả",
+      "empty": "Chưa có hoạt động nào.",
+      "items": {
+        "matching-complete": "Matching hoàn tất",
+        "matching-complete-desc": "Tìm thấy {count} ứng viên để duyệt.",
+        "candidate-added": "Thêm ứng viên",
+        "candidate-added-desc": "{name} đã được thêm vào pipeline.",
+        "job-published": "Đăng job",
+        "job-published-desc": "{title} đã được đăng."
+      }
+    }
+  },
   "auth": {
     "login": "Đăng nhập",
     "register": "Đăng ký",
@@ -123,11 +230,6 @@
     "change-password-success-description": "Mật khẩu của bạn đã được cập nhật",
     "change-password-error-title": "Đổi mật khẩu thất bại",
     "change-password-error-description": "Mật khẩu hiện tại không đúng"
-  },
-  "dashboard": {
-    "profile": "Hồ sơ",
-    "settings": "Cài đặt",
-    "notifications": "Thông báo"
   },
   "footer": {
     "tagline": "Nền tảng tuyển dụng thông minh với AI",

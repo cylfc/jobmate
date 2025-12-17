@@ -33,6 +33,113 @@
     "dashboard": "Dashboard",
     "settings": "Settings"
   },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Your recruiting overview and next best actions.",
+    "profile": "Profile",
+    "settings": "Settings",
+    "notifications": "Notifications",
+    "role": {
+      "recruiter": "Recruiter",
+      "hiring-manager": "Hiring manager",
+      "admin": "Admin"
+    },
+    "kpi": {
+      "title": "KPI summary",
+      "subtitle": "High-level performance across jobs, candidates and matching.",
+      "open-jobs": "Open jobs",
+      "new-candidates": "New candidates",
+      "avg-match": "Average match score",
+      "time-to-hire": "Time to hire",
+      "delta-week": "{value} vs last week"
+    },
+    "active-jobs": {
+      "title": "Active jobs",
+      "subtitle": "Track your roles and matching throughput.",
+      "view-all": "View all",
+      "count": "{count} jobs",
+      "columns": {
+        "title": "Job",
+        "status": "Status",
+        "applicants": "Applicants",
+        "matched": "Matched",
+        "updated-at": "Updated"
+      },
+      "status": {
+        "published": "Published",
+        "draft": "Draft",
+        "closed": "Closed"
+      }
+    },
+    "tasks": {
+      "title": "Tasks & alerts",
+      "subtitle": "Stay on top of blockers and next steps.",
+      "view-all": "View all",
+      "empty": "No tasks right now.",
+      "due": "Due: {due}",
+      "cta": {
+        "review": "Review",
+        "send": "Send",
+        "fix": "Fix"
+      },
+      "severity": {
+        "info": "Info",
+        "warning": "Warning",
+        "error": "Alert",
+        "success": "Success"
+      },
+      "items": {
+        "review-shortlist": "Review shortlist",
+        "review-shortlist-desc": "{count} candidates are ready for review.",
+        "follow-up": "Follow up candidates",
+        "follow-up-desc": "{count} conversations need a reply.",
+        "stale-jobs": "Stale job posts",
+        "stale-jobs-desc": "{count} jobs have not been updated recently."
+      }
+    },
+    "matching-health": {
+      "title": "Matching health",
+      "subtitle": "Quality signals for extraction and match reliability.",
+      "metrics": {
+        "coverage": "JD coverage",
+        "extraction": "CV/JD extraction quality",
+        "response-time": "Analysis speed",
+        "feedback": "Recruiter feedback rate"
+      },
+      "hints": {
+        "coverage": "How complete your job requirements are.",
+        "extraction": "How well the AI extracts structured data.",
+        "response-time": "Relative responsiveness of analysis.",
+        "feedback": "How often results get reviewed and rated."
+      }
+    },
+    "pipeline": {
+      "title": "Candidate pipeline",
+      "subtitle": "Snapshot of your current funnel.",
+      "stages": {
+        "applied": "Applied",
+        "screening": "Screening",
+        "interview": "Interview",
+        "offer": "Offer",
+        "hired": "Hired",
+        "rejected": "Rejected"
+      }
+    },
+    "activity": {
+      "title": "Recent activity",
+      "subtitle": "Latest updates across your workspace.",
+      "view-all": "View all",
+      "empty": "No activity yet.",
+      "items": {
+        "matching-complete": "Matching completed",
+        "matching-complete-desc": "{count} candidates surfaced for review.",
+        "candidate-added": "Candidate added",
+        "candidate-added-desc": "{name} was added to your pipeline.",
+        "job-published": "Job published",
+        "job-published-desc": "{title} is now live."
+      }
+    }
+  },
   "auth": {
     "login": "Login",
     "register": "Register",
@@ -123,11 +230,6 @@
     "change-password-success-description": "Your password has been updated",
     "change-password-error-title": "Failed to change password",
     "change-password-error-description": "Current password is incorrect"
-  },
-  "dashboard": {
-    "profile": "Profile",
-    "settings": "Settings",
-    "notifications": "Notifications"
   },
   "footer": {
     "tagline": "AI-powered recruitment platform",
