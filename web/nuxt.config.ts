@@ -27,8 +27,14 @@ export default defineNuxtConfig({
     "@nuxt/test-utils",
     "@nuxt/ui",
     "@nuxt/hints",
-    "@nuxtjs/i18n"
+    "@nuxtjs/i18n",
+    'nuxt-echarts',
   ],
+  echarts: {
+    charts: ['BarChart'],
+    components: ['GridComponent', 'TooltipComponent'],
+    renderer: ['svg', 'canvas']
+  },
   i18n: {
     lazy: true,
     langDir: 'locales',

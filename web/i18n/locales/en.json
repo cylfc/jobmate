@@ -61,9 +61,9 @@
       "columns": {
         "title": "Job",
         "status": "Status",
-        "applicants": "Applicants",
-        "matched": "Matched",
-        "updated-at": "Updated"
+        "candidates": "Candidates",
+        "top-match": "Top match",
+        "last-activity": "Last activity"
       },
       "status": {
         "published": "Published",
@@ -100,6 +100,12 @@
     "matching-health": {
       "title": "Matching health",
       "subtitle": "Quality signals for extraction and match reliability.",
+      "high-quality": "High-quality matches",
+      "high-quality-hint": "Share of matches with score > 80%.",
+      "low-quality": "Low-quality matches",
+      "low-quality-hint": "Share of matches with score < 60%.",
+      "distribution": "Score distribution",
+      "distribution-hint": "Share of matches per score bucket.",
       "metrics": {
         "coverage": "JD coverage",
         "extraction": "CV/JD extraction quality",
@@ -116,11 +122,16 @@
     "pipeline": {
       "title": "Candidate pipeline",
       "subtitle": "Snapshot of your current funnel.",
+      "bottleneck": "Bottleneck",
       "stages": {
+        "uploaded": "Uploaded",
+        "matched": "Matched",
+        "contacted": "Contacted",
+        "interviewing": "Interviewing",
+        "offer": "Offer",
         "applied": "Applied",
         "screening": "Screening",
         "interview": "Interview",
-        "offer": "Offer",
         "hired": "Hired",
         "rejected": "Rejected"
       }
@@ -130,6 +141,23 @@
       "subtitle": "Latest updates across your workspace.",
       "view-all": "View all",
       "empty": "No activity yet.",
+      "group": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "earlier": "Earlier"
+      },
+      "types": {
+        "cv-uploaded": "Uploaded a CV",
+        "cv-uploaded-with-name": "Uploaded CV: {name}",
+        "job-saved": "Saved a job",
+        "job-saved-with-title": "Saved job: {title}",
+        "matching-completed": "Matching run completed",
+        "matching-completed-with-title": "Matching completed: {title}",
+        "matching-completed-desc": "{count} candidates surfaced for review.",
+        "interview-scheduled": "Interview scheduled",
+        "interview-scheduled-with-name-title": "Interview scheduled: {name} · {title}",
+        "unknown": "Activity"
+      },
       "items": {
         "matching-complete": "Matching completed",
         "matching-complete-desc": "{count} candidates surfaced for review.",

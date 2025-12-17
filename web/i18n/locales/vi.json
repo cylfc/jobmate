@@ -61,9 +61,9 @@
       "columns": {
         "title": "Job",
         "status": "Trạng thái",
-        "applicants": "Ứng tuyển",
-        "matched": "Matched",
-        "updated-at": "Cập nhật"
+        "candidates": "Ứng viên",
+        "top-match": "Top match",
+        "last-activity": "Hoạt động"
       },
       "status": {
         "published": "Đang đăng",
@@ -100,6 +100,12 @@
     "matching-health": {
       "title": "Sức khoẻ matching",
       "subtitle": "Tín hiệu chất lượng cho extraction và độ tin cậy matching.",
+      "high-quality": "Matching chất lượng cao",
+      "high-quality-hint": "Tỉ lệ matching có điểm > 80%.",
+      "low-quality": "Matching chất lượng thấp",
+      "low-quality-hint": "Tỉ lệ matching có điểm < 60%.",
+      "distribution": "Phân bổ điểm matching",
+      "distribution-hint": "Tỉ lệ matching theo từng nhóm điểm.",
       "metrics": {
         "coverage": "Mức độ đầy đủ JD",
         "extraction": "Chất lượng extraction CV/JD",
@@ -116,11 +122,16 @@
     "pipeline": {
       "title": "Pipeline ứng viên",
       "subtitle": "Snapshot của funnel hiện tại.",
+      "bottleneck": "Nút thắt",
       "stages": {
+        "uploaded": "Đã upload",
+        "matched": "Đã match",
+        "contacted": "Đã liên hệ",
+        "interviewing": "Đang phỏng vấn",
+        "offer": "Offer",
         "applied": "Ứng tuyển",
         "screening": "Sàng lọc",
         "interview": "Phỏng vấn",
-        "offer": "Offer",
         "hired": "Đã tuyển",
         "rejected": "Loại"
       }
@@ -130,6 +141,23 @@
       "subtitle": "Cập nhật mới nhất trong workspace.",
       "view-all": "Xem tất cả",
       "empty": "Chưa có hoạt động nào.",
+      "group": {
+        "today": "Hôm nay",
+        "yesterday": "Hôm qua",
+        "earlier": "Trước đó"
+      },
+      "types": {
+        "cv-uploaded": "Đã upload CV",
+        "cv-uploaded-with-name": "Đã upload CV: {name}",
+        "job-saved": "Đã lưu job",
+        "job-saved-with-title": "Đã lưu job: {title}",
+        "matching-completed": "Matching hoàn tất",
+        "matching-completed-with-title": "Matching hoàn tất: {title}",
+        "matching-completed-desc": "Tìm thấy {count} ứng viên để duyệt.",
+        "interview-scheduled": "Đã lên lịch phỏng vấn",
+        "interview-scheduled-with-name-title": "Đã lên lịch phỏng vấn: {name} · {title}",
+        "unknown": "Hoạt động"
+      },
       "items": {
         "matching-complete": "Matching hoàn tất",
         "matching-complete-desc": "Tìm thấy {count} ứng viên để duyệt.",
