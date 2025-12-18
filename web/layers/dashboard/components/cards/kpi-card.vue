@@ -30,11 +30,22 @@
         {{ value }}
       </div>
 
-      <div v-if="delta !== undefined" class="flex items-center gap-2">
-        <UBadge :color="deltaColor" variant="subtle" size="sm">
+      <div v-if="delta !== undefined || trendData" class="flex items-center gap-2">
+        <UBadge v-if="delta !== undefined" :color="deltaColor" variant="subtle" size="sm">
           <UIcon :name="deltaIcon" class="size-3" />
           <span class="ml-1 tabular-nums">{{ formattedDelta }}</span>
         </UBadge>
+
+        <!-- Mini trend chart -->
+        <div v-if="trendData && trendData.length > 0" class="flex-1 min-w-0 h-8">
+          <ChartsSparklineChart
+            :data="trendData"
+            :color="sparklineColor"
+            height="32px"
+            width="100%"
+            :area="true"
+          />
+        </div>
       </div>
     </div>
   </UCard>
@@ -48,11 +59,13 @@ const props = withDefaults(
     delta?: number
     icon?: string
     loading?: boolean
+    trendData?: number[]
   }>(),
   {
     delta: undefined,
     icon: undefined,
     loading: false,
+    trendData: undefined,
   }
 )
 
@@ -86,6 +99,13 @@ const handleClick = () => {
   if (!clickable.value) return
   emit('drilldown')
 }
+
+const sparklineColor = computed(() => {
+  if (props.delta === undefined) return 'var(--color-brand-600)'
+  if (props.delta > 0) return 'var(--color-emerald-500)'
+  if (props.delta < 0) return 'var(--color-rose-500)'
+  return 'var(--color-brand-600)'
+})
 </script>
 
 

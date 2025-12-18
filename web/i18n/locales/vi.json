@@ -123,6 +123,12 @@
       "title": "Pipeline ứng viên",
       "subtitle": "Snapshot của funnel hiện tại.",
       "bottleneck": "Nút thắt",
+      "chart": {
+        "bar-title": "Tổng quan các giai đoạn",
+        "bar-subtitle": "Số lượng ứng viên theo từng giai đoạn",
+        "pie-title": "Phân bổ",
+        "pie-subtitle": "Tỷ lệ phần trăm theo giai đoạn"
+      },
       "stages": {
         "uploaded": "Đã upload",
         "matched": "Đã match",

@@ -123,6 +123,12 @@
       "title": "Candidate pipeline",
       "subtitle": "Snapshot of your current funnel.",
       "bottleneck": "Bottleneck",
+      "chart": {
+        "bar-title": "Stages Overview",
+        "bar-subtitle": "Candidate count per pipeline stage",
+        "pie-title": "Distribution",
+        "pie-subtitle": "Percentage breakdown by stage"
+      },
       "stages": {
         "uploaded": "Uploaded",
         "matched": "Matched",

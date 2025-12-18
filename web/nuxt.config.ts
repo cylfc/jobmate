@@ -31,8 +31,8 @@ export default defineNuxtConfig({
     'nuxt-echarts',
   ],
   echarts: {
-    charts: ['BarChart'],
-    components: ['GridComponent', 'TooltipComponent'],
+    charts: ['BarChart', 'LineChart', 'PieChart'],
+    components: ['GridComponent', 'TooltipComponent', 'LegendComponent'],
     renderer: ['svg', 'canvas']
   },
   i18n: {

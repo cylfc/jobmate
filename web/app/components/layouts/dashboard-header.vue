@@ -4,61 +4,37 @@
       <div class="flex items-center gap-4">
         <NuxtLink to="/dashboard" class="flex items-center gap-2">
           <UIcon name="i-lucide-briefcase" class="w-8 h-8 text-primary" />
-            <span class="text-xl font-bold text-default">JobMate</span>
+          <span class="text-xl font-bold text-default">JobMate</span>
         </NuxtLink>
       </div>
-      <div class="flex items-center gap-2">
+      <UFieldGroup class="flex items-center">
         <!-- Locale Selector -->
         <ULocaleSelect
           :model-value="locale || 'vi'"
           :locales="availableLocales"
           color="neutral"
-          variant="ghost"
+          variant="outline"
           class="w-auto"
-          :avatar="{
-            ui: {
-              root: 'size-6'
-            }
+          :ui="{
+            leadingIcon: 'size-4 text-default',
+            trailingIcon: 'size-4 text-default',
+            itemLeadingIcon: 'size-4 text-default',
+            itemLeadingAvatar: 'size-4 text-default',
           }"
           @update:model-value="handleLocaleChange($event)"
         />
 
         <!-- Color Mode Button -->
-        <UColorModeButton
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          square
-        />
+        <UColorModeButton color="neutral" variant="outline" square />
 
-        <!-- Notifications -->
-        <UButton
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          icon="i-lucide-bell"
-          :aria-label="t('dashboard.notifications')"
-          class="relative"
-          square
-          @click="isNotificationDrawerOpen = true"
-        >
-          <UBadge
-            v-if="notificationCount > 0"
-            :label="notificationCount > 9 ? '9+' : notificationCount.toString()"
-            color="error"
-            size="sm"
-            class="absolute -top-1 -right-1"
-          />
-        </UButton>
-
-        <!-- Notification Drawer -->
+        <!-- Notification Drawer (includes trigger button) -->
         <LayoutsNotificationDrawer v-model="isNotificationDrawerOpen" />
 
         <!-- User Profile -->
         <UDropdownMenu :items="userMenuItems">
           <UButton
             color="neutral"
-            variant="ghost"
+            variant="outline"
             size="sm"
             class="flex items-center gap-2"
           >
@@ -67,38 +43,37 @@
             <UIcon name="i-lucide-chevron-down" class="w-4 h-4" />
           </UButton>
         </UDropdownMenu>
-      </div>
+      </UFieldGroup>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
-import { vi, en } from '@nuxt/ui/locale';
+import { vi, en } from "@nuxt/ui/locale";
 
 const { locale, setLocale, t } = useI18n();
-const notificationCount = ref(3);
 const isNotificationDrawerOpen = ref(false);
 
 const availableLocales = [vi, en];
 
 const handleLocaleChange = (value: string | undefined) => {
-  if (value && (value === 'vi' || value === 'en')) {
-    setLocale(value)
+  if (value && (value === "vi" || value === "en")) {
+    setLocale(value);
   }
-}
+};
 
 const userMenuItems = computed<DropdownMenuItem[][]>(() => [
   [
     {
-      label: t('setting.title'),
+      label: t("setting.title"),
       icon: "i-lucide-settings",
       to: "/settings",
     },
   ],
   [
     {
-      label: t('auth.logout'),
+      label: t("auth.logout"),
       icon: "i-lucide-log-out",
       onSelect: () => {
         // TODO: Implement logout
