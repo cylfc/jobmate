@@ -61,7 +61,7 @@ const option = computed<ECOption>(() => {
         barMaxWidth: 32,
         itemStyle: {
           // Match Nuxt UI primary color (ui.colors.primary = "brand")
-          color: 'var(--color-brand-500)',
+          color: 'var(--color-brand-600)',
           borderRadius: [6, 6, 0, 0],
         },
       },
