@@ -7,6 +7,10 @@ export interface KpiCard {
   delta?: number
   icon?: string
   loading?: boolean
+  /**
+   * Trend data array (e.g., last 7 days values) for sparkline chart
+   */
+  trendData?: number[]
 }
 
 export type JobStatus = 'published' | 'draft' | 'closed'

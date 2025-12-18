@@ -1,4 +1,24 @@
+<!-- eslint-disable vue/no-multiple-template-root -->
 <template>
+  <!-- Notification Button Trigger -->
+  <UButton
+    color="neutral"
+    variant="outline"
+    icon="i-lucide-bell"
+    :aria-label="t('dashboard.notifications')"
+    class="relative"
+    square
+    @click="isOpen = true"
+  >
+    <UBadge
+      v-if="unreadCount > 0"
+      :label="unreadCount > 9 ? '9+' : unreadCount.toString()"
+      color="error"
+      size="sm"
+      class="absolute -top-1 -right-1"
+    />
+  </UButton>
+
   <UDrawer
     :open="isOpen"
     direction="right"
@@ -9,7 +29,9 @@
   >
     <template #header>
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold text-default">{{ t('notification.title') }}</h2>
+        <h2 class="text-lg font-semibold text-default">
+          {{ t("notification.title") }}
+        </h2>
         <UButton
           color="neutral"
           variant="ghost"
@@ -33,7 +55,9 @@
               name="i-lucide-bell-off"
               class="w-12 h-12 text-dimmed mb-4"
             />
-            <p class="text-sm text-muted">{{ t('notification.no-notifications') }}</p>
+            <p class="text-sm text-muted">
+              {{ t("notification.no-notifications") }}
+            </p>
           </div>
 
           <div v-else class="divide-y divide-default">
@@ -85,7 +109,7 @@
             class="w-full"
             @click="markAllAsRead"
           >
-            {{ t('notification.mark-all-read') }}
+            {{ t("notification.mark-all-read") }}
           </UButton>
         </div>
       </div>
@@ -94,7 +118,7 @@
 </template>
 
 <script setup lang="ts">
-const { t } = useI18n()
+const { t } = useI18n();
 
 interface Notification {
   id: string;
@@ -123,32 +147,35 @@ const notifications = computed<Notification[]>(() => [
   {
     id: "1",
     type: "info",
-    title: t('notification.new-candidate'),
-    message: t('notification.new-candidate-message', { count: 3, position: 'Frontend Developer' }),
+    title: t("notification.new-candidate"),
+    message: t("notification.new-candidate-message", {
+      count: 3,
+      position: "Frontend Developer",
+    }),
     read: false,
     createdAt: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
   },
   {
     id: "2",
     type: "success",
-    title: t('notification.matching-complete'),
-    message: t('notification.matching-complete-message', { count: 5 }),
+    title: t("notification.matching-complete"),
+    message: t("notification.matching-complete-message", { count: 5 }),
     read: false,
     createdAt: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
   },
   {
     id: "3",
     type: "warning",
-    title: t('notification.reminder'),
-    message: t('notification.reminder-message', { count: 2 }),
+    title: t("notification.reminder"),
+    message: t("notification.reminder-message", { count: 2 }),
     read: true,
     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
   },
   {
     id: "4",
     type: "info",
-    title: t('notification.system-update'),
-    message: t('notification.system-update-message'),
+    title: t("notification.system-update"),
+    message: t("notification.system-update-message"),
     read: true,
     createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
   },
@@ -181,10 +208,10 @@ const formatTime = (date: Date) => {
   const hours = Math.floor(diff / 3600000);
   const days = Math.floor(diff / 86400000);
 
-  if (minutes < 1) return t('notification.just-now');
-  if (minutes < 60) return t('notification.minutes-ago', { count: minutes });
-  if (hours < 24) return t('notification.hours-ago', { count: hours });
-  return t('notification.days-ago', { count: days });
+  if (minutes < 1) return t("notification.just-now");
+  if (minutes < 60) return t("notification.minutes-ago", { count: minutes });
+  if (hours < 24) return t("notification.hours-ago", { count: hours });
+  return t("notification.days-ago", { count: days });
 };
 
 const handleNotificationClick = (notification: Notification) => {
@@ -197,4 +224,8 @@ const markAllAsRead = () => {
     notification.read = true;
   });
 };
+
+const unreadCount = computed(() => {
+  return notifications.value.filter((n) => !n.read).length;
+});
 </script>

@@ -21,6 +21,7 @@
         :delta="card.delta"
         :icon="card.icon"
         :loading="card.loading"
+        :trend-data="card.trendData"
         @drilldown="$emit('drilldown', card.id)"
       />
     </div>
