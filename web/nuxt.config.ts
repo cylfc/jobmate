@@ -52,6 +52,16 @@ export default defineNuxtConfig({
   },
   css: ["~/assets/css/main.css"],
   runtimeConfig: {
+    /**
+     * AI SDK (server-only)
+     * - Set via env: NUXT_OPENAI_API_KEY=...
+     */
     openaiApiKey: "",
+    /**
+     * Optional: Vercel AI Gateway (recommended by AI SDK Nuxt quickstart)
+     * - Set via env: NUXT_AI_GATEWAY_API_KEY=...
+     * See: https://ai-sdk.dev/docs/getting-started/nuxt
+     */
+    aiGatewayApiKey: "",
   },
 });
