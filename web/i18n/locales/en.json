@@ -31,7 +31,8 @@
     "candidates": "Candidates",
     "matching": "Matching",
     "dashboard": "Dashboard",
-    "settings": "Settings"
+    "settings": "Settings",
+    "chat": "Chat"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -751,6 +752,13 @@
     "back": "Back",
     "close": "Close",
     "no-messages": "No messages yet",
+    "open": "Open chat",
+    "purpose": {
+      "matching": "Matching",
+      "create-candidate": "Create Candidate",
+      "create-job": "Create Job",
+      "general": "General"
+    },
     "matching": {
       "title": "Matching Chat",
       "step": "Step {step}/4",

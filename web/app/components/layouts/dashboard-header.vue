@@ -30,6 +30,20 @@
         <!-- Notification Drawer (includes trigger button) -->
         <LayoutsNotificationDrawer v-model="isNotificationDrawerOpen" />
 
+        <!-- Chat Button -->
+        <UButton
+          to="/chat?feature=matching"
+          color="primary"
+          variant="outline"
+          square
+          icon="i-lucide-message-circle"
+          :ui="{
+            square: 'rounded-lg'
+          }"
+        >
+          <span class="sr-only">{{ t('nav.chat') }}</span>
+        </UButton>
+
         <!-- User Profile -->
         <UDropdownMenu :items="userMenuItems">
           <UButton

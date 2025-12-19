@@ -31,6 +31,9 @@
         </main>
       </UDashboardPanel>
     </UDashboardGroup>
+
+    <!-- Chat Floating Button -->
+    <ChatFloatingButton />
   </div>
 </template>
 
