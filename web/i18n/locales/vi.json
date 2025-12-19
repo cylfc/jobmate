@@ -744,5 +744,40 @@
       "bulk-delete-failed": "Xóa hàng loạt thất bại",
       "bulk-delete-failed-description": "Không thể xóa một số ứng viên"
     }
+  },
+  "chat": {
+    "title": "Chat",
+    "send": "Gửi",
+    "back": "Quay lại",
+    "close": "Đóng",
+    "no-messages": "Chưa có tin nhắn nào",
+    "matching": {
+      "title": "Matching Chat",
+      "step": "Bước {step}/4",
+      "welcome": "Xin chào! Tôi sẽ giúp bạn tìm ứng viên phù hợp cho công việc. Hãy bắt đầu bằng cách cung cấp thông tin về công việc của bạn.",
+      "step-1": {
+        "prompt": "Vui lòng cung cấp thông tin về công việc. Bạn có thể:\n- Dán mô tả công việc\n- Cung cấp link đến job posting\n- Chọn job từ database",
+        "no-jobs": "Không tìm thấy job nào trong database. Vui lòng cung cấp thông tin job.",
+        "invalid": "Tôi không thể phân tích thông tin job từ tin nhắn của bạn. Vui lòng thử lại với mô tả công việc rõ ràng hơn hoặc link đến job posting."
+      },
+      "step-2": {
+        "prompt": "Bây giờ hãy cung cấp thông tin về ứng viên. Bạn có thể:\n- Dán thông tin ứng viên\n- Upload CV\n- Chọn ứng viên từ database",
+        "no-candidates": "Không tìm thấy ứng viên nào trong database. Vui lòng cung cấp thông tin ứng viên.",
+        "invalid": "Tôi không thể phân tích thông tin ứng viên từ tin nhắn của bạn. Vui lòng thử lại với thông tin ứng viên rõ ràng hơn."
+      },
+      "step-3": {
+        "prompt": "Đang phân tích và so khớp...",
+        "complete": "Đã hoàn thành phân tích! Tìm thấy {count} kết quả so khớp.",
+        "missing-data": "Thiếu thông tin job hoặc ứng viên. Vui lòng quay lại bước trước."
+      },
+      "step-4": {
+        "prompt": "Đã hoàn thành phân tích! Đây là kết quả so khớp.",
+        "refreshed": "Đã làm mới kết quả phân tích.",
+        "help": "Bạn có thể:\n- Gõ \"refresh\" để làm mới kết quả\n- Gõ \"reset\" để bắt đầu lại\n- Xem kết quả chi tiết trong bảng bên dưới"
+      },
+      "results": "Kết quả so khớp",
+      "no-results": "Chưa có kết quả",
+      "error": "Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại."
+    }
   }
 }

@@ -744,5 +744,40 @@
       "bulk-delete-failed": "Bulk delete failed",
       "bulk-delete-failed-description": "Unable to delete some candidates"
     }
+  },
+  "chat": {
+    "title": "Chat",
+    "send": "Send",
+    "back": "Back",
+    "close": "Close",
+    "no-messages": "No messages yet",
+    "matching": {
+      "title": "Matching Chat",
+      "step": "Step {step}/4",
+      "welcome": "Hello! I'll help you find suitable candidates for your job. Let's start by providing information about your job.",
+      "step-1": {
+        "prompt": "Please provide information about the job. You can:\n- Paste job description\n- Provide link to job posting\n- Select job from database",
+        "no-jobs": "No jobs found in database. Please provide job information.",
+        "invalid": "I cannot parse job information from your message. Please try again with a clearer job description or link to job posting."
+      },
+      "step-2": {
+        "prompt": "Now please provide information about candidates. You can:\n- Paste candidate information\n- Upload CV\n- Select candidates from database",
+        "no-candidates": "No candidates found in database. Please provide candidate information.",
+        "invalid": "I cannot parse candidate information from your message. Please try again with clearer candidate information."
+      },
+      "step-3": {
+        "prompt": "Analyzing and matching...",
+        "complete": "Analysis complete! Found {count} matching results.",
+        "missing-data": "Missing job or candidate information. Please go back to previous step."
+      },
+      "step-4": {
+        "prompt": "Analysis complete! Here are the matching results.",
+        "refreshed": "Refreshed analysis results.",
+        "help": "You can:\n- Type \"refresh\" to refresh results\n- Type \"reset\" to start over\n- View detailed results in the table below"
+      },
+      "results": "Matching Results",
+      "no-results": "No results yet",
+      "error": "Sorry, an error occurred. Please try again."
+    }
   }
 }
