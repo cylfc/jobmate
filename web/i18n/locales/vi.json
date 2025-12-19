@@ -51,7 +51,8 @@
       "new-candidates": "Ứng viên mới",
       "avg-match": "Điểm matching trung bình",
       "time-to-hire": "Thời gian tuyển",
-      "delta-week": "{value} so với tuần trước"
+      "delta-week": "{value} so với tuần trước",
+      "conversion-rate": "Tỷ lệ chuyển đổi"
     },
     "active-jobs": {
       "title": "Job đang hoạt động",

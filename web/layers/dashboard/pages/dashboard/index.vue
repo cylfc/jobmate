@@ -192,8 +192,10 @@ const kpis = computed<KpiCard[]>(() => {
       value: baseValue.openJobs,
       icon: 'i-lucide-briefcase',
       loading: isKpiLoading.value,
-      delta: 2, // Mock delta
+      delta: 2,
       trendData: generateTrend(baseValue.openJobs),
+      // Line chart: Trend số lượng job theo thời gian
+      chartType: 'line',
     },
     {
       id: 'candidates-in-pipeline',
@@ -203,6 +205,8 @@ const kpis = computed<KpiCard[]>(() => {
       loading: isKpiLoading.value,
       delta: 5,
       trendData: generateTrend(baseValue.candidatesInPipeline),
+      // Line chart: Trend số lượng ứng viên mới theo thời gian (continuous trend)
+      chartType: 'line',
     },
     {
       id: 'matches-this-week',
@@ -212,6 +216,8 @@ const kpis = computed<KpiCard[]>(() => {
       loading: isKpiLoading.value,
       delta: 3,
       trendData: generateTrend(baseValue.averageMatchScore, 0.15),
+      // Line chart: Trend của percentage score theo thời gian
+      chartType: 'line',
     },
     {
       id: 'time-to-shortlist',
@@ -219,8 +225,10 @@ const kpis = computed<KpiCard[]>(() => {
       value: `${baseValue.timeToShortlist}d`,
       icon: 'i-lucide-timer',
       loading: isKpiLoading.value,
-      delta: -1, // Negative is good for time-to-hire
-      trendData: generateTrend(baseValue.timeToShortlist, 0.1).reverse(), // Reversed for time (lower is better)
+      delta: -1, // Negative is good (faster hiring)
+      trendData: generateTrend(baseValue.timeToShortlist, 0.1).reverse(), // Reversed: lower is better
+      // Line chart: Trend thời gian tuyển (muốn giảm theo thời gian)
+      chartType: 'line',
     },
   ]
 })

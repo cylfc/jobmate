@@ -22,6 +22,10 @@
         :icon="card.icon"
         :loading="card.loading"
         :trend-data="card.trendData"
+        :chart-type="card.chartType"
+        :sub-metric="card.subMetric"
+        :sub-metric-value="card.subMetricValue"
+        :compare-data="card.compareData"
         @drilldown="$emit('drilldown', card.id)"
       />
     </div>
