@@ -1,5 +1,7 @@
 export type KpiTrend = 'up' | 'down' | 'flat'
 
+export type KpiChartType = 'progress' | 'line' | 'line-compare' | 'bar'
+
 export interface KpiCard {
   id: string
   label: string
@@ -8,9 +10,25 @@ export interface KpiCard {
   icon?: string
   loading?: boolean
   /**
-   * Trend data array (e.g., last 7 days values) for sparkline chart
+   * Trend data array (e.g., last 7 days values) for chart
    */
   trendData?: number[]
+  /**
+   * Chart type to display
+   */
+  chartType?: KpiChartType
+  /**
+   * Sub-metric label (e.g., "Conversion rate")
+   */
+  subMetric?: string
+  /**
+   * Sub-metric value (e.g., "7%")
+   */
+  subMetricValue?: string | number
+  /**
+   * Comparison data for line-compare chart type
+   */
+  compareData?: number[]
 }
 
 export type JobStatus = 'published' | 'draft' | 'closed'

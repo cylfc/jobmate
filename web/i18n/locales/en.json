@@ -51,7 +51,8 @@
       "new-candidates": "New candidates",
       "avg-match": "Average match score",
       "time-to-hire": "Time to hire",
-      "delta-week": "{value} vs last week"
+      "delta-week": "{value} vs last week",
+      "conversion-rate": "Conversion rate"
     },
     "active-jobs": {
       "title": "Active jobs",

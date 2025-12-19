@@ -62,6 +62,14 @@ const getColorValue = (colorVar: string): string => {
   return colorMap[colorVar] || '#a84d2f' // Default to brand-600
 }
 
+// Convert hex color to rgba with opacity
+const hexToRgba = (hex: string, opacity: number): string => {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`
+}
+
 const option = computed<ECOption>(() => {
   const values = props.data.length > 0 ? props.data : [0]
   const min = Math.min(...values)
@@ -104,17 +112,7 @@ const option = computed<ECOption>(() => {
         },
         areaStyle: props.area
           ? {
-              color: {
-                type: 'linear',
-                x: 0,
-                y: 0,
-                x2: 0,
-                y2: 1,
-                colorStops: [
-                  { offset: 0, color: actualColor },
-                  { offset: 1, color: 'transparent' },
-                ],
-              },
+              color: hexToRgba(actualColor, 0.15), // Solid color with opacity, no gradient
             }
           : undefined,
       },
