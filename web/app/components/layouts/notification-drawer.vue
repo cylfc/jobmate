@@ -129,18 +129,7 @@ interface Notification {
   createdAt: Date;
 }
 
-const props = defineProps<{
-  modelValue: boolean;
-}>();
-
-const emit = defineEmits<{
-  "update:modelValue": [value: boolean];
-}>();
-
-const isOpen = computed({
-  get: () => props.modelValue,
-  set: (value) => emit("update:modelValue", value),
-});
+const isOpen = defineModel<boolean>({ default: false });
 
 // Mock notifications data
 const notifications = computed<Notification[]>(() => [

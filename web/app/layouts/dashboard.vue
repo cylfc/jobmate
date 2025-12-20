@@ -41,6 +41,35 @@
 </template>
 
 <script setup lang="ts">
+import { initChatSetup, useChatSetup } from '@chat/composables/use-chat-setup'
+import { initChatHandlers } from '@chat/stores/chat-handlers'
+
 // Dashboard layout for authenticated pages
 
+const route = useRoute()
+const chatSetup = useChatSetup()
+
+// Initialize chat handlers (should be called once at app startup)
+initChatHandlers()
+
+// Initialize chat setup if not already initialized
+initChatSetup({
+  status: 'ready',
+  shouldAutoScroll: true,
+  shouldScrollToBottom: true,
+  autoScroll: true,
+  compact: false,
+  spacingOffset: 0,
+  displayMode: 'modal', // Default to modal mode
+  selectedPurpose: 'matching',
+})
+
+// Watch route changes to update display mode
+watch(() => route.path, (path) => {
+  if (path === '/chat') {
+    chatSetup.setDisplayMode('inline')
+  } else {
+    chatSetup.setDisplayMode('modal')
+  }
+}, { immediate: true })
 </script>

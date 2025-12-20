@@ -86,12 +86,10 @@ import type { Job, CreateJobInput } from '@matching/types/matching'
 const { t } = useI18n()
 
 interface Props {
-  modelValue: boolean
   job?: Job | null
 }
 
 interface Emits {
-  (e: 'update:modelValue', value: boolean): void
   (e: 'save', value: CreateJobInput): void
 }
 
@@ -100,10 +98,7 @@ const emit = defineEmits<Emits>()
 
 const { saveJob } = useMatching()
 
-const isOpen = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value),
-})
+const isOpen = defineModel<boolean>({ default: false })
 
 const isSaving = ref(false)
 const requirementsText = ref('')

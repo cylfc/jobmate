@@ -69,11 +69,10 @@ interface CandidateFilter {
 }
 
 interface Props {
-  modelValue: CandidateFilter
+  // No props needed - using defineModel
 }
 
 interface Emits {
-  (e: 'update:modelValue', value: CandidateFilter): void
   (e: 'apply'): void
   (e: 'reset'): void
 }
@@ -81,10 +80,7 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const filters = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value),
-})
+const filters = defineModel<CandidateFilter>({ required: true })
 
 const statusOptions = computed(() => [
   { label: t('candidate.status.active'), value: 'active' },
