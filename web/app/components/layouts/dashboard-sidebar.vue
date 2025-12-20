@@ -39,6 +39,12 @@ const menuItems = computed<NavigationMenuItem[]>(() => [
     to: '/candidates',
     active: route.path.startsWith('/candidates'),
   },
+  {
+    label: t('nav.chat'),
+    icon: 'i-lucide-message-circle',
+    to: '/chat?feature=matching',
+    active: route.path.startsWith('/chat'),
+  },
 ])
 </script>
 

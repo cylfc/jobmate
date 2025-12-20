@@ -30,6 +30,7 @@ export default defineNuxtConfig({
     "@nuxt/ui",
     "@nuxt/hints",
     "@nuxtjs/i18n",
+    '@pinia/nuxt',
     'nuxt-echarts',
   ],
   echarts: {

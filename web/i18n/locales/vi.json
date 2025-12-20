@@ -31,7 +31,8 @@
     "candidates": "Ứng viên",
     "matching": "Matching",
     "dashboard": "Dashboard",
-    "settings": "Cài đặt"
+    "settings": "Cài đặt",
+    "chat": "Chat"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -751,6 +752,13 @@
     "back": "Quay lại",
     "close": "Đóng",
     "no-messages": "Chưa có tin nhắn nào",
+    "open": "Mở chat",
+    "purpose": {
+      "matching": "Matching",
+      "create-candidate": "Tạo ứng viên",
+      "create-job": "Tạo JD",
+      "general": "Tổng quát"
+    },
     "matching": {
       "title": "Matching Chat",
       "step": "Bước {step}/4",

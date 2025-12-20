@@ -1,39 +1,30 @@
 <template>
   <div class="container mx-auto h-[calc(100vh-8rem)]">
-    <div class="bg-default rounded-lg shadow-sm h-full">
-      <ChatContainer
-        :title="chatTitle"
-        :subtitle="chatSubtitle"
-        :messages="messages"
-        :is-loading="isLoading"
-        :show-back="canGoBack"
-        @send="handleSend"
-        @back="handleBack"
-        @close="handleClose"
-      />
-
-      <!-- Results display for matching -->
-      <div v-if="showResults" class="border-t border-border p-6 bg-default">
-        <div class="mb-4">
-          <h3 class="text-lg font-semibold mb-2">
-            {{ t('chat.matching.results', { defaultValue: 'Kết quả so khớp' }) }}
-          </h3>
-        </div>
-        <TablesMatchingResultsTable
-          v-if="matchings.length > 0"
-          :matchings="matchings"
-        />
-        <div v-else class="text-center text-muted py-8">
-          {{ t('chat.matching.no-results', { defaultValue: 'Chưa có kết quả' }) }}
-        </div>
-      </div>
-    </div>
+    <ChatBox
+      :title="chatTitle"
+      :subtitle="chatSubtitle"
+      :messages="messages"
+      :is-loading="isLoading"
+      :show-back="canGoBack"
+      :show-results="showResults"
+      :show-purpose-buttons="showPurposeButtons"
+      :selected-purpose="selectedPurpose"
+      :matchings="matchings"
+      @send="handleSend"
+      @back="handleBack"
+      @close="handleClose"
+      @stop="handleStop"
+      @reload="handleReload"
+      @purpose-select="handlePurposeSelect"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useMatchingChatHandler } from '@chat/composables/use-matching-chat-handler'
 import { useMatchingState } from '@matching/composables/use-matching-state'
+import { initChatSetup } from '@chat/composables/use-chat-setup'
+import type { ChatFeature } from '@chat/types/chat'
 
 const { t } = useI18n()
 
@@ -44,8 +35,29 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 
-const { messages, isLoading, context, initializeChat, sendMessage, goBack, currentHandler } = useChat()
+const { messages, isLoading, context, initializeChat, sendMessage, goBack, currentHandler, clearChat } = useChat()
 const matchingState = useMatchingState()
+
+// Selected purpose/feature
+const selectedPurpose = ref<ChatFeature>('matching')
+const showPurposeButtons = ref(true)
+
+// Initialize chat setup with default configuration (only once)
+initChatSetup({
+  status: 'ready',
+  shouldAutoScroll: true,
+  shouldScrollToBottom: true,
+  autoScroll: true,
+  compact: false,
+  spacingOffset: 0,
+  displayMode: 'modal', // Default is modal
+})
+
+// Setup display mode to inline when on chat page
+const chatSetup = useChatSetup()
+onMounted(() => {
+  chatSetup.setDisplayMode('inline')
+})
 
 const chatTitle = computed(() => {
   if (context.value?.feature === 'matching') {
@@ -90,9 +102,39 @@ const handleClose = () => {
   router.push('/dashboard')
 }
 
+const handleStop = () => {
+  // Stop current operation
+  console.log('Stop operation')
+}
+
+const handleReload = () => {
+  // Reload/regenerate last message
+  console.log('Reload operation')
+}
+
+const handlePurposeSelect = (purpose: ChatFeature) => {
+  selectedPurpose.value = purpose
+  
+  // Initialize chat with selected purpose
+  if (purpose === 'matching') {
+    const handler = useMatchingChatHandler()
+    initializeChat('matching', handler)
+  } else if (purpose === 'create-candidate') {
+    // TODO: Implement create-candidate handler
+    console.log('Create candidate handler not implemented yet')
+  } else if (purpose === 'create-job') {
+    // TODO: Implement create-job handler
+    console.log('Create job handler not implemented yet')
+  } else if (purpose === 'general') {
+    // TODO: Implement general handler
+    console.log('General handler not implemented yet')
+  }
+}
+
 // Initialize chat based on route query
 onMounted(() => {
   const feature = (route.query.feature as string) || 'matching'
+  selectedPurpose.value = feature as ChatFeature
 
   if (feature === 'matching') {
     const handler = useMatchingChatHandler()
