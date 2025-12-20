@@ -10,11 +10,14 @@
       :ui="{
         root: 'h-full flex flex-col justify-start items-stretch',
         prompt: 'border-none border-t-0',
-        content: 'max-h-[60vh]',
+        content: 'max-h-[calc(100vh - 96px)]',
       }"
     >
       <div class="flex-1">
-        <ChatMessages :messages="messages" />
+        <ChatMessages
+          :messages="[...chat.messages.value]"
+          @component-update="handleComponentUpdate"
+        />
       </div>
 
       <template #prompt>
@@ -28,13 +31,11 @@
         >
           <ChatPurposeSelector
             :show-purpose-buttons="showPurposeButtons"
-            :selected-purpose="chatSetup.selectedPurpose.value"
             @select="handlePurposeSelect"
           />
 
           <UChatPrompt
             v-model="input"
-            :error="error ? new Error(error) : undefined"
             variant="soft"
             @submit="handleSubmit"
           >
@@ -58,32 +59,25 @@
 </template>
 
 <script setup lang="ts">
-import type { ChatMessage, ChatFeature } from "@chat/types/chat";
+import type { ChatFeature } from "@chat/types/chat";
 import { useChatState } from '@chat/composables/use-chat-state'
 import { useChat } from '@chat/composables/use-chat'
 import { useChatSetup } from '@chat/composables/use-chat-setup'
+import { useChatHandlers } from '@chat/composables/use-chat-handlers'
+import { useChatComponents } from '@chat/composables/use-chat-components'
+
+const chatComponents = useChatComponents()
+chatComponents.registerDefaultComponents()
 
 interface Props {
-  messages: ChatMessage[];
-  isLoading?: boolean;
-  error?: string | null;
   showPurposeButtons?: boolean;
   stickyFooter?: boolean;
 }
 
-interface Emits {
-  (e: "send", message: string): void;
-  (e: "purpose-select", purpose: ChatFeature): void;
-}
-
 const props = withDefaults(defineProps<Props>(), {
-  isLoading: false,
-  error: null,
   showPurposeButtons: true,
   stickyFooter: true,
 });
-
-const emit = defineEmits<Emits>();
 
 const chat = useChat()
 const chatSetup = useChatSetup()
@@ -92,21 +86,28 @@ const chatState = useChatState()
 const input = ref("");
 
 const chatStatus = computed(() => {
-  if (props.isLoading) {
+  if (chat.isLoading.value) {
     return "submitted" as const;
   }
   return "ready" as const;
 });
 
-const handleSubmit = (e: Event) => {
+const handleSubmit = async (e: Event) => {
   e.preventDefault();
   if (input.value.trim()) {
-    emit("send", input.value.trim());
+    await chat.sendMessage(input.value.trim());
     input.value = "";
   }
 };
 
 const handlePurposeSelect = (purpose: ChatFeature) => {
-  emit("purpose-select", purpose);
+  chatSetup.setSelectedPurpose(purpose);
+  const chatHandlers = useChatHandlers();
+  // Always reinitialize when purpose changes
+  chatHandlers.initializeChatWithFeature(purpose, chat.initializeChat);
+};
+
+const handleComponentUpdate = (messageId: string, data: any) => {
+  chat.handleComponentUpdate(messageId, data);
 };
 </script>

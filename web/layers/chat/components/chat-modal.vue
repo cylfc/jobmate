@@ -1,24 +1,44 @@
 <template>
   <UModal
-    :open="isModalOpen"
     :ui="{
-      wrapper: 'items-end justify-end p-4',
-      content: 'w-full',
+      content: 'w-full max-w-2xl p-0',
+      body: 'sm:p-0 p-0',
     }"
-    :prevent-close="false"
-    @close="chatSetup.closeModal()"
   >
-    <template #content>
+    <template #title>
+      {{ t("chat.title", { defaultValue: "Chat" }) }}
+    </template>
+
+    <template #description>
+      <span class="sr-only">{{ t("chat.description", { defaultValue: "Chat assistant" }) }}</span>
+    </template>
+
+    <div class="fixed bottom-4 right-4 z-50">
+      <UButton
+        color="primary"
+        size="xl"
+        icon="i-lucide-message-circle"
+        class="shadow-lg hover:shadow-xl transition-all duration-300 rounded-full p-4"
+      >
+        <span class="sr-only">{{
+          t("chat.open", { defaultValue: "Mở chat" })
+        }}</span>
+
+        <span
+          v-if="unreadCount > 0"
+          class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-error rounded-full"
+        >
+          {{ unreadCount > 9 ? "9+" : unreadCount }}
+        </span>
+      </UButton>
+    </div>
+
+    <template #body>
       <div class="flex flex-col">
         <ChatBox
-          class="h-full flex flex-col"
-          :messages="chatMessages"
-          :is-loading="isChatLoading"
+          class="h-full flex flex-col !border-0 !ring-0"
           :show-purpose-buttons="true"
           :sticky-footer="true"
-          :selected-purpose="chatSetup.selectedPurpose.value"
-          @send="handleSend"
-          @purpose-select="handlePurposeSelect"
         />
       </div>
     </template>
@@ -26,39 +46,43 @@
 </template>
 
 <script setup lang="ts">
-import { useChatHandlers } from '@chat/composables/use-chat-handlers'
+import { useChatHandlers } from "@chat/composables/use-chat-handlers";
 
-const route = useRoute()
-const chatSetup = useChatSetup()
-const chatHandlers = useChatHandlers()
-const chatComposable = useChat()
-
-const chatMessages = computed(() => {
-  return [...chatComposable.messages.value]
-})
-
-const isChatLoading = computed(() => {
-  return chatComposable.isLoading.value
-})
-
-const isChatPage = computed(() => route.path === '/chat')
-const shouldShowModal = computed(() => !isChatPage.value && chatSetup.displayMode.value === 'modal')
-const isModalOpen = computed(() => shouldShowModal.value && chatSetup.isModalOpen.value)
-
-const handleSend = async (message: string) => {
-  await chatComposable.sendMessage(message)
+interface Props {
+  feature?: string;
+  unreadCount?: number;
 }
 
-const handlePurposeSelect = (purpose: ChatFeature) => {
-  chatSetup.setSelectedPurpose(purpose)
-  chatHandlers.initializeChatWithFeature(purpose, chatComposable.initializeChat)
-}
+const props = withDefaults(defineProps<Props>(), {
+  feature: "matching",
+  unreadCount: 0,
+});
+
+const { t } = useI18n();
+const route = useRoute();
+const chatSetup = useChatSetup();
+const chatHandlers = useChatHandlers();
+const chatComposable = useChat();
+
+const displayMode = computed(() => chatSetup.displayMode.value);
+const isChatPage = computed(() => route.path === "/chat");
+const shouldShow = computed(
+  () => !isChatPage.value && displayMode.value === "modal"
+);
+
+const isModalOpen = ref(false);
 
 watch(isModalOpen, (open) => {
-  if (open && chatComposable.messages.value.length === 0) {
-    const purpose = chatSetup.selectedPurpose.value
-    chatHandlers.initializeChatWithFeature(purpose, chatComposable.initializeChat)
+  if (open) {
+    const purpose = chatSetup.selectedPurpose.value;
+    // Only initialize if messages are empty or feature changed
+    if (chatComposable.messages.value.length === 0 || 
+        chatComposable.context.value?.feature !== purpose) {
+      chatHandlers.initializeChatWithFeature(
+        purpose,
+        chatComposable.initializeChat
+      );
+    }
   }
-})
+});
 </script>
-

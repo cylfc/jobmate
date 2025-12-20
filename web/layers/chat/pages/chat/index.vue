@@ -2,11 +2,7 @@
   <div class="h-full container mx-auto">
     <ChatBox
       class="h-full"
-      :messages="messages"
-      :is-loading="isLoading"
       :show-purpose-buttons="true"
-      @send="handleSend"
-      @purpose-select="handlePurposeSelect"
     />
   </div>
 </template>
@@ -26,9 +22,9 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 
-const { messages, isLoading, initializeChat, sendMessage } = useChat()
 const chatSetup = useChatSetup()
 const chatHandlers = useChatHandlers()
+const chat = useChat()
 
 initChatSetup({
   status: 'ready',
@@ -45,19 +41,10 @@ onMounted(() => {
   chatSetup.setDisplayMode('inline')
   const feature = (route.query.feature as ChatFeature) || chatSetup.selectedPurpose.value
   chatSetup.setSelectedPurpose(feature)
-  chatHandlers.initializeChatWithFeature(feature, initializeChat)
-})
-
-const handleSend = async (message: string) => {
-  await sendMessage(message)
-}
-
-const handlePurposeSelect = (purpose: ChatFeature) => {
-  chatSetup.setSelectedPurpose(purpose)
-  const success = chatHandlers.initializeChatWithFeature(purpose, initializeChat)
-  if (!success) {
-    console.warn(`Failed to initialize chat for purpose: ${purpose}`)
+  // Only initialize if messages are empty or feature changed
+  if (chat.messages.value.length === 0 || chat.context.value?.feature !== feature) {
+    chatHandlers.initializeChatWithFeature(feature, chat.initializeChat)
   }
-}
+})
 </script>
 

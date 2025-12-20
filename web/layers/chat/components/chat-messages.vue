@@ -1,21 +1,31 @@
 <template>
   <UChatMessages
     :messages="formattedMessages"
-    :status="chatSetup.status"
-    :user="chatSetup.user"
-    :assistant="chatSetup.assistant"
-    :should-auto-scroll="chatSetup.shouldAutoScroll"
-    :should-scroll-to-bottom="chatSetup.shouldScrollToBottom"
-    :auto-scroll="chatSetup.autoScroll"
-    :compact="chatSetup.compact"
-    :spacing-offset="chatSetup.spacingOffset"
-    :ui="chatSetup.ui"
+    :status="chatSetup.status.value"
+    :user="chatSetup.user.value"
+    :assistant="chatSetup.assistant.value"
+    :should-auto-scroll="chatSetup.shouldAutoScroll.value"
+    :should-scroll-to-bottom="chatSetup.shouldScrollToBottom.value"
+    :auto-scroll="chatSetup.autoScroll.value"
+    :compact="chatSetup.compact.value ?? false"
+    :spacing-offset="chatSetup.spacingOffset.value ?? 0"
+    :ui="chatSetup.ui.value"
     class="h-full"
   >
     <!-- Content slot - customize message content rendering -->
     <template #content="{ message }">
       <slot name="content" :message="message">
-        <div class="text-pretty whitespace-pre-wrap">
+        <div v-if="hasCustomComponent(message)" class="space-y-2">
+          <div v-if="getMessageText(message)" class="text-pretty whitespace-pre-wrap mb-2">
+            {{ getMessageText(message) }}
+          </div>
+          <component
+            :is="getComponent(message)"
+            v-bind="getComponentProps(message)"
+            @update="(data) => handleComponentUpdate(message, data)"
+          />
+        </div>
+        <div v-else class="text-pretty whitespace-pre-wrap">
           {{ getTextFromMessage(message) }}
         </div>
       </slot>
@@ -52,29 +62,54 @@
 <script setup lang="ts">
 import type { ChatMessage } from "@chat/types/chat";
 import { getTextFromMessage } from "@nuxt/ui/utils/ai";
-
-/**
- * Chat Messages Component
- * Renders a list of chat messages using UChatMessages and UChatMessage
- * Compatible with AI SDK v5 message format
- */
+import { getChatComponent } from "@chat/stores/component-registry";
+import { useChat } from "@chat/composables/use-chat";
 
 interface Props {
-  /**
-   * Array of chat messages to display
-   */
   messages: ChatMessage[];
 }
 
 const props = defineProps<Props>();
 
-// Get chat setup configuration from store (read-only)
-// Note: init() should be called at page level, not in components
 const chatSetup = useChatSetup({ syncStatus: true });
+const chat = useChat();
 
-/**
- * Convert ChatMessage[] to AI SDK v5 format for UChatMessages
- */
+const emit = defineEmits<{
+  (e: "component-update", messageId: string, data: any): void;
+}>();
+
+const hasCustomComponent = (message: any): boolean => {
+  const originalMessage = props.messages.find((m) => m.id === message.id);
+  return !!originalMessage?.component;
+};
+
+const getMessageText = (message: any): string => {
+  return getTextFromMessage(message) || "";
+};
+
+const getComponent = (message: any) => {
+  const originalMessage = props.messages.find((m) => m.id === message.id);
+  if (!originalMessage?.component) return null;
+
+  const entry = getChatComponent(originalMessage.component.type);
+  return entry?.component || null;
+};
+
+const getComponentProps = (message: any) => {
+  const originalMessage = props.messages.find((m) => m.id === message.id);
+  if (!originalMessage?.component) return {};
+
+  const entry = getChatComponent(originalMessage.component.type);
+  return {
+    ...entry?.props,
+    ...originalMessage.component.props,
+  };
+};
+
+const handleComponentUpdate = (message: any, data: any) => {
+  emit("component-update", message.id, data);
+};
+
 const formattedMessages = computed(() => {
   return props.messages.map((msg) => ({
     id: msg.id,

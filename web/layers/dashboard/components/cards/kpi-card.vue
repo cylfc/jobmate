@@ -2,7 +2,7 @@
   <UCard
     class="h-full cursor-pointer transition hover:shadow-md"
     :ui="{
-      body: 'p-5',
+      body: 'p-5 h-full flex flex-col justify-start items-stretch',
     }"
     @click="handleClick"
   >
@@ -11,11 +11,11 @@
       <p class="text-xs font-semibold text-muted tracking-wide uppercase">
         {{ title }}
       </p>
-      <p class="text-xs text-muted">Last 7 days</p>
+      <p class="text-xs text-muted uppercase">Last 7 days</p>
     </div>
 
     <!-- Main Value -->
-    <div class="mb-4">
+    <div class="mb-4 flex-1">
       <USkeleton v-if="loading" class="h-10 w-32 mb-2" />
       <div v-else class="text-3xl font-bold text-default tabular-nums mb-3">
         {{ value }}
@@ -27,10 +27,15 @@
         <div v-if="subMetric" class="space-y-1.5">
           <div class="flex items-center justify-between">
             <p class="text-xs text-muted">{{ subMetric }}</p>
-            <span class="text-xs font-medium" :class="subMetricColorClass">
+            <UBadge
+              :color="deltaColor"
+              variant="outline"
+              size="xs"
+              class="text-sm"
+            >
               {{ subMetricValue }}
               <UIcon v-if="delta !== undefined" :name="deltaIcon" class="size-3 inline ml-0.5" />
-            </span>
+            </UBadge>
           </div>
           <!-- Progress bar for sub-metric -->
           <UProgress
@@ -44,10 +49,15 @@
 
         <!-- Trend badge (if no sub-metric) -->
         <div v-else-if="delta !== undefined" class="flex items-center gap-1">
-          <span class="text-xs font-medium" :class="deltaColorClass">
+          <UBadge
+            :color="deltaColor"
+            variant="outline"
+            size="xs"
+            class="text-sm"
+          >
             {{ formattedDelta }}
             <UIcon :name="deltaIcon" class="size-3 inline ml-0.5" />
-          </span>
+          </UBadge>
         </div>
       </div>
     </div>
