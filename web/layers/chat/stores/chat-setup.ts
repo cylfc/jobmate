@@ -3,7 +3,7 @@
  * Pinia store for managing chat configuration
  */
 import { defineStore } from 'pinia'
-import type { ChatSetupConfig } from '@chat/composables/use-chat-setup'
+import type { ChatSetupConfig, PurposeConfig } from '@chat/composables/use-chat-setup'
 
 export const useChatSetupStore = defineStore('chatSetup', {
   state: () => ({
@@ -31,6 +31,37 @@ export const useChatSetupStore = defineStore('chatSetup', {
     
     // Display mode: 'modal' or 'inline'
     displayMode: 'modal' as 'modal' | 'inline',
+    
+    // Modal state
+    isModalOpen: false,
+
+    // Chat purposes configuration
+    purposes: [
+      {
+        value: 'matching',
+        label: 'Matching',
+        icon: 'i-lucide-users',
+        i18nKey: 'chat.purpose.matching',
+      },
+      {
+        value: 'create-candidate',
+        label: 'Tạo ứng viên',
+        icon: 'i-lucide-user-plus',
+        i18nKey: 'chat.purpose.create-candidate',
+      },
+      {
+        value: 'create-job',
+        label: 'Tạo JD',
+        icon: 'i-lucide-briefcase',
+        i18nKey: 'chat.purpose.create-job',
+      },
+      {
+        value: 'general',
+        label: 'Tổng quát',
+        icon: 'i-lucide-message-circle',
+        i18nKey: 'chat.purpose.general',
+      },
+    ] as PurposeConfig[],
   }),
 
   getters: {
@@ -68,6 +99,7 @@ export const useChatSetupStore = defineStore('chatSetup', {
       spacingOffset: state.spacingOffset,
       ui: state.ui,
       displayMode: state.displayMode,
+      purposes: state.purposes,
     }),
   },
 
@@ -143,6 +175,34 @@ export const useChatSetupStore = defineStore('chatSetup', {
     },
 
     /**
+     * Open chat modal
+     */
+    openModal() {
+      this.isModalOpen = true
+    },
+
+    /**
+     * Close chat modal
+     */
+    closeModal() {
+      this.isModalOpen = false
+    },
+
+    /**
+     * Toggle chat modal
+     */
+    toggleModal() {
+      this.isModalOpen = !this.isModalOpen
+    },
+
+    /**
+     * Set purposes configuration
+     */
+    setPurposes(purposes: PurposeConfig[]) {
+      this.purposes = purposes
+    },
+
+    /**
      * Update entire configuration
      */
     updateConfig(config: Partial<ChatSetupConfig>) {
@@ -176,6 +236,9 @@ export const useChatSetupStore = defineStore('chatSetup', {
       if (config.displayMode !== undefined) {
         this.displayMode = config.displayMode
       }
+      if (config.purposes !== undefined) {
+        this.purposes = config.purposes
+      }
     },
 
     /**
@@ -192,6 +255,32 @@ export const useChatSetupStore = defineStore('chatSetup', {
       this.assistant = undefined
       this.ui = undefined
       this.displayMode = 'modal'
+      this.purposes = [
+        {
+          value: 'matching',
+          label: 'Matching',
+          icon: 'i-lucide-users',
+          i18nKey: 'chat.purpose.matching',
+        },
+        {
+          value: 'create-candidate',
+          label: 'Tạo ứng viên',
+          icon: 'i-lucide-user-plus',
+          i18nKey: 'chat.purpose.create-candidate',
+        },
+        {
+          value: 'create-job',
+          label: 'Tạo JD',
+          icon: 'i-lucide-briefcase',
+          i18nKey: 'chat.purpose.create-job',
+        },
+        {
+          value: 'general',
+          label: 'Tổng quát',
+          icon: 'i-lucide-message-circle',
+          i18nKey: 'chat.purpose.general',
+        },
+      ]
     },
 
     /**

@@ -1,22 +1,21 @@
 <template>
   <UModal
-    v-model:open="isOpen"
+    :open="isModalOpen"
     :ui="{
-      width: 'w-full sm:max-w-2xl',
-      height: 'h-[calc(100vh-4rem)]',
-      overlay: {
-        background: 'bg-black/50 dark:bg-black/50',
-      },
-      container: 'fixed bottom-4 right-4',
+      wrapper: 'items-end justify-end p-4',
+      content: 'w-full',
     }"
     :prevent-close="false"
+    @close="chatSetup.closeModal()"
   >
     <template #content>
-      <div class="w-full sm:max-w-2xl h-[calc(100vh-8rem)] flex flex-col">
+      <div class="flex flex-col">
         <ChatBox
-          :messages="messages"
-          :is-loading="isLoading"
-          :show-purpose-buttons="showPurposeButtons"
+          class="h-full flex flex-col"
+          :messages="chatMessages"
+          :is-loading="isChatLoading"
+          :show-purpose-buttons="true"
+          :sticky-footer="true"
           :selected-purpose="selectedPurpose"
           @send="handleSend"
           @purpose-select="handlePurposeSelect"
@@ -27,56 +26,60 @@
 </template>
 
 <script setup lang="ts">
-import type { ChatMessage, ChatFeature } from '@chat/types/chat'
+import type { ChatFeature } from '@chat/types/chat'
+import { useMatchingChatHandler } from '@chat/composables/use-matching-chat-handler'
 
-interface Props {
-  /**
-   * Whether modal is open
-   */
-  modelValue: boolean
-  /**
-   * Chat messages
-   */
-  messages: ChatMessage[]
-  /**
-   * Whether chat is loading
-   */
-  isLoading?: boolean
-  /**
-   * Show purpose buttons
-   */
-  showPurposeButtons?: boolean
-  /**
-   * Selected purpose
-   */
-  selectedPurpose?: ChatFeature
-}
+const route = useRoute()
+const chatSetup = useChatSetup()
 
-interface Emits {
-  (e: 'update:modelValue', value: boolean): void
-  (e: 'send', message: string): void
-  (e: 'purpose-select', purpose: ChatFeature): void
-}
+// Get chat messages from useChat
+const chatComposable = useChat()
 
-const props = withDefaults(defineProps<Props>(), {
-  isLoading: false,
-  showPurposeButtons: true,
-  selectedPurpose: 'matching',
+// Initialize handlers at top level (required by Vue Composition API)
+const matchingHandler = useMatchingChatHandler()
+
+// Use messages from composable
+const chatMessages = computed(() => {
+  return [...chatComposable.messages.value]
 })
 
-const emit = defineEmits<Emits>()
-
-const isOpen = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value),
+const isChatLoading = computed(() => {
+  return chatComposable.isLoading.value
 })
 
-const handleSend = (message: string) => {
-  emit('send', message)
+const selectedPurpose = ref<ChatFeature>('matching')
+
+// Check if we're on chat page
+const isChatPage = computed(() => route.path === '/chat')
+
+// Show modal only when not on chat page and displayMode is 'modal'
+const shouldShowModal = computed(() => !isChatPage.value && chatSetup.displayMode.value === 'modal')
+
+// Modal state from store - only open if shouldShowModal is true
+const isModalOpen = computed(() => shouldShowModal.value && chatSetup.isModalOpen.value)
+
+const handleSend = async (message: string) => {
+  await chatComposable.sendMessage(message)
 }
 
 const handlePurposeSelect = (purpose: ChatFeature) => {
-  emit('purpose-select', purpose)
+  selectedPurpose.value = purpose
+  
+  // Initialize chat with selected purpose
+  if (purpose === 'matching') {
+    chatComposable.initializeChat('matching', matchingHandler)
+  }
+  // TODO: Add handlers for other purposes
 }
+
+// Initialize chat when modal opens if not already initialized
+watch(isModalOpen, (open) => {
+  if (open && chatComposable.messages.value.length === 0) {
+    // Initialize chat with default purpose
+    if (selectedPurpose.value === 'matching') {
+      chatComposable.initializeChat('matching', matchingHandler)
+    }
+  }
+})
 </script>
 

@@ -2,6 +2,9 @@
 @import "@nuxt/ui";
 @import "./scrollbar.css";
 
+@source "../../../app/";
+@source "../../../layers";
+
 @theme static {
   --font-sans: "Epunda Slab", serif;
 

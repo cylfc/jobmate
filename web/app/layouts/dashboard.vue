@@ -24,8 +24,8 @@
         <template #header>
           <div class="h-16" />
         </template>
-        <main class="flex-1 overflow-y-auto">
-          <div class="p-6 mt-16">
+        <main class="flex-1 overflow-y-auto flex flex-col justify-start items-stretch">
+          <div class="p-6 mt-16 flex-1">
             <slot />
           </div>
         </main>
@@ -34,9 +34,13 @@
 
     <!-- Chat Floating Button -->
     <ChatFloatingButton />
+
+    <!-- Chat Modal (shown when not on chat page) -->
+    <ChatModal />
   </div>
 </template>
 
 <script setup lang="ts">
 // Dashboard layout for authenticated pages
+
 </script>

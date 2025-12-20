@@ -1,6 +1,7 @@
 <template>
-  <div class="container mx-auto h-[calc(100vh-8rem)]">
+  <div class="h-full container mx-auto">
     <ChatBox
+      class="h-full"
       :title="chatTitle"
       :subtitle="chatSubtitle"
       :messages="messages"

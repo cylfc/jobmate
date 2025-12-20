@@ -15,7 +15,7 @@
       :label="unreadCount > 9 ? '9+' : unreadCount.toString()"
       color="error"
       size="sm"
-      class="absolute -top-1 -right-1"
+      class="absolute -top-2 -right-1 !rounded-sm"
     />
   </UButton>
 
