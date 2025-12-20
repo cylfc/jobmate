@@ -3,6 +3,7 @@
  * Manages configuration for chat messages component using Pinia store
  */
 import { useChatSetupStore } from '@chat/stores/chat-setup'
+import type { ChatFeature } from '@chat/types/chat'
 
 export interface ChatSetupConfig {
   /**
@@ -74,6 +75,17 @@ export interface ChatSetupConfig {
    * @default 'modal'
    */
   displayMode?: 'modal' | 'inline';
+  /**
+   * Chat purpose configurations
+   */
+  purposes?: PurposeConfig[];
+}
+
+export interface PurposeConfig {
+  value: ChatFeature;
+  label: string;
+  icon: string;
+  i18nKey: string;
 }
 
 export interface ChatSetupOptions {
@@ -196,6 +208,13 @@ export const useChatSetup = (options: ChatSetupOptions = {}) => {
       store.setDisplayMode(mode);
     };
 
+    /**
+     * Set purposes configuration
+     */
+    const setPurposes = (purposes: PurposeConfig[]) => {
+      store.setPurposes(purposes);
+    };
+
   /**
    * Update entire configuration
    */
@@ -230,6 +249,8 @@ export const useChatSetup = (options: ChatSetupOptions = {}) => {
     spacingOffset: computed(() => store.spacingOffset),
     ui: computed(() => store.ui),
     displayMode: computed(() => store.displayMode),
+    isModalOpen: computed(() => store.isModalOpen),
+    purposes: computed(() => store.purposes),
 
     // Methods to update config (delegated to store)
     setStatus,
@@ -242,6 +263,10 @@ export const useChatSetup = (options: ChatSetupOptions = {}) => {
     setSpacingOffset,
     setUI,
     setDisplayMode,
+    setPurposes,
+    openModal: () => store.openModal(),
+    closeModal: () => store.closeModal(),
+    toggleModal: () => store.toggleModal(),
     updateConfig,
     reset,
     init,

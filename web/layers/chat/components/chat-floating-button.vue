@@ -12,12 +12,10 @@
       class="fixed bottom-4 right-4 z-50"
     >
       <UButton
-        :to="chatUrl"
         color="primary"
         size="xl"
         :icon="isOpen ? 'i-lucide-x' : 'i-lucide-message-circle'"
         class="shadow-lg hover:shadow-xl transition-all duration-300 rounded-full p-4"
-        :style="isOpen ? 'transform: rotate(90deg)' : ''"
         @click="handleClick"
       >
         <span class="sr-only">{{ t('chat.open', { defaultValue: 'Mở chat' }) }}</span>
@@ -37,6 +35,7 @@
 <script setup lang="ts">
 const { t } = useI18n()
 const route = useRoute()
+const chatSetup = useChatSetup()
 
 interface Props {
   feature?: string
@@ -57,7 +56,19 @@ const isOpen = computed(() => route.path.startsWith('/chat'))
 const shouldShow = computed(() => props.show && !isOpen.value)
 
 const handleClick = () => {
-  if (!isOpen.value) {
+  // If already on chat page, do nothing
+  if (isOpen.value) {
+    return
+  }
+
+  // Check display mode from store
+  const displayMode = chatSetup.displayMode.value
+
+  // If displayMode is modal, open modal via composable function
+  if (displayMode === 'modal') {
+    chatSetup.openModal()
+  } else {
+    // If inline mode, navigate to chat page
     navigateTo(chatUrl.value)
   }
 }

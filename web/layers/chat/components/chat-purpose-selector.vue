@@ -1,56 +1,28 @@
 <template>
   <div v-if="showPurposeButtons" class="flex justify-center items-start flex-wrap gap-2">
     <UButton
-      :variant="selectedPurpose === 'matching' ? 'solid' : 'outline'"
-      :color="selectedPurpose === 'matching' ? 'primary' : 'neutral'"
+      v-for="purpose in purposes"
+      :key="purpose.value"
+      :variant="selectedPurpose === purpose.value ? 'solid' : 'outline'"
+      :color="selectedPurpose === purpose.value ? 'primary' : 'neutral'"
       size="sm"
-      @click="handleSelect('matching')"
+      class="rounded-full"
+      @click="handleSelect(purpose.value)"
     >
       <template #leading>
-        <UIcon name="i-lucide-users" />
+        <UIcon :name="purpose.icon" />
       </template>
-      {{ t('chat.purpose.matching', { defaultValue: 'Matching' }) }}
-    </UButton>
-    <UButton
-      :variant="selectedPurpose === 'create-candidate' ? 'solid' : 'outline'"
-      :color="selectedPurpose === 'create-candidate' ? 'primary' : 'neutral'"
-      size="sm"
-      @click="handleSelect('create-candidate')"
-    >
-      <template #leading>
-        <UIcon name="i-lucide-user-plus" />
-      </template>
-      {{ t('chat.purpose.create-candidate', { defaultValue: 'Tạo ứng viên' }) }}
-    </UButton>
-    <UButton
-      :variant="selectedPurpose === 'create-job' ? 'solid' : 'outline'"
-      :color="selectedPurpose === 'create-job' ? 'primary' : 'neutral'"
-      size="sm"
-      @click="handleSelect('create-job')"
-    >
-      <template #leading>
-        <UIcon name="i-lucide-briefcase" />
-      </template>
-      {{ t('chat.purpose.create-job', { defaultValue: 'Tạo JD' }) }}
-    </UButton>
-    <UButton
-      :variant="selectedPurpose === 'general' ? 'solid' : 'outline'"
-      :color="selectedPurpose === 'general' ? 'primary' : 'neutral'"
-      size="sm"
-      @click="handleSelect('general')"
-    >
-      <template #leading>
-        <UIcon name="i-lucide-message-circle" />
-      </template>
-      {{ t('chat.purpose.general', { defaultValue: 'Tổng quát' }) }}
+      {{ t(purpose.i18nKey, { defaultValue: purpose.label }) }}
     </UButton>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { ChatFeature } from '@chat/types/chat'
+import type { PurposeConfig } from '@chat/composables/use-chat-setup'
 
 const { t } = useI18n()
+const chatSetup = useChatSetup()
 
 interface Props {
   /**
@@ -74,6 +46,9 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<Emits>()
+
+// Get purposes from chat setup
+const purposes = computed(() => chatSetup.purposes.value || [])
 
 const handleSelect = (purpose: ChatFeature) => {
   emit('select', purpose)

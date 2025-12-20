@@ -10,7 +10,7 @@
     :compact="chatSetup.compact"
     :spacing-offset="chatSetup.spacingOffset"
     :ui="chatSetup.ui"
-    class="flex-1"
+    class="h-full"
   >
     <!-- Content slot - customize message content rendering -->
     <template #content="{ message }">
