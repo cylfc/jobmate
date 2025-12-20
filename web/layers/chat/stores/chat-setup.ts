@@ -4,6 +4,7 @@
  */
 import { defineStore } from 'pinia'
 import type { ChatSetupConfig, PurposeConfig } from '@chat/composables/use-chat-setup'
+import type { ChatFeature } from '@chat/types/chat'
 
 export const useChatSetupStore = defineStore('chatSetup', {
   state: () => ({
@@ -35,6 +36,9 @@ export const useChatSetupStore = defineStore('chatSetup', {
     // Modal state
     isModalOpen: false,
 
+    // Selected purpose/feature
+    selectedPurpose: 'matching' as ChatFeature,
+
     // Chat purposes configuration
     purposes: [
       {
@@ -54,6 +58,12 @@ export const useChatSetupStore = defineStore('chatSetup', {
         label: 'Tạo JD',
         icon: 'i-lucide-briefcase',
         i18nKey: 'chat.purpose.create-job',
+      },
+      {
+        value: 'create-company',
+        label: 'Tạo công ty',
+        icon: 'i-lucide-building',
+        i18nKey: 'chat.purpose.create-company',
       },
       {
         value: 'general',
@@ -100,6 +110,7 @@ export const useChatSetupStore = defineStore('chatSetup', {
       ui: state.ui,
       displayMode: state.displayMode,
       purposes: state.purposes,
+      selectedPurpose: state.selectedPurpose,
     }),
   },
 
@@ -203,6 +214,13 @@ export const useChatSetupStore = defineStore('chatSetup', {
     },
 
     /**
+     * Set selected purpose/feature
+     */
+    setSelectedPurpose(purpose: ChatFeature) {
+      this.selectedPurpose = purpose
+    },
+
+    /**
      * Update entire configuration
      */
     updateConfig(config: Partial<ChatSetupConfig>) {
@@ -239,6 +257,9 @@ export const useChatSetupStore = defineStore('chatSetup', {
       if (config.purposes !== undefined) {
         this.purposes = config.purposes
       }
+      if (config.selectedPurpose !== undefined) {
+        this.selectedPurpose = config.selectedPurpose
+      }
     },
 
     /**
@@ -255,6 +276,7 @@ export const useChatSetupStore = defineStore('chatSetup', {
       this.assistant = undefined
       this.ui = undefined
       this.displayMode = 'modal'
+      this.selectedPurpose = 'matching'
       this.purposes = [
         {
           value: 'matching',
@@ -273,6 +295,12 @@ export const useChatSetupStore = defineStore('chatSetup', {
           label: 'Tạo JD',
           icon: 'i-lucide-briefcase',
           i18nKey: 'chat.purpose.create-job',
+        },
+        {
+          value: 'create-company',
+          label: 'Tạo công ty',
+          icon: 'i-lucide-building',
+          i18nKey: 'chat.purpose.create-company',
         },
         {
           value: 'general',

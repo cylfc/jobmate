@@ -1,8 +1,3 @@
-/**
- * Chat Types
- * TypeScript interfaces for chat layer
- */
-
 export type ChatMessageRole = 'user' | 'assistant' | 'system'
 
 export interface ChatMessage {
@@ -13,7 +8,7 @@ export interface ChatMessage {
   metadata?: Record<string, any>
 }
 
-export type ChatFeature = 'matching' | 'create-candidate' | 'create-job' | 'general'
+export type ChatFeature = 'matching' | 'create-candidate' | 'create-job' | 'create-company' | 'general'
 
 export interface ChatContext {
   feature: ChatFeature

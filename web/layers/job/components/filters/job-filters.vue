@@ -62,11 +62,10 @@ import type { JobFilter, JobStatus } from '@job/types/job'
 const { t } = useI18n()
 
 interface Props {
-  modelValue: JobFilter
+  // No props needed - using defineModel
 }
 
 interface Emits {
-  (e: 'update:modelValue', value: JobFilter): void
   (e: 'apply'): void
   (e: 'reset'): void
 }
@@ -74,10 +73,7 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const filters = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value),
-})
+const filters = defineModel<JobFilter>({ required: true })
 
 const statusOptions = computed(() => [
   { label: t('job.status.draft'), value: 'draft' as JobStatus },

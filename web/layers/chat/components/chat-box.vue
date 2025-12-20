@@ -28,7 +28,7 @@
         >
           <ChatPurposeSelector
             :show-purpose-buttons="showPurposeButtons"
-            :selected-purpose="selectedPurpose"
+            :selected-purpose="chatSetup.selectedPurpose.value"
             @select="handlePurposeSelect"
           />
 
@@ -43,14 +43,10 @@
                 class="w-full flex flex-row justify-between items-center mt-2"
               >
                 <ChatPromptActions
-                  :show-actions="showActions"
-                  @add="$emit('add')"
-                  @settings="$emit('settings')"
+                  :show-actions="true"
                 />
                 <UChatPromptSubmit
                   :status="chatStatus"
-                  @stop="$emit('stop')"
-                  @reload="$emit('reload')"
                 />
               </div>
             </template>
@@ -63,54 +59,38 @@
 
 <script setup lang="ts">
 import type { ChatMessage, ChatFeature } from "@chat/types/chat";
+import { useChatState } from '@chat/composables/use-chat-state'
+import { useChat } from '@chat/composables/use-chat'
+import { useChatSetup } from '@chat/composables/use-chat-setup'
 
 interface Props {
-  title?: string;
-  subtitle?: string;
   messages: ChatMessage[];
   isLoading?: boolean;
   error?: string | null;
-  showBack?: boolean;
-  showClose?: boolean;
-  showActions?: boolean;
-  showResults?: boolean;
   showPurposeButtons?: boolean;
-  selectedPurpose?: ChatFeature;
-  matchings?: any[];
   stickyFooter?: boolean;
 }
 
 interface Emits {
   (e: "send", message: string): void;
-  (e: "back"): void;
-  (e: "close"): void;
-  (e: "stop"): void;
-  (e: "reload"): void;
-  (e: "add"): void;
-  (e: "settings"): void;
   (e: "purpose-select", purpose: ChatFeature): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  title: "Chat",
   isLoading: false,
   error: null,
-  showBack: false,
-  showClose: true,
-  showActions: true,
-  showResults: false,
   showPurposeButtons: true,
-  selectedPurpose: "matching",
-  matchings: () => [],
   stickyFooter: true,
 });
 
 const emit = defineEmits<Emits>();
 
+const chat = useChat()
+const chatSetup = useChatSetup()
+const chatState = useChatState()
+
 const input = ref("");
 
-// Chat status is now managed by useChatSetup composable inside ChatMessages
-// We still need chatStatus for UChatPromptSubmit
 const chatStatus = computed(() => {
   if (props.isLoading) {
     return "submitted" as const;
