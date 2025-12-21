@@ -14,19 +14,39 @@ export const useChat = () => {
    * Initialize chat with a feature
    */
   const initializeChat = (feature: ChatFeature, handler: ChatHandler) => {
+    // Clear existing messages first to prevent duplicates
+    messages.value = []
+    
     context.value = {
       feature,
-      data: {},
+      data: { stepIndex: 0 },
     }
     currentHandler.value = handler
-    messages.value = [
-      {
-        id: `msg-${Date.now()}`,
-        role: 'assistant',
-        content: handler.getInitialMessage(),
-        timestamp: new Date(),
-      },
-    ]
+    const initialMessage = handler.getInitialMessage()
+    
+    // Check if handler has script-based initial message
+    const script = (handler as any).getScript?.()
+    if (script && script.steps && script.steps.length > 0) {
+      const firstStep = script.steps[0]
+      messages.value = [
+        {
+          id: `msg-${Date.now()}`,
+          role: 'assistant',
+          content: firstStep.message,
+          timestamp: new Date(),
+          component: firstStep.component,
+        },
+      ]
+    } else {
+      messages.value = [
+        {
+          id: `msg-${Date.now()}`,
+          role: 'assistant',
+          content: initialMessage,
+          timestamp: new Date(),
+        },
+      ]
+    }
   }
 
   /**
@@ -101,6 +121,46 @@ export const useChat = () => {
     }
   }
 
+  /**
+   * Handle component update from custom chat components
+   */
+  const handleComponentUpdate = async (messageId: string, data: any) => {
+    if (!currentHandler.value || !context.value) {
+      return
+    }
+
+    const message = messages.value.find((m) => m.id === messageId)
+    if (!message) {
+      return
+    }
+
+    // Update context with component data
+    context.value.data = {
+      ...context.value.data,
+      ...data,
+    }
+
+    // Process the update through handler
+    isLoading.value = true
+    try {
+      const response = await currentHandler.value.handleComponentUpdate?.(messageId, data, context.value)
+      if (response) {
+        messages.value.push(response)
+      }
+    } catch (error) {
+      console.error('Error processing component update:', error)
+      const errorMessage: ChatMessage = {
+        id: `msg-${Date.now()}`,
+        role: 'assistant',
+        content: 'Xin lỗi, đã có lỗi xảy ra khi xử lý dữ liệu. Vui lòng thử lại.',
+        timestamp: new Date(),
+      }
+      messages.value.push(errorMessage)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     messages: readonly(messages),
     isLoading: readonly(isLoading),
@@ -110,6 +170,7 @@ export const useChat = () => {
     sendMessage,
     clearChat,
     goBack,
+    handleComponentUpdate,
   }
 }
 

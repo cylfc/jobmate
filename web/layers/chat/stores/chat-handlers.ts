@@ -72,3 +72,7 @@ export const initChatHandlers = () => {
   }
 }
 
+export const hasHandlerFactory = (feature: ChatFeature): boolean => {
+  return handlerRegistry.has(feature)
+}
+

@@ -5,15 +5,44 @@ import { useMatchingChatHandler } from '@chat/composables/use-matching-chat-hand
 export const useChatHandlers = () => {
   const store = useChatHandlersStore()
 
+  // Always ensure matching factory is registered
+  if (!getHandlerFactory('matching')) {
+    try {
+      const factory: ChatHandlerFactory = () => {
+        return useMatchingChatHandler()
+      }
+      store.registerHandlerFactory('matching', factory)
+    } catch (error) {
+      console.error('Error registering matching handler factory:', error)
+    }
+  }
+
   if (!store.isInitialized) {
-    const matchingHandler = useMatchingChatHandler()
-    store.registerHandlerFactory('matching', () => matchingHandler)
-    store.setHandlerInstance('matching', matchingHandler)
     store.markInitialized()
   }
 
   const getHandler = (feature: ChatFeature): ChatHandler | null => {
-    return store.getHandler(feature)
+    let handler = store.getHandler(feature)
+    
+    if (!handler) {
+      const factory = getHandlerFactory(feature)
+      if (factory) {
+        try {
+          handler = factory()
+          if (handler) {
+            store.setHandlerInstance(feature, handler)
+          } else {
+            console.error(`Factory for feature ${feature} returned null/undefined`)
+          }
+        } catch (error) {
+          console.error(`Failed to create handler for feature: ${feature}`, error)
+        }
+      } else {
+        console.warn(`No factory found for feature: ${feature}. Registered features:`, store.registeredFeaturesList)
+      }
+    }
+    
+    return handler
   }
 
   const initializeChatWithFeature = (

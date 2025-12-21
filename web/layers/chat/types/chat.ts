@@ -6,6 +6,10 @@ export interface ChatMessage {
   content: string
   timestamp: Date
   metadata?: Record<string, any>
+  component?: {
+    type: string
+    props?: Record<string, any>
+  }
 }
 
 export type ChatFeature = 'matching' | 'create-candidate' | 'create-job' | 'create-company' | 'general'
@@ -25,6 +29,7 @@ export interface ChatHandler {
   name: string
   feature: ChatFeature
   handleMessage: (message: string, context: ChatContext) => Promise<ChatMessage | null>
+  handleComponentUpdate?: (messageId: string, data: any, context: ChatContext) => Promise<ChatMessage | null>
   getInitialMessage: () => string
   getStepMessage: (step: number) => string
   canGoBack: (currentStep: number) => boolean

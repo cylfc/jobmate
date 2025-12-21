@@ -48,13 +48,7 @@ const chatSetup = useChatSetup()
 const isChatPage = computed(() => route.path === '/chat')
 
 const handleAdd = () => {
-  // If not on chat page and displayMode is modal, open modal
-  if (!isChatPage.value && chatSetup.displayMode.value === 'modal') {
-    chatSetup.openModal()
-  } else {
-    // Emit add event when on chat page or inline mode
-    emit('add')
-  }
+  emit('add')
 }
 </script>
 

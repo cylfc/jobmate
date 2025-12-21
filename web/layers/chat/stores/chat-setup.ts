@@ -32,9 +32,6 @@ export const useChatSetupStore = defineStore('chatSetup', {
     
     // Display mode: 'modal' or 'inline'
     displayMode: 'modal' as 'modal' | 'inline',
-    
-    // Modal state
-    isModalOpen: false,
 
     // Selected purpose/feature
     selectedPurpose: 'matching' as ChatFeature,
@@ -183,27 +180,6 @@ export const useChatSetupStore = defineStore('chatSetup', {
      */
     setDisplayMode(mode: 'modal' | 'inline') {
       this.displayMode = mode
-    },
-
-    /**
-     * Open chat modal
-     */
-    openModal() {
-      this.isModalOpen = true
-    },
-
-    /**
-     * Close chat modal
-     */
-    closeModal() {
-      this.isModalOpen = false
-    },
-
-    /**
-     * Toggle chat modal
-     */
-    toggleModal() {
-      this.isModalOpen = !this.isModalOpen
     },
 
     /**
