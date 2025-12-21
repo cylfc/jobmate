@@ -39,7 +39,7 @@ const props = withDefaults(
   {
     items: () => [],
     height: '300px',
-    color: '#d68d67',
+    color: '#c6613f',
     horizontal: false,
     yAxisMax: undefined,
     valueFormatter: (v: number) => String(v),

@@ -2,12 +2,12 @@
   <UCard
     class="h-full cursor-pointer transition hover:shadow-md"
     :ui="{
-      body: 'p-5 h-full flex flex-col justify-start items-stretch',
+      body: 'sm:p-5 p-5 h-full flex flex-col justify-start items-stretch',
     }"
     @click="handleClick"
   >
     <!-- Header: Title + "Last 7 days" -->
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between">
       <p class="text-xs font-semibold text-muted tracking-wide uppercase">
         {{ title }}
       </p>
@@ -15,9 +15,9 @@
     </div>
 
     <!-- Main Value -->
-    <div class="mb-4 flex-1">
+    <div class="flex-1">
       <USkeleton v-if="loading" class="h-10 w-32 mb-2" />
-      <div v-else class="text-3xl font-bold text-default tabular-nums mb-3">
+      <div v-else class="text-3xl font-bold text-default tabular-nums ">
         {{ value }}
       </div>
 
@@ -29,12 +29,16 @@
             <p class="text-xs text-muted">{{ subMetric }}</p>
             <UBadge
               :color="deltaColor"
-              variant="outline"
+              variant="soft"
               size="xs"
               class="text-sm"
             >
               {{ subMetricValue }}
-              <UIcon v-if="delta !== undefined" :name="deltaIcon" class="size-3 inline ml-0.5" />
+              <UIcon
+                v-if="delta !== undefined"
+                :name="deltaIcon"
+                class="size-3 inline ml-0.5"
+              />
             </UBadge>
           </div>
           <!-- Progress bar for sub-metric -->
@@ -49,12 +53,7 @@
 
         <!-- Trend badge (if no sub-metric) -->
         <div v-else-if="delta !== undefined" class="flex items-center gap-1">
-          <UBadge
-            :color="deltaColor"
-            variant="outline"
-            size="xs"
-            class="text-sm"
-          >
+          <UBadge :color="deltaColor" variant="soft" size="xs" class="text-sm">
             {{ formattedDelta }}
             <UIcon :name="deltaIcon" class="size-3 inline ml-0.5" />
           </UBadge>
@@ -63,7 +62,7 @@
     </div>
 
     <!-- Chart -->
-    <div v-if="!loading && trendData && trendData.length > 0" class="mt-4 h-16 -mx-6">
+    <div v-if="!loading && trendData && trendData.length > 0" class="-mx-6">
       <!-- Progress bar chart (already shown above, hide here) -->
       <template v-if="chartType === 'progress'">
         <!-- Progress already shown above -->
@@ -80,7 +79,10 @@
       />
 
       <!-- Line chart with comparison -->
-      <div v-else-if="chartType === 'line-compare' && compareData" class="h-full">
+      <div
+        v-else-if="chartType === 'line-compare' && compareData"
+        class="h-full"
+      >
         <ChartsSparklineChart
           :data="trendData"
           :color="sparklineColor"
@@ -113,111 +115,109 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { KpiChartType } from '../../types/dashboard'
-import type { BarChartItem } from '../charts/bar-chart.vue'
+import { computed } from "vue";
+import type { KpiChartType } from "../../types/dashboard";
+import type { BarChartItem } from "../charts/bar-chart.vue";
 
 const props = withDefaults(
   defineProps<{
-    title: string
-    value: number | string
-    delta?: number
-    icon?: string
-    loading?: boolean
-    trendData?: number[]
-    chartType?: KpiChartType
-    subMetric?: string
-    subMetricValue?: string | number
-    compareData?: number[]
+    title: string;
+    value: number | string;
+    delta?: number;
+    icon?: string;
+    loading?: boolean;
+    trendData?: number[];
+    chartType?: KpiChartType;
+    subMetric?: string;
+    subMetricValue?: string | number;
+    compareData?: number[];
   }>(),
   {
     delta: undefined,
     icon: undefined,
     loading: false,
     trendData: undefined,
-    chartType: 'line',
+    chartType: "line",
     subMetric: undefined,
     subMetricValue: undefined,
     compareData: undefined,
   }
-)
+);
 
 const emit = defineEmits<{
-  (e: 'drilldown'): void
-}>()
+  (e: "drilldown"): void;
+}>();
 
-const clickable = computed(() => !props.loading)
+const clickable = computed(() => !props.loading);
 
 const deltaColor = computed(() => {
-  if (props.delta === undefined) return 'neutral'
-  if (props.delta > 0) return 'success'
-  if (props.delta < 0) return 'error'
-  return 'neutral'
-})
+  if (props.delta === undefined) return "neutral";
+  if (props.delta > 0) return "success";
+  if (props.delta < 0) return "error";
+  return "neutral";
+});
 
 const deltaIcon = computed(() => {
-  if (props.delta === undefined) return 'i-lucide-minus'
-  if (props.delta > 0) return 'i-lucide-trending-up'
-  if (props.delta < 0) return 'i-lucide-trending-down'
-  return 'i-lucide-minus'
-})
+  if (props.delta === undefined) return "i-lucide-minus";
+  if (props.delta > 0) return "i-lucide-trending-up";
+  if (props.delta < 0) return "i-lucide-trending-down";
+  return "i-lucide-minus";
+});
 
 const formattedDelta = computed(() => {
-  if (props.delta === undefined) return ''
-  const sign = props.delta > 0 ? '+' : ''
-  return `${sign}${props.delta}`
-})
+  if (props.delta === undefined) return "";
+  const sign = props.delta > 0 ? "+" : "";
+  return `${sign}${props.delta}`;
+});
 
 const handleClick = () => {
-  if (!clickable.value) return
-  emit('drilldown')
-}
+  if (!clickable.value) return;
+  emit("drilldown");
+};
 
 const sparklineColor = computed(() => {
-  if (props.delta === undefined) return '#10b981' // emerald-500
-  if (props.delta > 0) return '#10b981' // emerald-500
-  if (props.delta < 0) return '#f43f5e' // rose-500
-  return '#10b981'
-})
+  if (props.delta === undefined) return "#10b981"; // emerald-500
+  if (props.delta > 0) return "#10b981"; // emerald-500
+  if (props.delta < 0) return "#f43f5e"; // rose-500
+  return "#10b981";
+});
 
 const deltaColorClass = computed(() => {
-  if (props.delta === undefined) return 'text-muted'
-  if (props.delta > 0) return 'text-emerald-600'
-  if (props.delta < 0) return 'text-rose-600'
-  return 'text-amber-600'
-})
+  if (props.delta === undefined) return "text-muted";
+  if (props.delta > 0) return "text-emerald-600";
+  if (props.delta < 0) return "text-rose-600";
+  return "text-amber-600";
+});
 
 const subMetricColorClass = computed(() => {
-  if (props.delta === undefined) return 'text-emerald-600'
-  if (props.delta > 0) return 'text-emerald-600'
-  if (props.delta < 0) return 'text-rose-600'
-  return 'text-amber-600'
-})
+  if (props.delta === undefined) return "text-emerald-600";
+  if (props.delta > 0) return "text-emerald-600";
+  if (props.delta < 0) return "text-rose-600";
+  return "text-amber-600";
+});
 
 const progressColor = computed(() => {
-  if (props.delta === undefined) return 'success'
-  if (props.delta > 0) return 'success'
-  if (props.delta < 0) return 'error'
-  return 'warning'
-})
+  if (props.delta === undefined) return "success";
+  if (props.delta > 0) return "success";
+  if (props.delta < 0) return "error";
+  return "warning";
+});
 
 const progressValue = computed(() => {
   // For progress chart, use the main value as percentage
-  if (typeof props.value === 'string') {
-    const num = parseFloat(props.value.replace(/[^0-9.]/g, ''))
-    return Number.isFinite(num) ? num : 0
+  if (typeof props.value === "string") {
+    const num = parseFloat(props.value.replace(/[^0-9.]/g, ""));
+    return Number.isFinite(num) ? num : 0;
   }
   // If value is already a number, assume it's a percentage
-  return typeof props.value === 'number' ? props.value : 0
-})
+  return typeof props.value === "number" ? props.value : 0;
+});
 
 const barChartItems = computed<BarChartItem[]>(() => {
-  if (!props.trendData || props.trendData.length === 0) return []
+  if (!props.trendData || props.trendData.length === 0) return [];
   return props.trendData.map((value, idx) => ({
     label: `Day ${idx + 1}`,
     value,
-  }))
-})
+  }));
+});
 </script>
-
-
