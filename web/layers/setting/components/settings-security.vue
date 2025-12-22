@@ -127,7 +127,7 @@ const handleSubmit = async () => {
     
     // Reset form after success
     handleReset()
-  } catch (error) {
+  } catch (_error) {
     toast.add({
       title: t('setting.security.error.title'),
       description: t('setting.security.error.description'),

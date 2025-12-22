@@ -5,7 +5,6 @@ import type { ChangePasswordInput } from '@auth/composables/auth/schemas'
 export function useChangePassword() {
   const { t } = useI18n()
   const toast = useToast()
-  const router = useRouter()
 
   const state = reactive<ChangePasswordInput>({
     currentPassword: '',
@@ -38,7 +37,7 @@ export function useChangePassword() {
       path: ['newPassword'],
     })
 
-  async function handleSubmit(event: FormSubmitEvent<ChangePasswordInput>) {
+  async function handleSubmit(_event: FormSubmitEvent<ChangePasswordInput>) {
     isLoading.value = true
 
     try {
@@ -67,7 +66,7 @@ export function useChangePassword() {
 
       // Optionally redirect
       // await router.push('/dashboard')
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.add({
         title: t('auth.change-password-error-title', 'Đổi mật khẩu thất bại'),
         description: error.message || t('auth.change-password-error-description', 'Mật khẩu hiện tại không đúng'),

@@ -11,7 +11,7 @@
       <p class="text-xs font-semibold text-muted tracking-wide uppercase">
         {{ title }}
       </p>
-      <p class="text-xs text-muted uppercase">Last 7 days</p>
+      <p class="text-xs text-muted uppercase">{{ KPI_LABELS.LAST_7_DAYS }}</p>
     </div>
 
     <!-- Main Value -->
@@ -45,7 +45,7 @@
           <UProgress
             v-if="chartType === 'progress'"
             :value="progressValue"
-            :max="100"
+            :max="KPI_PROGRESS.MAX"
             :color="progressColor"
             size="sm"
           />
@@ -73,8 +73,8 @@
         v-else-if="chartType === 'line'"
         :data="trendData"
         :color="sparklineColor"
-        height="64px"
-        width="100%"
+        :height="KPI_CHART_DIMENSIONS.HEIGHT"
+        :width="KPI_CHART_DIMENSIONS.WIDTH"
         :area="true"
       />
 
@@ -86,8 +86,8 @@
         <ChartsSparklineChart
           :data="trendData"
           :color="sparklineColor"
-          height="64px"
-          width="100%"
+          :height="KPI_CHART_DIMENSIONS.HEIGHT"
+          :width="KPI_CHART_DIMENSIONS.WIDTH"
           :area="false"
         />
         <!-- TODO: Add comparison line overlay -->
@@ -106,8 +106,8 @@
         v-else
         :data="trendData"
         :color="sparklineColor"
-        height="64px"
-        width="100%"
+        :height="KPI_CHART_DIMENSIONS.HEIGHT"
+        :width="KPI_CHART_DIMENSIONS.WIDTH"
         :area="true"
       />
     </div>
@@ -118,6 +118,18 @@
 import { computed } from "vue";
 import type { KpiChartType } from "../../types/dashboard";
 import type { BarChartItem } from "../charts/bar-chart.vue";
+import {
+  KPI_BADGE_COLOR,
+  KPI_ICON,
+  KPI_COLORS,
+  KPI_TEXT_COLOR,
+  KPI_LABELS,
+  KPI_PROGRESS,
+  KPI_CHART_DIMENSIONS,
+  type KpiBadgeColor,
+  type KpiIcon,
+  type KpiTextColor,
+} from "../../constants/kpi";
 
 const props = withDefaults(
   defineProps<{
@@ -150,18 +162,18 @@ const emit = defineEmits<{
 
 const clickable = computed(() => !props.loading);
 
-const deltaColor = computed(() => {
-  if (props.delta === undefined) return "neutral";
-  if (props.delta > 0) return "success";
-  if (props.delta < 0) return "error";
-  return "neutral";
+const deltaColor = computed((): KpiBadgeColor => {
+  if (props.delta === undefined) return KPI_BADGE_COLOR.NEUTRAL;
+  if (props.delta > 0) return KPI_BADGE_COLOR.SUCCESS;
+  if (props.delta < 0) return KPI_BADGE_COLOR.ERROR;
+  return KPI_BADGE_COLOR.NEUTRAL;
 });
 
-const deltaIcon = computed(() => {
-  if (props.delta === undefined) return "i-lucide-minus";
-  if (props.delta > 0) return "i-lucide-trending-up";
-  if (props.delta < 0) return "i-lucide-trending-down";
-  return "i-lucide-minus";
+const deltaIcon = computed((): KpiIcon => {
+  if (props.delta === undefined) return KPI_ICON.MINUS;
+  if (props.delta > 0) return KPI_ICON.TRENDING_UP;
+  if (props.delta < 0) return KPI_ICON.TRENDING_DOWN;
+  return KPI_ICON.MINUS;
 });
 
 const formattedDelta = computed(() => {
@@ -176,31 +188,31 @@ const handleClick = () => {
 };
 
 const sparklineColor = computed(() => {
-  if (props.delta === undefined) return "#10b981"; // emerald-500
-  if (props.delta > 0) return "#10b981"; // emerald-500
-  if (props.delta < 0) return "#f43f5e"; // rose-500
-  return "#10b981";
+  if (props.delta === undefined) return KPI_COLORS.EMERALD_500;
+  if (props.delta > 0) return KPI_COLORS.EMERALD_500;
+  if (props.delta < 0) return KPI_COLORS.ROSE_500;
+  return KPI_COLORS.EMERALD_500;
 });
 
-const deltaColorClass = computed(() => {
-  if (props.delta === undefined) return "text-muted";
-  if (props.delta > 0) return "text-emerald-600";
-  if (props.delta < 0) return "text-rose-600";
-  return "text-amber-600";
+const deltaColorClass = computed((): KpiTextColor => {
+  if (props.delta === undefined) return KPI_TEXT_COLOR.MUTED;
+  if (props.delta > 0) return KPI_TEXT_COLOR.EMERALD_600;
+  if (props.delta < 0) return KPI_TEXT_COLOR.ROSE_600;
+  return KPI_TEXT_COLOR.AMBER_600;
 });
 
-const subMetricColorClass = computed(() => {
-  if (props.delta === undefined) return "text-emerald-600";
-  if (props.delta > 0) return "text-emerald-600";
-  if (props.delta < 0) return "text-rose-600";
-  return "text-amber-600";
+const subMetricColorClass = computed((): KpiTextColor => {
+  if (props.delta === undefined) return KPI_TEXT_COLOR.EMERALD_600;
+  if (props.delta > 0) return KPI_TEXT_COLOR.EMERALD_600;
+  if (props.delta < 0) return KPI_TEXT_COLOR.ROSE_600;
+  return KPI_TEXT_COLOR.AMBER_600;
 });
 
-const progressColor = computed(() => {
-  if (props.delta === undefined) return "success";
-  if (props.delta > 0) return "success";
-  if (props.delta < 0) return "error";
-  return "warning";
+const progressColor = computed((): KpiBadgeColor => {
+  if (props.delta === undefined) return KPI_BADGE_COLOR.SUCCESS;
+  if (props.delta > 0) return KPI_BADGE_COLOR.SUCCESS;
+  if (props.delta < 0) return KPI_BADGE_COLOR.ERROR;
+  return KPI_BADGE_COLOR.WARNING;
 });
 
 const progressValue = computed(() => {
@@ -216,7 +228,7 @@ const progressValue = computed(() => {
 const barChartItems = computed<BarChartItem[]>(() => {
   if (!props.trendData || props.trendData.length === 0) return [];
   return props.trendData.map((value, idx) => ({
-    label: `Day ${idx + 1}`,
+    label: `${KPI_LABELS.DAY_PREFIX} ${idx + 1}`,
     value,
   }));
 });

@@ -37,8 +37,8 @@
           variant="ghost"
           icon="i-lucide-x"
           size="sm"
-          @click="isOpen = false"
           :aria-label="t('common.close')"
+          @click="isOpen = false"
         />
       </div>
     </template>
@@ -90,7 +90,7 @@
                   </p>
                 </div>
                 <div v-if="!notification.read" class="flex-shrink-0">
-                  <div class="w-2 h-2 bg-primary rounded-full"></div>
+                  <div class="w-2 h-2 bg-primary rounded-full"/>
                 </div>
               </div>
             </div>

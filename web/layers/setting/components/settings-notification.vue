@@ -160,7 +160,7 @@ const handleSubmit = async () => {
       description: t('setting.notification.success.description'),
       color: 'success',
     })
-  } catch (error) {
+  } catch (_error) {
     toast.add({
       title: t('setting.notification.error.title'),
       description: t('setting.notification.error.description'),

@@ -65,7 +65,7 @@ function parseJobFromText(text: string, link?: string): CreateJobInput {
   const requirementsMatch = text.match(/(?:requirements|yêu cầu|skills|kỹ năng):\s*([\s\S]+?)(?:\n\n|\n[A-Z]|$)/i)
   if (requirementsMatch) {
     const reqText = requirementsMatch[1]
-    requirements.push(...reqText.split(/[,\n•\-]/).map(r => r.trim()).filter(r => r.length > 0))
+    requirements.push(...reqText.split(/[,\n•-]/).map(r => r.trim()).filter(r => r.length > 0))
   }
 
   // Extract salary

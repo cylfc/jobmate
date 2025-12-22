@@ -11,6 +11,21 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { ComposeOption } from 'echarts/core'
+import type { BarSeriesOption, LineSeriesOption, PieSeriesOption } from 'echarts/charts'
+import type { TooltipComponentOption, LegendComponentOption, GridComponentOption } from 'echarts/components'
+import {
+  CHART_AXIS_TYPE,
+  CHART_SERIES_TYPE,
+  SYMBOL_TYPE,
+  CHART_DIMENSIONS,
+  CHART_GRID,
+  CHART_CALCULATION,
+  CSS_VAR_COLOR_MAP,
+  CHART_COLORS,
+} from '../../constants/chart'
+
+type ECOption = ComposeOption<BarSeriesOption | LineSeriesOption | PieSeriesOption | TooltipComponentOption | LegendComponentOption | GridComponentOption>
 
 const props = withDefaults(
   defineProps<{
@@ -37,8 +52,8 @@ const props = withDefaults(
   }>(),
   {
     data: () => [],
-    height: '40px',
-    width: '100%',
+    height: CHART_DIMENSIONS.SPARKLINE_HEIGHT,
+    width: CHART_DIMENSIONS.DEFAULT_WIDTH,
     color: 'var(--color-brand-600)',
     area: true,
   }
@@ -51,15 +66,7 @@ const getColorValue = (colorVar: string): string => {
     return colorVar
   }
   
-  // Map common CSS variables to actual colors (from main.css)
-  const colorMap: Record<string, string> = {
-    'var(--color-brand-600)': '#a84d2f',
-    'var(--color-brand-500)': '#c6613f',
-    'var(--color-emerald-500)': '#10b981',
-    'var(--color-rose-500)': '#f43f5e',
-  }
-  
-  return colorMap[colorVar] || '#a84d2f' // Default to brand-600
+  return CSS_VAR_COLOR_MAP[colorVar] || CHART_COLORS.BRAND_600
 }
 
 // Convert hex color to rgba with opacity
@@ -82,19 +89,19 @@ const option = computed<ECOption>(() => {
     grid: {
       left: 0,
       right: 0,
-      top: 2,
-      bottom: 2,
+      top: CHART_GRID.SPARKLINE_TOP,
+      bottom: CHART_GRID.SPARKLINE_BOTTOM,
       containLabel: false,
     },
     xAxis: {
-      type: 'category',
+      type: CHART_AXIS_TYPE.CATEGORY,
       data: Array.from({ length: values.length }, (_, i) => i),
       show: false,
     },
     yAxis: {
-      type: 'value',
-      min: min - range * 0.1,
-      max: max + range * 0.1,
+      type: CHART_AXIS_TYPE.VALUE,
+      min: min - range * CHART_CALCULATION.SPARKLINE_RANGE_MULTIPLIER,
+      max: max + range * CHART_CALCULATION.SPARKLINE_RANGE_MULTIPLIER,
       show: false,
     },
     tooltip: {
@@ -102,17 +109,17 @@ const option = computed<ECOption>(() => {
     },
     series: [
       {
-        type: 'line',
+        type: CHART_SERIES_TYPE.LINE,
         data: values,
         smooth: true,
-        symbol: 'none',
+        symbol: SYMBOL_TYPE.NONE,
         lineStyle: {
           color: actualColor,
-          width: 2,
+          width: CHART_DIMENSIONS.LINE_WIDTH,
         },
         areaStyle: props.area
           ? {
-              color: hexToRgba(actualColor, 0.15), // Solid color with opacity, no gradient
+              color: hexToRgba(actualColor, CHART_CALCULATION.AREA_OPACITY),
             }
           : undefined,
       },

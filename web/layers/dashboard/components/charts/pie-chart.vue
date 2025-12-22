@@ -6,6 +6,23 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { ComposeOption } from 'echarts/core'
+import type { BarSeriesOption, LineSeriesOption, PieSeriesOption } from 'echarts/charts'
+import type { TooltipComponentOption, LegendComponentOption, GridComponentOption } from 'echarts/components'
+import {
+  CHART_SERIES_TYPE,
+  TOOLTIP_TRIGGER,
+  LEGEND_ORIENT,
+  LEGEND_POSITION,
+  CHART_COLORS,
+  CHART_DIMENSIONS,
+  CHART_TYPOGRAPHY,
+  CHART_BORDER_RADIUS,
+  CHART_RADIUS,
+  PIE_CHART_COLORS,
+} from '../../constants/chart'
+
+type ECOption = ComposeOption<BarSeriesOption | LineSeriesOption | PieSeriesOption | TooltipComponentOption | LegendComponentOption | GridComponentOption>
 
 export interface PieChartItem {
   name: string
@@ -43,24 +60,14 @@ const props = withDefaults(
   }>(),
   {
     items: () => [],
-    height: '300px',
+    height: CHART_DIMENSIONS.DEFAULT_HEIGHT,
     donut: false,
-    donutRadius: () => ['40%', '70%'],
+    donutRadius: () => [CHART_RADIUS.DONUT_INNER, CHART_RADIUS.DONUT_OUTER],
     showLabel: true,
     showLegend: true,
     legendPosition: 'bottom',
   }
 )
-
-const defaultColors = [
-  '#c6613f',
-  'var(--color-sky-500)',
-  'var(--color-emerald-500)',
-  'var(--color-amber-500)',
-  'var(--color-rose-500)',
-  'var(--color-purple-500)',
-  'var(--color-indigo-500)',
-]
 
 const option = computed<ECOption>(() => {
   const total = props.items.reduce((sum, item) => sum + item.value, 0)
@@ -69,23 +76,35 @@ const option = computed<ECOption>(() => {
     name: item.name,
     value: item.value,
     itemStyle: {
-      color: item.color ?? defaultColors[idx % defaultColors.length],
+      color: item.color ?? PIE_CHART_COLORS[idx % PIE_CHART_COLORS.length],
     },
   }))
 
   const legendConfig = props.showLegend
     ? {
         show: true,
-        orient: props.legendPosition === 'left' || props.legendPosition === 'right' ? 'vertical' : 'horizontal',
-        left: props.legendPosition === 'left' ? 'left' : props.legendPosition === 'right' ? 'right' : 'center',
-        top: props.legendPosition === 'top' ? 'top' : props.legendPosition === 'bottom' ? 'bottom' : 'middle',
-        textStyle: { fontSize: 11 },
+        orient: (props.legendPosition === 'left' || props.legendPosition === 'right'
+          ? LEGEND_ORIENT.VERTICAL
+          : LEGEND_ORIENT.HORIZONTAL) as 'vertical' | 'horizontal',
+        left:
+          props.legendPosition === 'left'
+            ? LEGEND_POSITION.LEFT
+            : props.legendPosition === 'right'
+              ? LEGEND_POSITION.RIGHT
+              : LEGEND_POSITION.CENTER,
+        top:
+          props.legendPosition === 'top'
+            ? LEGEND_POSITION.TOP
+            : props.legendPosition === 'bottom'
+              ? LEGEND_POSITION.BOTTOM
+              : LEGEND_POSITION.MIDDLE,
+        textStyle: { fontSize: CHART_TYPOGRAPHY.FONT_SIZE_SMALL },
       }
     : { show: false }
 
   return {
     tooltip: {
-      trigger: 'item',
+      trigger: TOOLTIP_TRIGGER.ITEM,
       formatter: (params: any) => {
         const percent = total > 0 ? ((params.value / total) * 100).toFixed(1) : '0'
         return `${params.name}<br/>${params.value} (${percent}%)`
@@ -94,14 +113,14 @@ const option = computed<ECOption>(() => {
     legend: legendConfig,
     series: [
       {
-        type: 'pie',
-        radius: props.donut ? props.donutRadius : ['0%', '70%'],
-        center: ['50%', '50%'],
+        type: CHART_SERIES_TYPE.PIE,
+        radius: props.donut ? props.donutRadius : [CHART_RADIUS.PIE_START, CHART_RADIUS.DONUT_OUTER],
+        center: [CHART_RADIUS.CENTER, CHART_RADIUS.CENTER],
         avoidLabelOverlap: true,
         itemStyle: {
-          borderRadius: 4,
-          borderColor: '#fff',
-          borderWidth: 2,
+          borderRadius: CHART_BORDER_RADIUS.PIE,
+          borderColor: CHART_COLORS.WHITE,
+          borderWidth: CHART_BORDER_RADIUS.PIE_BORDER_WIDTH,
         },
         label: props.showLabel
           ? {
@@ -110,13 +129,13 @@ const option = computed<ECOption>(() => {
                 const percent = total > 0 ? ((params.value / total) * 100).toFixed(0) : '0'
                 return `${params.name}\n${percent}%`
               },
-              fontSize: 11,
+              fontSize: CHART_TYPOGRAPHY.FONT_SIZE_SMALL,
             }
           : { show: false },
         emphasis: {
           label: {
             show: true,
-            fontSize: 12,
+            fontSize: CHART_TYPOGRAPHY.FONT_SIZE_MEDIUM,
             fontWeight: 'bold',
           },
         },
