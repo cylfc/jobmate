@@ -77,36 +77,36 @@ export const useMatchingChatHandler = (): ChatHandler => {
     const stepId = currentStep?.id || ''
 
     try {
-      // Step 1: Select job input method
+      // Step 1: Select job input method - if user sends text, treat as prompt input
       if (stepId === 'step-1-select-method') {
-        // This should be handled by component update, not message
-        return null
+        // User sent text directly, treat as prompt input
+        return await handleStep1InputJob(message, chatContext)
       }
 
-      // Step 1.5: Input job data (from prompt)
+      // Step 1.5: Input job data (from prompt) - this step is now skipped
       if (stepId === 'step-1-input-job') {
         return await handleStep1InputJob(message, chatContext)
       }
 
-      // Step 2: Select candidate input method
+      // Step 2: Select candidate input method - if user sends text, treat as prompt input
       if (stepId === 'step-2-select-method') {
-        // This should be handled by component update, not message
-        return null
+        // User sent text directly, treat as prompt input
+        return await handleStep2InputCandidate(message, chatContext)
       }
 
-      // Step 2.5: Input candidate data (from prompt)
+      // Step 2.5: Input candidate data (from prompt) - this step is now skipped
       if (stepId === 'step-2-input-candidate') {
         return await handleStep2InputCandidate(message, chatContext)
       }
 
       // Step 3: Analysis
       if (stepId === 'step-3') {
-        return await handleStep3(message, chatContext)
+          return await handleStep3(message, chatContext)
       }
 
       // Step 4: Results
       if (stepId === 'step-4') {
-        return await handleStep4(message, chatContext)
+          return await handleStep4(message, chatContext)
       }
 
       return null

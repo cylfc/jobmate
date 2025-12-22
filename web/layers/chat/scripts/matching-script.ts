@@ -10,22 +10,19 @@ export const createMatchingScript = (): ChatScript => {
       {
         id: 'step-1-select-method',
         name: 'Select Job Input Method',
-        message: 'Chọn cách bạn muốn cung cấp thông tin về công việc:',
+        message: 'Hãy nhập chi tiết JD',
         component: {
           type: 'input-method-selector',
           props: {
             type: 'job',
             methods: [
-              { value: 'prompt', label: 'Nhập text', icon: 'i-lucide-pencil' },
               { value: 'source', label: 'Chọn từ database', icon: 'i-lucide-database' },
               { value: 'upload', label: 'Upload file', icon: 'i-lucide-file-up' },
             ],
           },
         },
         validation: (data: any) => {
-          if (!data.method) {
-            return 'Vui lòng chọn phương thức nhập liệu'
-          }
+          // Method is optional now - user can type directly or select from options
           return true
         },
       },
@@ -43,13 +40,12 @@ export const createMatchingScript = (): ChatScript => {
       {
         id: 'step-2-select-method',
         name: 'Select Candidate Input Method',
-        message: 'Chọn cách bạn muốn cung cấp thông tin về ứng viên:',
+        message: 'Hãy nhập thông tin ứng viên',
         component: {
           type: 'input-method-selector',
           props: {
             type: 'candidate',
             methods: [
-              { value: 'prompt', label: 'Nhập text', icon: 'i-lucide-pencil' },
               { value: 'source', label: 'Chọn từ database', icon: 'i-lucide-database' },
               { value: 'upload', label: 'Upload CV', icon: 'i-lucide-file-up' },
             ],
@@ -57,9 +53,7 @@ export const createMatchingScript = (): ChatScript => {
           },
         },
         validation: (data: any) => {
-          if (!data.method) {
-            return 'Vui lòng chọn phương thức nhập liệu'
-          }
+          // Method is optional now - user can type directly or select from options
           return true
         },
       },

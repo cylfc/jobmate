@@ -53,7 +53,7 @@ const props = withDefaults(
 )
 
 const defaultColors = [
-  '#d68d67',
+  '#c6613f',
   'var(--color-sky-500)',
   'var(--color-emerald-500)',
   'var(--color-amber-500)',
