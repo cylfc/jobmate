@@ -6,14 +6,12 @@ export default withNuxt(
     rules: {
       'vue/no-v-model-argument': 'off',
     },
-    overrides: [
-      {
-        files: ['**/notification-drawer.vue'],
-        rules: {
-          'vue/no-multiple-template-root': 'off',
-        },
-      },
-    ],
+  },
+  {
+    files: ['**/notification-drawer.vue'],
+    rules: {
+      'vue/no-multiple-template-root': 'off',
+    },
   }
 );
 // Your custom configs here

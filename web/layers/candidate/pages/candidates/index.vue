@@ -77,7 +77,7 @@ const loadCandidates = async () => {
   try {
     const data = await getCandidates()
     candidates.value = data
-  } catch (error) {
+  } catch (_error) {
     toast.add({
       title: t('candidate.error.load-failed'),
       description: t('candidate.error.load-failed-description'),
@@ -136,7 +136,7 @@ const handleCreateCandidate = async (input: CreateCandidateInput) => {
     })
     showCreateModal.value = false
     await loadCandidates()
-  } catch (error) {
+  } catch (_error) {
     toast.add({
       title: t('candidate.error.create-failed'),
       description: t('candidate.error.create-failed-description'),
@@ -164,7 +164,7 @@ const handleInvite = async (candidate: Candidate) => {
       description: t('candidate.success.invite-success-description', { name: `${candidate.firstName} ${candidate.lastName}` }),
       color: 'success',
     })
-  } catch (error) {
+  } catch (_error) {
     toast.add({
       title: t('candidate.error.invite-failed'),
       description: t('candidate.error.invite-failed-description'),
@@ -185,7 +185,7 @@ const handleDelete = async (candidate: Candidate) => {
       color: 'success',
     })
     await loadCandidates()
-  } catch (error) {
+  } catch (_error) {
     toast.add({
       title: t('candidate.error.delete-failed'),
       description: t('candidate.error.delete-failed-description'),
@@ -202,7 +202,7 @@ const handleBulkInvite = async (candidateIds: string[]) => {
       description: t('candidate.success.bulk-invite-success-description', { count: candidateIds.length }),
       color: 'success',
     })
-  } catch (error) {
+  } catch (_error) {
     toast.add({
       title: t('candidate.error.bulk-invite-failed'),
       description: t('candidate.error.bulk-invite-failed-description'),
@@ -232,7 +232,7 @@ const handleBulkDelete = async (candidateIds: string[]) => {
       color: 'success',
     })
     await loadCandidates()
-  } catch (error) {
+  } catch (_error) {
     toast.add({
       title: t('candidate.error.bulk-delete-failed'),
       description: t('candidate.error.bulk-delete-failed-description'),

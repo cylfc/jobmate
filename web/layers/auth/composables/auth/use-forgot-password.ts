@@ -19,7 +19,7 @@ export function useForgotPassword() {
       .email(t('auth.validation.email-invalid')),
   })
 
-  async function handleSubmit(event: FormSubmitEvent<ForgotPasswordInput>) {
+  async function handleSubmit(_event: FormSubmitEvent<ForgotPasswordInput>) {
     isLoading.value = true
 
     try {
@@ -39,7 +39,7 @@ export function useForgotPassword() {
         description: t('auth.forgot-password-success-description', 'Vui lòng kiểm tra hộp thư của bạn để đặt lại mật khẩu'),
         color: 'success',
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.add({
         title: t('auth.forgot-password-error-title', 'Gửi email thất bại'),
         description: error.message || t('auth.forgot-password-error-description', 'Có lỗi xảy ra khi gửi email'),

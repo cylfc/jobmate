@@ -158,7 +158,7 @@ const handleSubmit = async () => {
       description: t('setting.profile.success.description'),
       color: 'success',
     })
-  } catch (error) {
+  } catch (_error) {
     toast.add({
       title: t('setting.profile.error.title'),
       description: t('setting.profile.error.description'),

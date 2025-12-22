@@ -6,6 +6,24 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { ComposeOption } from 'echarts/core'
+import type { BarSeriesOption, LineSeriesOption, PieSeriesOption } from 'echarts/charts'
+import type { TooltipComponentOption, LegendComponentOption, GridComponentOption } from 'echarts/components'
+import {
+  CHART_AXIS_TYPE,
+  CHART_SERIES_TYPE,
+  TOOLTIP_TRIGGER,
+  SYMBOL_TYPE,
+  CHART_COLORS,
+  CHART_DIMENSIONS,
+  CHART_GRID,
+  CHART_TYPOGRAPHY,
+  CHART_CALCULATION,
+  CHART_GRADIENT,
+  DEFAULT_CHART_COLORS,
+} from '../../constants/chart'
+
+type ECOption = ComposeOption<BarSeriesOption | LineSeriesOption | PieSeriesOption | TooltipComponentOption | LegendComponentOption | GridComponentOption>
 
 export interface LineChartSeries {
   name: string
@@ -54,22 +72,14 @@ const props = withDefaults(
     items: () => [],
     series: () => [],
     labels: () => [],
-    height: '300px',
+    height: CHART_DIMENSIONS.DEFAULT_HEIGHT,
     area: false,
     yAxisMax: undefined,
     valueFormatter: (v: number) => String(v),
   }
 )
 
-const defaultColors = [
-  '#c6613f',
-  'var(--color-sky-500)',
-  'var(--color-emerald-500)',
-  'var(--color-amber-500)',
-  'var(--color-rose-500)',
-]
-
-const option = computed<ECOption>(() => {
+const option = computed(() => {
   let xAxisLabels: string[] = []
   let seriesData: LineChartSeries[] = []
 
@@ -80,71 +90,85 @@ const option = computed<ECOption>(() => {
     seriesData = Array.from({ length: seriesCount }, (_, idx) => ({
       name: `Series ${idx + 1}`,
       data: props.items.map((item) => item.values[idx] ?? 0),
-      color: defaultColors[idx % defaultColors.length],
+      color: DEFAULT_CHART_COLORS[idx % DEFAULT_CHART_COLORS.length],
     }))
   } else if (props.series.length > 0 && props.labels.length > 0) {
     xAxisLabels = props.labels
     seriesData = props.series.map((s, idx) => ({
       ...s,
-      color: s.color ?? defaultColors[idx % defaultColors.length],
+      color: s.color ?? DEFAULT_CHART_COLORS[idx % DEFAULT_CHART_COLORS.length],
     }))
   }
 
   const allValues = seriesData.flatMap((s) => s.data)
-  const maxValue = props.yAxisMax ?? Math.max(...allValues, 0) * 1.1
+  const maxValue = props.yAxisMax ?? Math.max(...allValues, 0) * CHART_CALCULATION.MAX_VALUE_MULTIPLIER
 
   return {
-    grid: { left: 12, right: 12, top: 10, bottom: 24, containLabel: true },
+    grid: {
+      left: CHART_GRID.LEFT_SMALL,
+      right: CHART_GRID.RIGHT,
+      top: CHART_GRID.TOP,
+      bottom: CHART_GRID.BOTTOM,
+      containLabel: true,
+    },
     xAxis: {
-      type: 'category',
+      type: CHART_AXIS_TYPE.CATEGORY,
       data: xAxisLabels,
       axisTick: { show: false },
       axisLine: { show: false },
-      axisLabel: { color: '#6b7280', fontSize: 11 },
+      axisLabel: { color: CHART_COLORS.GRAY_500, fontSize: CHART_TYPOGRAPHY.FONT_SIZE_SMALL },
     },
     yAxis: {
-      type: 'value',
+      type: CHART_AXIS_TYPE.VALUE,
       max: maxValue,
       axisLine: { show: false },
       axisTick: { show: false },
-      splitLine: { lineStyle: { color: 'rgba(148,163,184,0.25)' } },
+      splitLine: { lineStyle: { color: CHART_COLORS.SPLIT_LINE } },
       axisLabel: {
-        color: '#6b7280',
-        fontSize: 11,
+        color: CHART_COLORS.GRAY_500,
+        fontSize: CHART_TYPOGRAPHY.FONT_SIZE_SMALL,
         formatter: props.valueFormatter,
       },
     },
     tooltip: {
-      trigger: 'axis',
-      valueFormatter: props.valueFormatter,
+      trigger: TOOLTIP_TRIGGER.AXIS,
+      valueFormatter: ((value: any, dataIndex: number) => {
+        const numValue = Array.isArray(value) ? value[0] : value
+        return props.valueFormatter(typeof numValue === 'number' ? numValue : 0)
+      }) as any,
     },
-    legend: seriesData.length > 1 ? { show: true, top: 0, textStyle: { fontSize: 11 } } : { show: false },
-    series: seriesData.map((s) => ({
-      name: s.name,
-      type: 'line',
-      data: s.data,
-      smooth: true,
-      symbol: 'circle',
-      symbolSize: 6,
-      lineStyle: { color: s.color, width: 2 },
-      itemStyle: { color: s.color },
-      areaStyle: props.area
-        ? {
-            color: {
-              type: 'linear',
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
-              colorStops: [
-                { offset: 0, color: s.color },
-                { offset: 1, color: 'transparent' },
-              ],
-            },
-          }
-        : undefined,
-    })),
-  }
-})
+    legend: seriesData.length > 1
+      ? { show: true, top: 0, textStyle: { fontSize: CHART_TYPOGRAPHY.FONT_SIZE_SMALL } }
+      : { show: false },
+    series: seriesData.map((s) => {
+      const color = s.color || DEFAULT_CHART_COLORS[0]
+      return {
+        name: s.name,
+        type: CHART_SERIES_TYPE.LINE,
+        data: s.data,
+        smooth: true,
+        symbol: SYMBOL_TYPE.CIRCLE,
+        symbolSize: CHART_DIMENSIONS.SYMBOL_SIZE,
+        lineStyle: { color, width: CHART_DIMENSIONS.LINE_WIDTH },
+        itemStyle: { color },
+        areaStyle: props.area
+          ? {
+              color: {
+                type: 'linear',
+                x: CHART_GRADIENT.LINEAR_X,
+                y: CHART_GRADIENT.LINEAR_Y,
+                x2: CHART_GRADIENT.LINEAR_X2,
+                y2: CHART_GRADIENT.LINEAR_Y2,
+                colorStops: [
+                  { offset: CHART_GRADIENT.COLOR_STOP_START, color },
+                  { offset: CHART_GRADIENT.COLOR_STOP_END, color: CHART_COLORS.TRANSPARENT },
+                ],
+              },
+            }
+          : undefined,
+      }
+    }),
+  } as ECOption
+}) as any
 </script>
 

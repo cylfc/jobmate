@@ -42,7 +42,7 @@ export function useRegister() {
       path: ['confirmPassword'],
     })
 
-  async function handleSubmit(event: FormSubmitEvent<RegisterInput>) {
+  async function handleSubmit(_event: FormSubmitEvent<RegisterInput>) {
     isLoading.value = true
 
     try {
@@ -68,7 +68,7 @@ export function useRegister() {
 
       // Redirect to login
       await router.push('/auth/login')
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.add({
         title: t('auth.register-error-title', 'Đăng ký thất bại'),
         description: error.message || t('auth.register-error-description', 'Có lỗi xảy ra khi đăng ký'),

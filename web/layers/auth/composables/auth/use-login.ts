@@ -23,7 +23,7 @@ export function useLogin() {
       .min(6, t('auth.validation.password-min', { min: 6 })),
   })
 
-  async function handleSubmit(event: FormSubmitEvent<LoginInput>) {
+  async function handleSubmit(_event: FormSubmitEvent<LoginInput>) {
     isLoading.value = true
 
     try {
@@ -44,7 +44,7 @@ export function useLogin() {
 
       // Redirect to dashboard
       await router.push('/dashboard')
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.add({
         title: t('auth.login-error-title', 'Đăng nhập thất bại'),
         description: error.message || t('auth.login-error-description', 'Email hoặc mật khẩu không đúng'),

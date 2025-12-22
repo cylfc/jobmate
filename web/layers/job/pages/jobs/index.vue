@@ -74,7 +74,7 @@ const loadJobs = async () => {
   try {
     const data = await getJobs(filters.value)
     jobs.value = data
-  } catch (error) {
+  } catch (_error) {
     toast.add({
       title: t('job.error.load-failed'),
       description: t('job.error.load-failed-description'),
@@ -140,7 +140,7 @@ const handleCreateJob = async (input: CreateJobInput) => {
     })
     showCreateModal.value = false
     await loadJobs()
-  } catch (error) {
+  } catch (_error) {
     toast.add({
       title: t('job.error.create-failed'),
       description: t('job.error.create-failed-description'),
@@ -171,7 +171,7 @@ const handleDelete = async (job: Job) => {
       color: 'success',
     })
     await loadJobs()
-  } catch (error) {
+  } catch (_error) {
     toast.add({
       title: t('job.error.delete-failed'),
       description: t('job.error.delete-failed-description'),
@@ -201,7 +201,7 @@ const handleBulkDelete = async (jobIds: string[]) => {
       color: 'success',
     })
     await loadJobs()
-  } catch (error) {
+  } catch (_error) {
     toast.add({
       title: t('job.error.bulk-delete-failed'),
       description: t('job.error.bulk-delete-failed-description'),

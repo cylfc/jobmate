@@ -6,6 +6,23 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { ComposeOption } from 'echarts/core'
+import type { BarSeriesOption, LineSeriesOption, PieSeriesOption } from 'echarts/charts'
+import type { TooltipComponentOption, LegendComponentOption, GridComponentOption } from 'echarts/components'
+import {
+  CHART_AXIS_TYPE,
+  CHART_SERIES_TYPE,
+  TOOLTIP_TRIGGER,
+  AXIS_POINTER_TYPE,
+  CHART_COLORS,
+  CHART_DIMENSIONS,
+  CHART_GRID,
+  CHART_TYPOGRAPHY,
+  CHART_BORDER_RADIUS,
+  CHART_CALCULATION,
+} from '../../constants/chart'
+
+type ECOption = ComposeOption<BarSeriesOption | LineSeriesOption | PieSeriesOption | TooltipComponentOption | LegendComponentOption | GridComponentOption>
 
 export interface BarChartItem {
   label: string
@@ -38,99 +55,117 @@ const props = withDefaults(
   }>(),
   {
     items: () => [],
-    height: '300px',
-    color: '#c6613f',
+    height: CHART_DIMENSIONS.DEFAULT_HEIGHT,
+    color: CHART_COLORS.BRAND_500,
     horizontal: false,
     yAxisMax: undefined,
     valueFormatter: (v: number) => String(v),
   }
 )
 
-const option = computed<ECOption>(() => {
+const option = computed(() => {
   const labels = props.items.map((item) => item.label)
   const values = props.items.map((item) => item.value)
 
-  const maxValue = props.yAxisMax ?? Math.max(...values, 0) * 1.1
+  const maxValue = props.yAxisMax ?? Math.max(...values, 0) * CHART_CALCULATION.MAX_VALUE_MULTIPLIER
 
   if (props.horizontal) {
     return {
-      grid: { left: 80, right: 12, top: 10, bottom: 24, containLabel: true },
+      grid: {
+        left: CHART_GRID.LEFT_LARGE,
+        right: CHART_GRID.RIGHT,
+        top: CHART_GRID.TOP,
+        bottom: CHART_GRID.BOTTOM,
+        containLabel: true,
+      },
       xAxis: {
-        type: 'value',
+        type: CHART_AXIS_TYPE.VALUE,
         max: maxValue,
         axisLine: { show: false },
         axisTick: { show: false },
-        splitLine: { lineStyle: { color: 'rgba(148,163,184,0.25)' } },
+        splitLine: { lineStyle: { color: CHART_COLORS.SPLIT_LINE } },
         axisLabel: {
-          color: '#6b7280',
-          fontSize: 11,
+          color: CHART_COLORS.GRAY_500,
+          fontSize: CHART_TYPOGRAPHY.FONT_SIZE_SMALL,
           formatter: props.valueFormatter,
         },
       },
       yAxis: {
-        type: 'category',
+        type: CHART_AXIS_TYPE.CATEGORY,
         data: labels,
         axisTick: { show: false },
         axisLine: { show: false },
-        axisLabel: { color: '#6b7280', fontSize: 11 },
+        axisLabel: { color: CHART_COLORS.GRAY_500, fontSize: CHART_TYPOGRAPHY.FONT_SIZE_SMALL },
       },
       tooltip: {
-        trigger: 'axis',
-        axisPointer: { type: 'shadow' },
-        valueFormatter: props.valueFormatter,
+        trigger: TOOLTIP_TRIGGER.AXIS,
+        axisPointer: { type: AXIS_POINTER_TYPE.SHADOW },
+        valueFormatter: ((value: any, dataIndex: number) => {
+          const numValue = Array.isArray(value) ? value[0] : value
+          return props.valueFormatter(typeof numValue === 'number' ? numValue : 0)
+        }) as any,
       },
       series: [
         {
-          type: 'bar',
+          type: CHART_SERIES_TYPE.BAR,
           data: values,
-          barMaxWidth: 32,
+          barMaxWidth: CHART_DIMENSIONS.BAR_MAX_WIDTH,
           itemStyle: {
             color: props.color,
-            borderRadius: [0, 6, 6, 0],
+            borderRadius: CHART_BORDER_RADIUS.BAR_HORIZONTAL,
           },
         },
       ],
-    }
+    } as ECOption
   }
 
   return {
-    grid: { left: 12, right: 12, top: 10, bottom: 24, containLabel: true },
+    grid: {
+      left: CHART_GRID.LEFT_SMALL,
+      right: CHART_GRID.RIGHT,
+      top: CHART_GRID.TOP,
+      bottom: CHART_GRID.BOTTOM,
+      containLabel: true,
+    },
     xAxis: {
-      type: 'category',
+      type: CHART_AXIS_TYPE.CATEGORY,
       data: labels,
       axisTick: { show: false },
       axisLine: { show: false },
-      axisLabel: { color: '#6b7280', fontSize: 11 },
+      axisLabel: { color: CHART_COLORS.GRAY_500, fontSize: CHART_TYPOGRAPHY.FONT_SIZE_SMALL },
     },
     yAxis: {
-      type: 'value',
+      type: CHART_AXIS_TYPE.VALUE,
       max: maxValue,
       axisLine: { show: false },
       axisTick: { show: false },
-      splitLine: { lineStyle: { color: 'rgba(148,163,184,0.25)' } },
+      splitLine: { lineStyle: { color: CHART_COLORS.SPLIT_LINE } },
       axisLabel: {
-        color: '#6b7280',
-        fontSize: 11,
+        color: CHART_COLORS.GRAY_500,
+        fontSize: CHART_TYPOGRAPHY.FONT_SIZE_SMALL,
         formatter: props.valueFormatter,
       },
     },
     tooltip: {
-      trigger: 'axis',
-      axisPointer: { type: 'shadow' },
-      valueFormatter: props.valueFormatter,
+      trigger: TOOLTIP_TRIGGER.AXIS,
+      axisPointer: { type: AXIS_POINTER_TYPE.SHADOW },
+      valueFormatter: ((value: any, dataIndex: number) => {
+        const numValue = Array.isArray(value) ? value[0] : value
+        return props.valueFormatter(typeof numValue === 'number' ? numValue : 0)
+      }) as any,
     },
     series: [
       {
-        type: 'bar',
+        type: CHART_SERIES_TYPE.BAR,
         data: values,
-        barMaxWidth: 32,
+        barMaxWidth: CHART_DIMENSIONS.BAR_MAX_WIDTH,
         itemStyle: {
           color: props.color,
-          borderRadius: [6, 6, 0, 0],
+          borderRadius: CHART_BORDER_RADIUS.BAR_VERTICAL,
         },
       },
     ],
-  }
-})
+  } as ECOption
+}) as any
 </script>
 
