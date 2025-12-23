@@ -17,6 +17,7 @@
         <ChatMessages
           :messages="[...chat.messages.value]"
           @component-update="handleComponentUpdate"
+          @component-action="handleComponentAction"
         />
       </div>
 
@@ -109,5 +110,36 @@ const handlePurposeSelect = (purpose: ChatFeature) => {
 
 const handleComponentUpdate = (messageId: string, data: any) => {
   chat.handleComponentUpdate(messageId, data);
+};
+
+const handleComponentAction = (messageId: string, action: string) => {
+  if (action === 'back') {
+    // Go back to previous step
+    const currentStepIndex = chat.context.value?.data?.stepIndex || 0
+    if (currentStepIndex > 0) {
+      chat.context.value = {
+        ...chat.context.value!,
+        data: {
+          ...chat.context.value!.data,
+          stepIndex: currentStepIndex - 1,
+        },
+      }
+      // Reload the previous step message
+      const script = chat.currentHandler.value?.getScript?.()
+      if (script && script.steps[currentStepIndex - 1]) {
+        const prevStep = script.steps[currentStepIndex - 1]
+        chat.messages.value.push({
+          id: `msg-${Date.now()}`,
+          role: 'assistant',
+          content: prevStep.message,
+          timestamp: new Date(),
+          component: prevStep.component,
+        })
+      }
+    }
+  } else if (action === 'clear') {
+    // Clear current step data - handled by component itself
+    // This is mainly for UI feedback
+  }
 };
 </script>

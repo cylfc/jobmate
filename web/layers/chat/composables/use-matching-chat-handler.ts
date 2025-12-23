@@ -261,14 +261,22 @@ export const useMatchingChatHandler = (): ChatHandler => {
       }
     }
 
-    // Create job from uploaded file
-    const job: Job = {
-      title: files[0].name.split('.')[0],
+    // Support multiple JDs for matching candidate with job scenario
+    // Create jobs from uploaded files
+    const jobs: Job[] = files.map((file) => ({
+      title: file.name.split('.')[0],
       description: '',
-      file: files[0],
+      file,
       status: 'draft',
+    }))
+    
+    // Store all jobs (for multiple JD scenario)
+    state.selectedJob.value = jobs[0] // Keep first for backward compatibility
+    chatContext.data = {
+      ...chatContext.data,
+      jobFiles: files, // Store all files
+      jobs, // Store all jobs
     }
-    state.selectedJob.value = job
 
     const script = createMatchingScript()
     const nextStepIndex = 2
@@ -396,6 +404,14 @@ export const useMatchingChatHandler = (): ChatHandler => {
         content: 'Vui lòng chọn file để upload.',
         timestamp: new Date(),
       }
+    }
+
+    // Support multiple CVs for matching job with candidate scenario
+    // Note: For matching candidate with job, only 1 candidate is allowed
+    // Store all CV files
+    chatContext.data = {
+      ...chatContext.data,
+      candidateFiles: files,
     }
 
     // Create candidates from uploaded files

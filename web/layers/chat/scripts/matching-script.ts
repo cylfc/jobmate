@@ -19,6 +19,9 @@ export const createMatchingScript = (): ChatScript => {
               { value: 'source', label: 'Chọn từ database', icon: 'i-lucide-database' },
               { value: 'upload', label: 'Upload file', icon: 'i-lucide-file-up' },
             ],
+            // Matching candidate with job: can select multiple JDs
+            multiple: true,
+            accept: '.pdf,.doc,.docx,.txt',
           },
         },
         validation: (data: any) => {
@@ -49,7 +52,10 @@ export const createMatchingScript = (): ChatScript => {
               { value: 'source', label: 'Chọn từ database', icon: 'i-lucide-database' },
               { value: 'upload', label: 'Upload CV', icon: 'i-lucide-file-up' },
             ],
+            // Matching job with candidate: can select multiple CVs, but only 1 JD
+            // Note: For matching candidate with job scenario, only 1 candidate is allowed
             multiple: true,
+            accept: '.pdf,.doc,.docx,.txt',
           },
         },
         validation: (data: any) => {

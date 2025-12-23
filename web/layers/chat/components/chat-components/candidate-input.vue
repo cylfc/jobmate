@@ -23,20 +23,35 @@
         Chọn từ database
       </UButton>
     </div>
+
+    <!-- Step action buttons -->
+    <StepActionButtons
+      :show-clear="true"
+      :show-back="showBack"
+      clear-label="Xóa nội dung"
+      @clear="handleClear"
+      @back="handleBack"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import StepActionButtons from './step-action-buttons.vue'
+
 interface Props {
   value?: string
+  showBack?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   value: '',
+  showBack: true,
 })
 
 const emit = defineEmits<{
   (e: 'update', data: { candidateText?: string; useDatabase?: boolean }): void
+  (e: 'clear'): void
+  (e: 'back'): void
 }>()
 
 const candidateText = ref(props.value)
@@ -51,6 +66,15 @@ const handleSubmit = () => {
 
 const handleUseDatabase = () => {
   emit('update', { useDatabase: true })
+}
+
+const handleClear = () => {
+  candidateText.value = ''
+  emit('clear')
+}
+
+const handleBack = () => {
+  emit('back')
 }
 </script>
 

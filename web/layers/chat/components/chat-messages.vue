@@ -23,6 +23,8 @@
             :is="getComponent(message)"
             v-bind="getComponentProps(message)"
             @update="(data) => handleComponentUpdate(message, data)"
+            @clear="() => handleComponentAction(message, 'clear')"
+            @back="() => handleComponentAction(message, 'back')"
           />
         </div>
         <div v-else class="text-pretty whitespace-pre-wrap">
@@ -76,6 +78,7 @@ const chat = useChat();
 
 const emit = defineEmits<{
   (e: "component-update", messageId: string, data: any): void;
+  (e: "component-action", messageId: string, action: string): void;
 }>();
 
 const hasCustomComponent = (message: any): boolean => {
@@ -108,6 +111,10 @@ const getComponentProps = (message: any) => {
 
 const handleComponentUpdate = (message: any, data: any) => {
   emit("component-update", message.id, data);
+};
+
+const handleComponentAction = (message: any, action: string) => {
+  emit("component-action", message.id, action);
 };
 
 const formattedMessages = computed(() => {
