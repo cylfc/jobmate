@@ -8,19 +8,16 @@
 </template>
 
 <script setup lang="ts">
-import { useMatchingState } from '@matching/composables/use-matching-state'
 import { initChatSetup, useChatSetup } from '@chat/composables/use-chat-setup'
 import { useChatHandlers } from '@chat/composables/use-chat-handlers'
+import { useChat } from '@chat/composables/use-chat'
 import type { ChatFeature } from '@chat/types/chat'
-
-const { t } = useI18n()
 
 definePageMeta({
   layout: 'dashboard',
 })
 
 const route = useRoute()
-const router = useRouter()
 
 const chatSetup = useChatSetup()
 const chatHandlers = useChatHandlers()
