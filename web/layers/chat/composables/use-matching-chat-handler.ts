@@ -24,7 +24,7 @@ export const useMatchingChatHandler = (): ChatHandler => {
   }
 
   const getInitialMessageWithComponent = (): ChatMessage => {
-    const script = createMatchingScript()
+    const script = createMatchingScript(t)
     const firstStep = script.steps[0]
     return {
       id: `msg-${Date.now()}`,
@@ -67,12 +67,12 @@ export const useMatchingChatHandler = (): ChatHandler => {
   }
 
   const getScript = () => {
-    return createMatchingScript()
+    return createMatchingScript(t)
   }
 
   const handleMessage = async (message: string, chatContext: ChatContext): Promise<ChatMessage | null> => {
     const currentStepIndex = chatContext.data?.stepIndex || 0
-    const script = createMatchingScript()
+    const script = createMatchingScript(t)
     const currentStep = script.steps[currentStepIndex]
     const stepId = currentStep?.id || ''
 
@@ -129,7 +129,7 @@ export const useMatchingChatHandler = (): ChatHandler => {
     chatContext: ChatContext
   ): Promise<ChatMessage | null> => {
     const currentStepIndex = chatContext.data?.stepIndex || 0
-    const script = createMatchingScript()
+    const script = createMatchingScript(t)
     const currentStep = script.steps[currentStepIndex]
     const stepId = currentStep?.id || ''
 
@@ -175,7 +175,7 @@ export const useMatchingChatHandler = (): ChatHandler => {
     data: any,
     chatContext: ChatContext
   ): Promise<ChatMessage | null> => {
-    const script = createMatchingScript()
+    const script = createMatchingScript(t)
     const method = data.method
 
     // Store method in context
@@ -222,7 +222,9 @@ export const useMatchingChatHandler = (): ChatHandler => {
       return {
         id: `msg-${Date.now()}`,
         role: 'assistant',
-        content: 'Vui lòng chọn ít nhất một job từ database.',
+        content: t('chat.matching.step-1.input-required', {
+          defaultValue: 'Vui lòng chọn ít nhất một job từ database.',
+        }),
         timestamp: new Date(),
       }
     }
@@ -231,7 +233,7 @@ export const useMatchingChatHandler = (): ChatHandler => {
     const selectedJob = items[0]
     state.selectedJob.value = selectedJob
 
-    const script = createMatchingScript()
+    const script = createMatchingScript(t)
     const nextStepIndex = 2
     chatContext.data = {
       ...chatContext.data,
@@ -256,7 +258,9 @@ export const useMatchingChatHandler = (): ChatHandler => {
       return {
         id: `msg-${Date.now()}`,
         role: 'assistant',
-        content: 'Vui lòng chọn file để upload.',
+        content: t('chat.components.file-upload.select-file', {
+          defaultValue: 'Vui lòng chọn file để upload.',
+        }),
         timestamp: new Date(),
       }
     }
@@ -278,7 +282,7 @@ export const useMatchingChatHandler = (): ChatHandler => {
       jobs, // Store all jobs
     }
 
-    const script = createMatchingScript()
+    const script = createMatchingScript(t)
     const nextStepIndex = 2
     chatContext.data = {
       ...chatContext.data,
@@ -303,7 +307,7 @@ export const useMatchingChatHandler = (): ChatHandler => {
 
     if (job) {
       state.selectedJob.value = job
-      const script = createMatchingScript()
+      const script = createMatchingScript(t)
       const nextStepIndex = 2
       chatContext.data = {
         ...chatContext.data,
@@ -334,7 +338,7 @@ export const useMatchingChatHandler = (): ChatHandler => {
     data: any,
     chatContext: ChatContext
   ): Promise<ChatMessage | null> => {
-    const script = createMatchingScript()
+    const script = createMatchingScript(t)
     const method = data.method
 
     chatContext.data = {
@@ -377,14 +381,16 @@ export const useMatchingChatHandler = (): ChatHandler => {
       return {
         id: `msg-${Date.now()}`,
         role: 'assistant',
-        content: 'Vui lòng chọn ít nhất một ứng viên từ database.',
+        content: t('chat.matching.step-2.input-required', {
+          defaultValue: 'Vui lòng chọn ít nhất một ứng viên từ database.',
+        }),
         timestamp: new Date(),
       }
     }
 
     state.selectedCandidates.value = items
 
-    const script = createMatchingScript()
+    const script = createMatchingScript(t)
     const nextStepIndex = 4
     chatContext.data = {
       ...chatContext.data,
@@ -401,7 +407,9 @@ export const useMatchingChatHandler = (): ChatHandler => {
       return {
         id: `msg-${Date.now()}`,
         role: 'assistant',
-        content: 'Vui lòng chọn file để upload.',
+        content: t('chat.components.file-upload.select-file', {
+          defaultValue: 'Vui lòng chọn file để upload.',
+        }),
         timestamp: new Date(),
       }
     }
@@ -425,7 +433,7 @@ export const useMatchingChatHandler = (): ChatHandler => {
     }))
     state.selectedCandidates.value = candidates
 
-    const script = createMatchingScript()
+    const script = createMatchingScript(t)
     const nextStepIndex = 4
     chatContext.data = {
       ...chatContext.data,
@@ -442,7 +450,7 @@ export const useMatchingChatHandler = (): ChatHandler => {
 
     if (candidates && candidates.length > 0) {
       state.selectedCandidates.value = candidates
-      const script = createMatchingScript()
+      const script = createMatchingScript(t)
       const nextStepIndex = 4
       chatContext.data = {
         ...chatContext.data,
@@ -612,7 +620,7 @@ export const useMatchingChatHandler = (): ChatHandler => {
         }
       }
 
-      const script = createMatchingScript()
+      const script = createMatchingScript(t)
       const nextStep = script.steps[1]
       return {
         id: `msg-${Date.now()}`,
@@ -690,7 +698,7 @@ export const useMatchingChatHandler = (): ChatHandler => {
         }
       }
 
-      const script = createMatchingScript()
+      const script = createMatchingScript(t)
       const nextStep = script.steps[2]
       return {
         id: `msg-${Date.now()}`,

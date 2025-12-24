@@ -1,9 +1,9 @@
 <template>
   <div class="space-y-4">
-    <UFormField label="Nhập thông tin công việc">
+    <UFormField :label="$t('chat.components.job-input.label')">
       <UTextarea
         v-model="jobText"
-        placeholder="Dán mô tả công việc hoặc link đến job posting..."
+        :placeholder="$t('chat.components.job-input.placeholder')"
         :rows="8"
       />
     </UFormField>
@@ -14,13 +14,13 @@
         :disabled="!jobText.trim()"
         @click="handleSubmit"
       >
-        Xác nhận
+        {{ $t('chat.components.job-input.confirm') }}
       </UButton>
       <UButton
         variant="outline"
         @click="handleUseDatabase"
       >
-        Chọn từ database
+        {{ $t('chat.components.job-input.select-database') }}
       </UButton>
     </div>
 
@@ -28,7 +28,7 @@
     <StepActionButtons
       :show-clear="true"
       :show-back="showBack"
-      clear-label="Xóa nội dung"
+      :clear-label="$t('chat.components.job-input.clear-content')"
       @clear="handleClear"
       @back="handleBack"
     />

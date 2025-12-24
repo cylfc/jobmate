@@ -2,26 +2,29 @@
   <div class="space-y-6">
     <div>
       <h1 class="text-3xl font-bold text-default">
-        {{ t('setting.title') }}
+        {{ t("setting.title") }}
       </h1>
       <p class="mt-2 text-sm text-muted">
-        {{ t('setting.subtitle') }}
+        {{ t("setting.subtitle") }}
       </p>
     </div>
 
-    <div class="flex flex-row justify-start items-stretch gap-4">
-      <UTabs
-        v-model="selectedTab"
-        :items="tabs"
-        orientation="vertical"
-        class="w-64 flex-shrink-0 flex justify-start items-start"
-        :ui="{
-          list: 'items-stretch',
-          leadingIcon: 'size-4',
-        }"
-      />
+    <div class="grid grid-cols-1 lg:grid-cols-4 justify-start items-stretch gap-4">
+      <div class="lg:col-span-1">
+        <UTabs
+          v-model="selectedTab"
+          :items="tabs"
+          orientation="vertical"
+          class="w-full items-stretch gap-0"
+          :ui="{
+            list: 'items-stretch w-full justify-start',
+            leadingIcon: 'size-4',
+            content: 'hidden'
+          }"
+        />
+      </div>
 
-      <div class="flex-1">
+      <div class="flex-1 lg:col-span-3">
         <SettingsProfile v-if="selectedTab === 'profile'" />
         <SettingsSecurity v-else-if="selectedTab === 'security'" />
         <SettingsNotification v-else-if="selectedTab === 'notification'" />
@@ -32,23 +35,26 @@
 </template>
 
 <script setup lang="ts">
-const { t } = useI18n()
-const route = useRoute()
-const router = useRouter()
+const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
 
 definePageMeta({
-  layout: 'dashboard',
-})
+  layout: "dashboard",
+});
 
 // Get initial tab from query params or default to 'profile'
-const selectedTab = ref((route.query.tab as string) || 'profile')
+const selectedTab = ref((route.query.tab as string) || "profile");
 
 // Watch for tab changes in query params
-watch(() => route.query.tab, (newTab) => {
-  if (newTab && typeof newTab === 'string') {
-    selectedTab.value = newTab
+watch(
+  () => route.query.tab,
+  (newTab) => {
+    if (newTab && typeof newTab === "string") {
+      selectedTab.value = newTab;
+    }
   }
-})
+);
 
 // Watch for tab selection changes and update URL
 watch(selectedTab, (newTab) => {
@@ -57,29 +63,29 @@ watch(selectedTab, (newTab) => {
       ...route.query,
       tab: newTab,
     },
-  })
-})
+  });
+});
 
 const tabs = computed(() => [
   {
-    label: t('setting.profile.title'),
-    value: 'profile',
-    icon: 'i-lucide-user',
+    label: t("setting.profile.title"),
+    value: "profile",
+    icon: "i-lucide-user",
   },
   {
-    label: t('setting.security.title'),
-    value: 'security',
-    icon: 'i-lucide-lock',
+    label: t("setting.security.title"),
+    value: "security",
+    icon: "i-lucide-lock",
   },
   {
-    label: t('setting.notification.title'),
-    value: 'notification',
-    icon: 'i-lucide-bell',
+    label: t("setting.notification.title"),
+    value: "notification",
+    icon: "i-lucide-bell",
   },
   {
-    label: t('setting.system-config.title'),
-    value: 'system',
-    icon: 'i-lucide-settings',
+    label: t("setting.system-config.title"),
+    value: "system",
+    icon: "i-lucide-settings",
   },
-])
+]);
 </script>

@@ -767,12 +767,18 @@
       "step-1": {
         "prompt": "Please provide information about the job. You can:\n- Paste job description\n- Provide link to job posting\n- Select job from database",
         "no-jobs": "No jobs found in database. Please provide job information.",
-        "invalid": "I cannot parse job information from your message. Please try again with a clearer job description or link to job posting."
+        "invalid": "I cannot parse job information from your message. Please try again with a clearer job description or link to job posting.",
+        "message": "Please enter job details",
+        "input-message": "Please enter job information in the chat box below:",
+        "input-required": "Please provide job information"
       },
       "step-2": {
         "prompt": "Now please provide information about candidates. You can:\n- Paste candidate information\n- Upload CV\n- Select candidates from database",
         "no-candidates": "No candidates found in database. Please provide candidate information.",
-        "invalid": "I cannot parse candidate information from your message. Please try again with clearer candidate information."
+        "invalid": "I cannot parse candidate information from your message. Please try again with clearer candidate information.",
+        "message": "Please enter candidate information",
+        "input-message": "Please enter candidate information in the chat box below:",
+        "input-required": "Please provide candidate information"
       },
       "step-3": {
         "prompt": "Analyzing and matching...",
@@ -787,6 +793,41 @@
       "results": "Matching Results",
       "no-results": "No results yet",
       "error": "Sorry, an error occurred. Please try again."
+    },
+    "components": {
+      "file-upload": {
+        "upload": "Upload",
+        "accept-formats": "Accepted formats: {formats}",
+        "select-file": "Select file to upload"
+      },
+      "input-method": {
+        "select-method": "Select input method:",
+        "enter-info": "Please enter information in the chat box below and press Enter.",
+        "methods": {
+          "text": "Enter text",
+          "database": "Select from database",
+          "upload-file": "Upload file",
+          "upload-cv": "Upload CV"
+        }
+      },
+      "job-input": {
+        "label": "Enter job information",
+        "placeholder": "Paste job description or link to job posting...",
+        "confirm": "Confirm",
+        "select-database": "Select from database",
+        "clear-content": "Clear content"
+      },
+      "candidate-input": {
+        "label": "Enter candidate information",
+        "placeholder": "Paste candidate information or upload CV...",
+        "confirm": "Confirm",
+        "select-database": "Select from database",
+        "clear-content": "Clear content"
+      },
+      "step-actions": {
+        "clear": "Clear",
+        "back": "Back"
+      }
     }
   }
 }
