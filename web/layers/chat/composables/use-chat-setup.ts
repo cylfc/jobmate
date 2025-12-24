@@ -5,7 +5,7 @@ export interface ChatSetupConfig {
   status?: "submitted" | "streaming" | "ready" | "error";
   user?: {
     ui?: string;
-    variant?: "soft" | "outline" | "ghost" | "solid";
+    variant?: "soft" | "outline" | "solid" | "subtle" | "naked";
     icon?: string;
     avatar?: string;
     side?: "left" | "right";
@@ -13,7 +13,7 @@ export interface ChatSetupConfig {
   };
   assistant?: {
     ui?: string;
-    variant?: "soft" | "outline" | "ghost" | "solid";
+    variant?: "soft" | "outline" | "solid" | "subtle" | "naked";
     icon?: string;
     avatar?: string;
     side?: "left" | "right";

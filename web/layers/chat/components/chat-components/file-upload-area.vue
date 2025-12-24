@@ -20,7 +20,7 @@
           class="w-8 h-8 text-muted group-hover:text-primary transition-colors"
         />
         <span class="text-xs text-muted mt-1 group-hover:text-primary transition-colors">
-          Upload
+          {{ $t('chat.components.file-upload.upload') }}
         </span>
       </div>
 
@@ -56,7 +56,7 @@
       {{ hint }}
     </p>
     <p v-else class="text-xs text-muted">
-      Chấp nhận các định dạng: {{ accept }}
+      {{ $t('chat.components.file-upload.accept-formats', { formats: accept }) }}
     </p>
   </div>
 </template>

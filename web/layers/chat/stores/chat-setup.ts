@@ -25,7 +25,9 @@ export const useChatSetupStore = defineStore('chatSetup', {
     
     // User and Assistant configurations
     user: undefined as ChatSetupConfig['user'],
-    assistant: undefined as ChatSetupConfig['assistant'],
+    assistant: {
+      variant: 'soft',
+    } as ChatSetupConfig['assistant'],
     
     // UI customization
     ui: undefined as ChatSetupConfig['ui'],
@@ -46,25 +48,25 @@ export const useChatSetupStore = defineStore('chatSetup', {
       },
       {
         value: 'create-candidate',
-        label: 'Tạo ứng viên',
+        label: undefined,
         icon: 'i-lucide-user-plus',
         i18nKey: 'chat.purpose.create-candidate',
       },
       {
         value: 'create-job',
-        label: 'Tạo JD',
+        label: undefined,
         icon: 'i-lucide-briefcase',
         i18nKey: 'chat.purpose.create-job',
       },
       {
         value: 'create-company',
-        label: 'Tạo công ty',
+        label: undefined,
         icon: 'i-lucide-building',
         i18nKey: 'chat.purpose.create-company',
       },
       {
         value: 'general',
-        label: 'Tổng quát',
+        label: undefined,
         icon: 'i-lucide-message-circle',
         i18nKey: 'chat.purpose.general',
       },
@@ -249,7 +251,9 @@ export const useChatSetupStore = defineStore('chatSetup', {
       this.compact = false
       this.spacingOffset = 0
       this.user = undefined
-      this.assistant = undefined
+      this.assistant = {
+        variant: 'soft',
+      }
       this.ui = undefined
       this.displayMode = 'modal'
       this.selectedPurpose = 'matching'
@@ -262,19 +266,19 @@ export const useChatSetupStore = defineStore('chatSetup', {
         },
         {
           value: 'create-candidate',
-          label: 'Tạo ứng viên',
+          label: undefined,
           icon: 'i-lucide-user-plus',
           i18nKey: 'chat.purpose.create-candidate',
         },
         {
           value: 'create-job',
-          label: 'Tạo JD',
+          label: undefined,
           icon: 'i-lucide-briefcase',
           i18nKey: 'chat.purpose.create-job',
         },
         {
           value: 'create-company',
-          label: 'Tạo công ty',
+          label: undefined,
           icon: 'i-lucide-building',
           i18nKey: 'chat.purpose.create-company',
         },

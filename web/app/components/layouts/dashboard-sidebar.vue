@@ -67,7 +67,7 @@ const menuItems = computed<NavigationMenuItem[]>(() => [
       :items="menuItems"
       orientation="vertical"
       :ui="{
-        link: 'py-2'
+        link: 'py-2',
       }"
     />
   </div>

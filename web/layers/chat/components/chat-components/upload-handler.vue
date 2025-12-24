@@ -21,10 +21,12 @@ interface Props {
   hint?: string
 }
 
+const { t } = useI18n()
+
 const props = withDefaults(defineProps<Props>(), {
   accept: '.pdf,.doc,.docx,.txt',
   multiple: false,
-  label: 'Chọn file để upload',
+  label: undefined,
   hint: undefined,
 })
 

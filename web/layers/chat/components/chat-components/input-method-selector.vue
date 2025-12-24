@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-4">
     <p class="text-sm text-muted mb-4">
-      {{ message || 'Chọn phương thức nhập liệu:' }}
+      {{ message || $t('chat.components.input-method.select-method') }}
     </p>
 
     <div class="flex flex-wrap gap-2">
@@ -27,7 +27,7 @@
     </div>
     <div v-else-if="selectedMethod === 'prompt'" class="mt-4 p-4 bg-muted rounded-lg">
       <p class="text-sm text-muted">
-        Vui lòng nhập thông tin vào ô chat phía dưới và nhấn Enter.
+        {{ $t('chat.components.input-method.enter-info') }}
       </p>
     </div>
 
@@ -59,12 +59,14 @@ interface Props {
   showBack?: boolean
 }
 
+const { t } = useI18n()
+
 const props = withDefaults(defineProps<Props>(), {
-  message: 'Chọn phương thức nhập liệu:',
+  message: undefined,
   methods: () => [
-    { value: 'prompt', label: 'Nhập text', icon: 'i-lucide-pencil' },
-    { value: 'source', label: 'Chọn từ database', icon: 'i-lucide-database' },
-    { value: 'upload', label: 'Upload file', icon: 'i-lucide-file-up' },
+    { value: 'prompt', label: t('chat.components.input-method.methods.text'), icon: 'i-lucide-pencil' },
+    { value: 'source', label: t('chat.components.input-method.methods.database'), icon: 'i-lucide-database' },
+    { value: 'upload', label: t('chat.components.input-method.methods.upload-file'), icon: 'i-lucide-file-up' },
   ],
   defaultMethod: undefined,
   showBack: true,

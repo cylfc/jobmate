@@ -32,6 +32,9 @@ initChatSetup({
   spacingOffset: 0,
   displayMode: 'inline',
   selectedPurpose: 'matching',
+  assistant: {
+    variant: 'soft',
+  },
 })
 
 onMounted(() => {
