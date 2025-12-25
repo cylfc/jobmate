@@ -72,17 +72,32 @@ const shouldShow = computed(
 
 const isModalOpen = ref(false);
 
+// Initialize chat when modal opens or when purpose changes
+const initializeChatIfNeeded = () => {
+  const purpose = chatSetup.selectedPurpose.value;
+  // Only initialize if messages are empty or feature changed
+  if (chatComposable.messages.value.length === 0 || 
+      chatComposable.context.value?.feature !== purpose) {
+    const success = chatHandlers.initializeChatWithFeature(
+      purpose,
+      chatComposable.initializeChat
+    );
+    if (!success) {
+      console.error(`Failed to initialize chat with feature: ${purpose}`);
+    }
+  }
+};
+
 watch(isModalOpen, (open) => {
   if (open) {
-    const purpose = chatSetup.selectedPurpose.value;
-    // Only initialize if messages are empty or feature changed
-    if (chatComposable.messages.value.length === 0 || 
-        chatComposable.context.value?.feature !== purpose) {
-      chatHandlers.initializeChatWithFeature(
-        purpose,
-        chatComposable.initializeChat
-      );
-    }
+    initializeChatIfNeeded();
+  }
+});
+
+// Also watch for purpose changes to reinitialize if needed
+watch(() => chatSetup.selectedPurpose.value, () => {
+  if (isModalOpen.value) {
+    initializeChatIfNeeded();
   }
 });
 </script>
