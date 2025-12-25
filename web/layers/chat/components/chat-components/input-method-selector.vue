@@ -1,15 +1,11 @@
 <template>
   <div class="space-y-4">
-    <p class="text-sm text-muted mb-4">
-      {{ message || $t('chat.components.input-method.select-method') }}
-    </p>
-
     <div class="flex flex-wrap gap-2">
       <UButton
         v-for="method in methods"
         :key="method.value"
         :color="selectedMethod === method.value ? 'neutral' : 'neutral'"
-        :variant="selectedMethod === method.value ? 'soft' : 'outline'"
+        :variant="selectedMethod === method.value ? 'outline' : 'outline'"
         :icon="method.icon"
         @click="handleSelectMethod(method.value)"
       >
@@ -59,24 +55,28 @@ interface Props {
   showBack?: boolean
 }
 
-const { t } = useI18n()
-
 const props = withDefaults(defineProps<Props>(), {
   message: undefined,
-  methods: () => [
-    { value: 'prompt', label: t('chat.components.input-method.methods.text'), icon: 'i-lucide-pencil' },
-    { value: 'source', label: t('chat.components.input-method.methods.database'), icon: 'i-lucide-database' },
-    { value: 'upload', label: t('chat.components.input-method.methods.upload-file'), icon: 'i-lucide-file-up' },
-  ],
+  methods: undefined,
   defaultMethod: undefined,
   showBack: true,
 })
+
+const { t } = useI18n()
 
 const emit = defineEmits<{
   (e: 'update', data: { method: string; data?: any }): void
   (e: 'clear'): void
   (e: 'back'): void
 }>()
+
+const defaultMethods = computed(() => [
+  { value: 'prompt', label: t('chat.components.input-method.methods.text'), icon: 'i-lucide-pencil' },
+  { value: 'source', label: t('chat.components.input-method.methods.database'), icon: 'i-lucide-database' },
+  { value: 'upload', label: t('chat.components.input-method.methods.upload-file'), icon: 'i-lucide-file-up' },
+])
+
+const methods = computed(() => props.methods || defaultMethods.value)
 
 const selectedMethod = ref(props.defaultMethod || '')
 const uploadComponentRef = ref<any>(null)

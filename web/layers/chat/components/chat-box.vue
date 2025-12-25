@@ -83,6 +83,7 @@ const props = withDefaults(defineProps<Props>(), {
 const chat = useChat()
 const chatSetup = useChatSetup()
 const chatState = useChatState()
+const chatHandlers = useChatHandlers()
 
 const input = ref("");
 
@@ -91,6 +92,18 @@ const chatStatus = computed(() => {
     return "submitted" as const;
   }
   return "ready" as const;
+});
+
+// Initialize chat on mount if not already initialized
+onMounted(() => {
+  const purpose = chatSetup.selectedPurpose.value;
+  if (chat.messages.value.length === 0 || 
+      chat.context.value?.feature !== purpose) {
+    const success = chatHandlers.initializeChatWithFeature(purpose, chat.initializeChat);
+    if (!success) {
+      console.error(`Failed to initialize chat with feature: ${purpose} on mount`);
+    }
+  }
 });
 
 const handleSubmit = async (e: Event) => {
@@ -103,9 +116,15 @@ const handleSubmit = async (e: Event) => {
 
 const handlePurposeSelect = (purpose: ChatFeature) => {
   chatSetup.setSelectedPurpose(purpose);
-  const chatHandlers = useChatHandlers();
   // Always reinitialize when purpose changes
-  chatHandlers.initializeChatWithFeature(purpose, chat.initializeChat);
+  // Ensure handlers are ready before initializing
+  if (!chatHandlers.hasHandler(purpose)) {
+    console.warn(`Handler for feature ${purpose} not found. Attempting to initialize...`);
+  }
+  const success = chatHandlers.initializeChatWithFeature(purpose, chat.initializeChat);
+  if (!success) {
+    console.error(`Failed to initialize chat with feature: ${purpose}`);
+  }
 };
 
 const handleComponentUpdate = (messageId: string, data: any) => {
