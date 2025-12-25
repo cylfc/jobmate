@@ -43,6 +43,19 @@ export const useJob = () => {
     }
   }
 
+  const updateJob = async (id: string, input: Partial<CreateJobInput> & { status?: Job['status'] }): Promise<Job | null> => {
+    try {
+      const response = await $fetch<{ job: Job }>(`/api/jobs/${id}`, {
+        method: 'PUT',
+        body: input,
+      })
+      return response.job
+    } catch (error) {
+      console.error('Error updating job:', error)
+      throw error
+    }
+  }
+
   const deleteJob = async (id: string): Promise<void> => {
     try {
       await $fetch(`/api/jobs/${id}`, {
@@ -75,6 +88,7 @@ export const useJob = () => {
     getJobs,
     getJobById,
     createJob,
+    updateJob,
     deleteJob,
     parseJobFromText,
   }

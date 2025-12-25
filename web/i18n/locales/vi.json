@@ -827,6 +827,16 @@
       "step-actions": {
         "clear": "Xóa",
         "back": "Quay lại"
+      },
+      "source-table": {
+        "no-data": "Không tìm thấy dữ liệu nào",
+        "confirm": "Xác nhận ({count})",
+        "untitled-job": "Công việc chưa có tiêu đề",
+        "unknown": "Không xác định"
+      },
+      "messages": {
+        "thinking": "Đang suy nghĩ...",
+        "invalid-data": "Dữ liệu không hợp lệ"
       }
     }
   }

@@ -140,7 +140,9 @@ export const useMatchingChatHandler = (): ChatHandler => {
         return {
           id: `msg-${Date.now()}`,
           role: 'assistant',
-          content: typeof validationResult === 'string' ? validationResult : 'Dữ liệu không hợp lệ',
+          content: typeof validationResult === 'string' ? validationResult : t('chat.components.messages.invalid-data', {
+            defaultValue: 'Dữ liệu không hợp lệ',
+          }),
           timestamp: new Date(),
         }
       }

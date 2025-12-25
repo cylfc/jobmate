@@ -827,6 +827,16 @@
       "step-actions": {
         "clear": "Clear",
         "back": "Back"
+      },
+      "source-table": {
+        "no-data": "No data found",
+        "confirm": "Confirm ({count})",
+        "untitled-job": "Untitled Job",
+        "unknown": "Unknown"
+      },
+      "messages": {
+        "thinking": "Thinking...",
+        "invalid-data": "Invalid data"
       }
     }
   }
