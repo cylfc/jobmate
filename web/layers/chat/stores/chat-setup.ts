@@ -260,7 +260,7 @@ export const useChatSetupStore = defineStore('chatSetup', {
       this.purposes = [
         {
           value: 'matching',
-          label: 'Matching',
+          label: undefined,
           icon: 'i-lucide-users',
           i18nKey: 'chat.purpose.matching',
         },
@@ -284,7 +284,7 @@ export const useChatSetupStore = defineStore('chatSetup', {
         },
         {
           value: 'general',
-          label: 'Tổng quát',
+          label: undefined,
           icon: 'i-lucide-message-circle',
           i18nKey: 'chat.purpose.general',
         },

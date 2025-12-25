@@ -50,7 +50,7 @@
         variant="link"
         loading
         loading-icon="i-lucide-loader"
-        label="Thinking..."
+        :label="$t('chat.components.messages.thinking')"
       />
     </template>
 

@@ -5,7 +5,7 @@
     </div>
 
     <div v-else-if="items.length === 0" class="text-center p-8 text-muted">
-      <p>Không tìm thấy dữ liệu nào</p>
+      <p>{{ $t('chat.components.source-table.no-data') }}</p>
     </div>
 
     <div v-else class="space-y-2 max-h-96 overflow-y-auto">
@@ -34,7 +34,7 @@
       block
       @click="handleConfirm"
     >
-      Xác nhận ({{ selectedItems.length }})
+      {{ $t('chat.components.source-table.confirm', { count: selectedItems.length }) }}
     </UButton>
   </div>
 </template>
@@ -68,11 +68,13 @@ const getItemId = (item: any) => {
   return item.id || item.value || JSON.stringify(item)
 }
 
+const { t } = useI18n()
+
 const getItemTitle = (item: any) => {
   if (props.type === 'job') {
-    return item.title || item.label || 'Untitled Job'
+    return item.title || item.label || t('chat.components.source-table.untitled-job')
   }
-  return `${item.firstName || ''} ${item.lastName || ''}`.trim() || item.name || item.label || 'Unknown'
+  return `${item.firstName || ''} ${item.lastName || ''}`.trim() || item.name || item.label || t('chat.components.source-table.unknown')
 }
 
 const getItemSubtitle = (item: any) => {

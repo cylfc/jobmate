@@ -43,6 +43,19 @@ export const useCandidate = () => {
     }
   }
 
+  const updateCandidate = async (id: string, input: Partial<CreateCandidateInput> & { status?: Candidate['status'] }) => {
+    try {
+      const response = await $fetch<{ candidate: Candidate }>(`/api/candidates/${id}`, {
+        method: 'PUT',
+        body: input,
+      })
+      return response.candidate
+    } catch (error) {
+      console.error('Error updating candidate:', error)
+      throw error
+    }
+  }
+
   const deleteCandidate = async (id: string) => {
     try {
       await $fetch(`/api/candidates/${id}`, {
@@ -88,6 +101,7 @@ export const useCandidate = () => {
     getCandidates,
     getCandidateById,
     createCandidate,
+    updateCandidate,
     deleteCandidate,
     inviteCandidate,
     parseCandidateFromText,
