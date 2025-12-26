@@ -97,6 +97,21 @@ export const useCandidate = () => {
     }
   }
 
+  /**
+   * Get filter options for candidate filters
+   */
+  const getFilterOptions = async () => {
+    try {
+      const response = await $fetch<{ options: import('@candidate/types/candidate').CandidateFilterOptions }>('/api/candidates/filter-options', {
+        method: 'GET',
+      })
+      return response.options
+    } catch (error) {
+      console.error('Error fetching filter options:', error)
+      throw error
+    }
+  }
+
   return {
     getCandidates,
     getCandidateById,
@@ -105,6 +120,7 @@ export const useCandidate = () => {
     deleteCandidate,
     inviteCandidate,
     parseCandidateFromText,
+    getFilterOptions,
   }
 }
 

@@ -45,3 +45,21 @@ export interface CandidateFilter {
   maxExperience?: number
 }
 
+/**
+ * Filter option types
+ */
+export interface FilterOption {
+  label: string
+  value: string | number
+}
+
+export interface CandidateFilterOptions {
+  status: FilterOption[]
+  experienceRange: {
+    min: number
+    max: number
+    step?: number
+  }
+  skills?: FilterOption[]
+  companies?: FilterOption[]
+}
