@@ -194,6 +194,7 @@
 import { z } from 'zod'
 import type { CreateJobInput } from '@job/types/job'
 import { JOB_CREATE_MODE, type JobCreateMode } from '@job/constants/modes'
+import { useJob } from '@job/utils/job-api'
 
 interface Emits {
   (e: 'submit', value: CreateJobInput): void

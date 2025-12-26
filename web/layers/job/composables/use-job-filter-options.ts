@@ -1,18 +1,18 @@
 /**
- * Use Candidate Filter Options Composable
- * Manages filter options state for candidate filters
+ * Use Job Filter Options Composable
+ * Manages filter options state for job filters
  * Uses Layer 2: createSharedComposable for module-scoped state
  */
 import { createSharedComposable } from '@vueuse/core'
-import type { CandidateFilterOptions, FilterOption } from '@candidate/types/candidate'
-import { useCandidate } from '@candidate/utils/candidate-api'
+import type { JobFilterOptions, FilterOption } from '@job/types/job'
+import { useJob } from '@job/utils/job-api'
 
-const _useCandidateFilterOptions = () => {
-  const options = ref<CandidateFilterOptions | null>(null)
+const _useJobFilterOptions = () => {
+  const options = ref<JobFilterOptions | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
   
-  const candidateOps = useCandidate()
+  const jobOps = useJob()
   
   /**
    * Fetch filter options from API
@@ -26,7 +26,7 @@ const _useCandidateFilterOptions = () => {
     loading.value = true
     error.value = null
     try {
-      const data = await candidateOps.getFilterOptions()
+      const data = await jobOps.getFilterOptions()
       options.value = data
       return data
     } catch (e: unknown) {
@@ -46,24 +46,17 @@ const _useCandidateFilterOptions = () => {
   })
   
   /**
-   * Get experience range
-   */
-  const experienceRange = computed(() => {
-    return options.value?.experienceRange || { min: 0, max: 30, step: 1 }
-  })
-  
-  /**
-   * Get skills options
-   */
-  const skillsOptions = computed<FilterOption[]>(() => {
-    return options.value?.skills || []
-  })
-  
-  /**
    * Get companies options
    */
   const companiesOptions = computed<FilterOption[]>(() => {
     return options.value?.companies || []
+  })
+  
+  /**
+   * Get locations options
+   */
+  const locationsOptions = computed<FilterOption[]>(() => {
+    return options.value?.locations || []
   })
   
   /**
@@ -91,14 +84,13 @@ const _useCandidateFilterOptions = () => {
     error: readonly(error),
     // Computed options
     statusOptions,
-    experienceRange,
-    skillsOptions,
     companiesOptions,
+    locationsOptions,
     // Actions
     fetchOptions,
     reset,
   }
 }
 
-export const useCandidateFilterOptions = createSharedComposable(_useCandidateFilterOptions)
+export const useJobFilterOptions = createSharedComposable(_useJobFilterOptions)
 

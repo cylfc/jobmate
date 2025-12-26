@@ -168,6 +168,7 @@
 import { z } from 'zod'
 import type { CreateCandidateInput } from '@candidate/types/candidate'
 import { CANDIDATE_CREATE_MODE, type CandidateCreateMode } from '@candidate/constants/modes'
+import { useCandidate } from '@candidate/utils/candidate-api'
 
 interface Emits {
   (e: 'submit', value: CreateCandidateInput): void

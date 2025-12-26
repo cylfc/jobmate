@@ -1,6 +1,7 @@
 /**
- * Use Job Composable
- * Composable for job-related functionality
+ * Job API Utilities
+ * API utility functions for job-related operations
+ * Stateless functions - no reactive state
  */
 import type { Job, CreateJobInput, JobFilter } from '@job/types/job'
 
@@ -84,6 +85,21 @@ export const useJob = () => {
     }
   }
 
+  /**
+   * Get filter options for job filters
+   */
+  const getFilterOptions = async () => {
+    try {
+      const response = await $fetch<{ options: import('@job/types/job').JobFilterOptions }>('/api/jobs/filter-options', {
+        method: 'GET',
+      })
+      return response.options
+    } catch (error) {
+      console.error('Error fetching filter options:', error)
+      throw error
+    }
+  }
+
   return {
     getJobs,
     getJobById,
@@ -91,5 +107,7 @@ export const useJob = () => {
     updateJob,
     deleteJob,
     parseJobFromText,
+    getFilterOptions,
   }
 }
+

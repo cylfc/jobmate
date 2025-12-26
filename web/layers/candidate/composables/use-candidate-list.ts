@@ -5,7 +5,7 @@
  */
 import { createSharedComposable } from '@vueuse/core'
 import type { Candidate, CandidateFilter } from '@candidate/types/candidate'
-import { useCandidate } from '@candidate/composables/use-candidate'
+import { useCandidate } from '@candidate/utils/candidate-api'
 
 const _useCandidateList = () => {
   const candidates = ref<Candidate[]>([])
@@ -80,6 +80,15 @@ const _useCandidateList = () => {
   const removeCandidates = (candidateIds: string[]) => {
     candidates.value = candidates.value.filter(c => !candidateIds.includes(c.id))
   }
+  
+  // Auto-cleanup on unmount (optional - only if component unmounts)
+  // Note: Shared composable may be used by multiple components,
+  // so cleanup is optional and should be called explicitly if needed
+  onUnmounted(() => {
+    // Optional: Reset state when all components using this composable unmount
+    // Uncomment if you want auto-cleanup:
+    // reset()
+  })
   
   return {
     // Readonly state - prevent external mutation

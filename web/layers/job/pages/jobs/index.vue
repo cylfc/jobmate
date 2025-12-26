@@ -20,7 +20,6 @@
     <!-- Filters Card -->
     <UCard>
       <FiltersJobFilters
-        v-model="filters"
         @apply="handleApplyFilters"
         @reset="handleResetFilters"
       />
@@ -29,8 +28,9 @@
     <!-- Table Card -->
     <UCard>
       <TablesJobsTable
-        :jobs="filteredJobs"
-        :loading="isLoading"
+        :jobs="jobList.jobs.value"
+        :loading="jobList.loading.value"
+        :error="jobList.error.value"
         @view-detail="handleViewDetail"
         @delete="handleDelete"
         @match-candidates="handleMatchCandidates"
@@ -47,7 +47,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Job, CreateJobInput, JobFilter } from '@job/types/job'
+import type { Job, CreateJobInput } from '@job/types/job'
+import { useJobList } from '@job/composables/use-job-list'
+import { useJobFilters } from '@job/composables/use-job-filters'
+import { useJob } from '@job/utils/job-api'
 
 const { t } = useI18n()
 const toast = useToast()
@@ -57,90 +60,70 @@ definePageMeta({
   layout: 'dashboard',
 })
 
-const { getJobs, createJob, deleteJob } = useJob()
+// Layer 2: Shared composable for job list state
+const jobList = useJobList()
 
-const jobs = ref<Job[]>([])
-const isLoading = ref(false)
+// Layer 3: Query params for filters
+const { filters, updateFilters, resetFilters } = useJobFilters()
+
+// Layer 4: Component-local UI state
 const showCreateModal = ref(false)
-const filters = ref<JobFilter>({})
+
+// Track if initial load is done to avoid double fetch
+const isInitialLoad = ref(true)
 
 // Load jobs on mount
 onMounted(async () => {
   await loadJobs()
+  isInitialLoad.value = false
 })
 
+// Watch filters and reload when they change (but not on initial load)
+watch(filters, async (newFilters) => {
+  if (isInitialLoad.value) return
+  await jobList.fetchJobs(newFilters)
+}, { deep: true })
+
 const loadJobs = async () => {
-  isLoading.value = true
   try {
-    const data = await getJobs(filters.value)
-    jobs.value = data
-  } catch (_error) {
+    // Server handles all filtering based on query params
+    await jobList.fetchJobs(filters.value)
+  } catch (error) {
     toast.add({
       title: t('job.error.load-failed'),
-      description: t('job.error.load-failed-description'),
+      description: jobList.error.value || t('job.error.load-failed-description'),
       color: 'error',
     })
-  } finally {
-    isLoading.value = false
   }
 }
 
-const filteredJobs = computed(() => {
-  let filtered = [...jobs.value]
-
-  // Apply search filter
-  if (filters.value.search) {
-    const search = filters.value.search.toLowerCase()
-    filtered = filtered.filter(
-      (j) =>
-        j.title.toLowerCase().includes(search) ||
-        j.description.toLowerCase().includes(search) ||
-        j.company.toLowerCase().includes(search)
-    )
-  }
-
-  // Apply status filter
-  if (filters.value.status) {
-    filtered = filtered.filter((j) => j.status === filters.value.status)
-  }
-
-  // Apply company filter
-  if (filters.value.company) {
-    filtered = filtered.filter((j) =>
-      j.company.toLowerCase().includes(filters.value.company!.toLowerCase())
-    )
-  }
-
-  // Apply location filter
-  if (filters.value.location) {
-    filtered = filtered.filter((j) =>
-      j.location.toLowerCase().includes(filters.value.location!.toLowerCase())
-    )
-  }
-
-  return filtered
-})
-
 const handleApplyFilters = () => {
-  loadJobs()
+  // Filters are synced with URL automatically via useJobFilters
+  // The watch will automatically reload jobs when filters change
 }
 
 const handleResetFilters = () => {
-  filters.value = {}
-  loadJobs()
+  resetFilters()
+  // Filters reset will trigger watch and reload automatically
 }
 
 const handleCreateJob = async (input: CreateJobInput) => {
+  const jobOps = useJob()
   try {
-    await createJob(input)
-    toast.add({
-      title: t('job.success.create-success'),
-      description: t('job.success.create-success-description'),
-      color: 'success',
-    })
-    showCreateModal.value = false
-    await loadJobs()
-  } catch (_error) {
+    const newJob = await jobOps.createJob(input)
+    if (newJob) {
+      // Optimistically add to list
+      jobList.addJob(newJob)
+      toast.add({
+        title: t('job.success.create-success'),
+        description: t('job.success.create-success-description'),
+        color: 'success',
+      })
+      showCreateModal.value = false
+      // Optionally refresh to get server state
+      await loadJobs()
+    }
+  } catch (error) {
     toast.add({
       title: t('job.error.create-failed'),
       description: t('job.error.create-failed-description'),
@@ -162,16 +145,20 @@ const handleViewDetail = (job: Job) => {
 const handleDelete = async (job: Job) => {
   if (!job.id) return
 
+  const jobOps = useJob()
   // TODO: Add confirmation dialog
   try {
-    await deleteJob(job.id)
+    await jobOps.deleteJob(job.id)
+    // Optimistically remove from list
+    jobList.removeJob(job.id)
     toast.add({
       title: t('job.success.delete-success'),
       description: t('job.success.delete-success-description'),
       color: 'success',
     })
+    // Optionally refresh to sync with server
     await loadJobs()
-  } catch (_error) {
+  } catch (error) {
     toast.add({
       title: t('job.error.delete-failed'),
       description: t('job.error.delete-failed-description'),
@@ -192,16 +179,20 @@ const handleMatchCandidates = (job: Job) => {
 }
 
 const handleBulkDelete = async (jobIds: string[]) => {
+  const jobOps = useJob()
   // TODO: Add confirmation dialog
   try {
-    await Promise.all(jobIds.map(id => deleteJob(id)))
+    await Promise.all(jobIds.map(id => jobOps.deleteJob(id)))
+    // Optimistically remove from list
+    jobList.removeJobs(jobIds)
     toast.add({
       title: t('job.success.bulk-delete-success'),
       description: t('job.success.bulk-delete-success-description', { count: jobIds.length }),
       color: 'success',
     })
+    // Optionally refresh to sync with server
     await loadJobs()
-  } catch (_error) {
+  } catch (error) {
     toast.add({
       title: t('job.error.bulk-delete-failed'),
       description: t('job.error.bulk-delete-failed-description'),
