@@ -20,7 +20,6 @@
     <!-- Filters Card -->
     <UCard>
       <FiltersCandidateFilters
-        v-model="filters"
         @apply="handleApplyFilters"
         @reset="handleResetFilters"
       />
@@ -30,7 +29,8 @@
     <UCard>
       <TablesCandidatesTable
         :candidates="filteredCandidates"
-        :loading="isLoading"
+        :loading="candidateList.loading.value"
+        :error="candidateList.error.value"
         @view-detail="handleViewDetail"
         @invite="handleInvite"
         @delete="handleDelete"
@@ -50,7 +50,9 @@
 </template>
 
 <script setup lang="ts">
-import type { Candidate, CreateCandidateInput, CandidateFilter } from '@candidate/types/candidate'
+import type { Candidate, CreateCandidateInput } from '@candidate/types/candidate'
+import { useCandidateList } from '@candidate/composables/use-candidate-list'
+import { useCandidateFilters } from '@candidate/composables/use-candidate-filters'
 
 const { t } = useI18n()
 const toast = useToast()
@@ -60,38 +62,49 @@ definePageMeta({
   layout: 'dashboard',
 })
 
-const { getCandidates, createCandidate, deleteCandidate, inviteCandidate } = useCandidate()
+// Layer 2: Shared composable for candidate list state
+const candidateList = useCandidateList()
 
-const candidates = ref<Candidate[]>([])
-const isLoading = ref(false)
+// Layer 3: Query params for filters
+const { filters, updateFilters, resetFilters } = useCandidateFilters()
+
+// Layer 4: Component-local UI state
 const showCreateModal = ref(false)
-const filters = ref<CandidateFilter>({})
+
+// Track if initial load is done to avoid double fetch
+const isInitialLoad = ref(true)
 
 // Load candidates on mount
 onMounted(async () => {
   await loadCandidates()
+  isInitialLoad.value = false
 })
 
+// Watch filters and reload when they change (but not on initial load)
+watch(filters, async (newFilters) => {
+  if (isInitialLoad.value) return
+  await candidateList.fetchCandidates(newFilters)
+}, { deep: true })
+
 const loadCandidates = async () => {
-  isLoading.value = true
   try {
-    const data = await getCandidates()
-    candidates.value = data
-  } catch (_error) {
+    await candidateList.fetchCandidates(filters.value)
+  } catch (error) {
     toast.add({
       title: t('candidate.error.load-failed'),
-      description: t('candidate.error.load-failed-description'),
+      description: candidateList.error.value || t('candidate.error.load-failed-description'),
       color: 'error',
     })
-  } finally {
-    isLoading.value = false
   }
 }
 
+// Apply client-side filtering (if needed for additional filtering beyond server-side)
 const filteredCandidates = computed(() => {
-  let filtered = [...candidates.value]
+  // If server already filters, we can just return the list
+  // Otherwise, apply client-side filtering here
+  let filtered = [...candidateList.candidates.value]
 
-  // Apply search filter
+  // Apply search filter (client-side)
   if (filters.value.search) {
     const search = filters.value.search.toLowerCase()
     filtered = filtered.filter(
@@ -101,12 +114,12 @@ const filteredCandidates = computed(() => {
     )
   }
 
-  // Apply status filter
+  // Apply status filter (client-side)
   if (filters.value.status) {
     filtered = filtered.filter((c) => c.status === filters.value.status)
   }
 
-  // Apply experience filters
+  // Apply experience filters (client-side)
   if (filters.value.minExperience !== undefined) {
     filtered = filtered.filter((c) => c.experience >= filters.value.minExperience!)
   }
@@ -119,24 +132,30 @@ const filteredCandidates = computed(() => {
 })
 
 const handleApplyFilters = () => {
-  // Filters are applied automatically via computed property
+  // Filters are synced with URL automatically via useCandidateFilters
+  // The watch will automatically reload candidates when filters change
 }
 
 const handleResetFilters = () => {
-  filters.value = {}
+  resetFilters()
+  // Filters reset will trigger watch and reload automatically
 }
 
 const handleCreateCandidate = async (input: CreateCandidateInput) => {
+  const candidateOps = useCandidate()
   try {
-    await createCandidate(input)
+    const newCandidate = await candidateOps.createCandidate(input)
+    // Optimistically add to list
+    candidateList.addCandidate(newCandidate)
     toast.add({
       title: t('candidate.success.create-success'),
       description: t('candidate.success.create-success-description'),
       color: 'success',
     })
     showCreateModal.value = false
+    // Optionally refresh to get server state
     await loadCandidates()
-  } catch (_error) {
+  } catch (error) {
     toast.add({
       title: t('candidate.error.create-failed'),
       description: t('candidate.error.create-failed-description'),
@@ -156,15 +175,16 @@ const handleViewDetail = (candidate: Candidate) => {
 }
 
 const handleInvite = async (candidate: Candidate) => {
+  const candidateOps = useCandidate()
   try {
     if (!candidate.id) return
-    await inviteCandidate(candidate.id)
+    await candidateOps.inviteCandidate(candidate.id)
     toast.add({
       title: t('candidate.success.invite-success'),
       description: t('candidate.success.invite-success-description', { name: `${candidate.firstName} ${candidate.lastName}` }),
       color: 'success',
     })
-  } catch (_error) {
+  } catch (error) {
     toast.add({
       title: t('candidate.error.invite-failed'),
       description: t('candidate.error.invite-failed-description'),
@@ -176,16 +196,20 @@ const handleInvite = async (candidate: Candidate) => {
 const handleDelete = async (candidate: Candidate) => {
   if (!candidate.id) return
   
+  const candidateOps = useCandidate()
   // TODO: Add confirmation dialog
   try {
-    await deleteCandidate(candidate.id)
+    await candidateOps.deleteCandidate(candidate.id)
+    // Optimistically remove from list
+    candidateList.removeCandidate(candidate.id)
     toast.add({
       title: t('candidate.success.delete-success'),
       description: t('candidate.success.delete-success-description'),
       color: 'success',
     })
+    // Optionally refresh to sync with server
     await loadCandidates()
-  } catch (_error) {
+  } catch (error) {
     toast.add({
       title: t('candidate.error.delete-failed'),
       description: t('candidate.error.delete-failed-description'),
@@ -195,14 +219,15 @@ const handleDelete = async (candidate: Candidate) => {
 }
 
 const handleBulkInvite = async (candidateIds: string[]) => {
+  const candidateOps = useCandidate()
   try {
-    await Promise.all(candidateIds.map(id => inviteCandidate(id)))
+    await Promise.all(candidateIds.map(id => candidateOps.inviteCandidate(id)))
     toast.add({
       title: t('candidate.success.bulk-invite-success'),
       description: t('candidate.success.bulk-invite-success-description', { count: candidateIds.length }),
       color: 'success',
     })
-  } catch (_error) {
+  } catch (error) {
     toast.add({
       title: t('candidate.error.bulk-invite-failed'),
       description: t('candidate.error.bulk-invite-failed-description'),
@@ -223,16 +248,20 @@ const handleMatchJobs = (candidate: Candidate) => {
 }
 
 const handleBulkDelete = async (candidateIds: string[]) => {
+  const candidateOps = useCandidate()
   // TODO: Add confirmation dialog
   try {
-    await Promise.all(candidateIds.map(id => deleteCandidate(id)))
+    await Promise.all(candidateIds.map(id => candidateOps.deleteCandidate(id)))
+    // Optimistically remove from list
+    candidateList.removeCandidates(candidateIds)
     toast.add({
       title: t('candidate.success.bulk-delete-success'),
       description: t('candidate.success.bulk-delete-success-description', { count: candidateIds.length }),
       color: 'success',
     })
+    // Optionally refresh to sync with server
     await loadCandidates()
-  } catch (_error) {
+  } catch (error) {
     toast.add({
       title: t('candidate.error.bulk-delete-failed'),
       description: t('candidate.error.bulk-delete-failed-description'),
