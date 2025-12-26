@@ -28,7 +28,7 @@
     <!-- Table Card -->
     <UCard>
       <TablesCandidatesTable
-        :candidates="filteredCandidates"
+        :candidates="candidateList.candidates.value"
         :loading="candidateList.loading.value"
         :error="candidateList.error.value"
         @view-detail="handleViewDetail"
@@ -53,6 +53,7 @@
 import type { Candidate, CreateCandidateInput } from '@candidate/types/candidate'
 import { useCandidateList } from '@candidate/composables/use-candidate-list'
 import { useCandidateFilters } from '@candidate/composables/use-candidate-filters'
+import { useCandidate } from '@candidate/utils/candidate-api'
 
 const { t } = useI18n()
 const toast = useToast()
@@ -88,6 +89,7 @@ watch(filters, async (newFilters) => {
 
 const loadCandidates = async () => {
   try {
+    // Server handles all filtering based on query params
     await candidateList.fetchCandidates(filters.value)
   } catch (error) {
     toast.add({
@@ -97,39 +99,6 @@ const loadCandidates = async () => {
     })
   }
 }
-
-// Apply client-side filtering (if needed for additional filtering beyond server-side)
-const filteredCandidates = computed(() => {
-  // If server already filters, we can just return the list
-  // Otherwise, apply client-side filtering here
-  let filtered = [...candidateList.candidates.value]
-
-  // Apply search filter (client-side)
-  if (filters.value.search) {
-    const search = filters.value.search.toLowerCase()
-    filtered = filtered.filter(
-      (c) =>
-        `${c.firstName} ${c.lastName}`.toLowerCase().includes(search) ||
-        c.email.toLowerCase().includes(search)
-    )
-  }
-
-  // Apply status filter (client-side)
-  if (filters.value.status) {
-    filtered = filtered.filter((c) => c.status === filters.value.status)
-  }
-
-  // Apply experience filters (client-side)
-  if (filters.value.minExperience !== undefined) {
-    filtered = filtered.filter((c) => c.experience >= filters.value.minExperience!)
-  }
-
-  if (filters.value.maxExperience !== undefined) {
-    filtered = filtered.filter((c) => c.experience <= filters.value.maxExperience!)
-  }
-
-  return filtered
-})
 
 const handleApplyFilters = () => {
   // Filters are synced with URL automatically via useCandidateFilters

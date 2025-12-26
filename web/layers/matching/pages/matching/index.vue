@@ -65,6 +65,8 @@
 
 <script setup lang="ts">
 import type { Candidate, Matching } from '@matching/types/matching'
+import { useJob } from '@job/utils/job-api'
+import { useCandidate } from '@candidate/utils/candidate-api'
 
 const { t } = useI18n()
 

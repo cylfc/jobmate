@@ -1,6 +1,7 @@
 /**
- * Use Candidate Composable
- * Composable for candidate-related functionality
+ * Candidate API Utilities
+ * API utility functions for candidate-related operations
+ * Stateless functions - no reactive state
  */
 import type { Candidate, CreateCandidateInput, CandidateFilter } from '@candidate/types/candidate'
 

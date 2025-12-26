@@ -1,93 +1,169 @@
 <template>
-  <div class="flex flex-row justify-between space-y-4">
-    <div class="flex flex-row justify-start items-start gap-4">
+  <div class="flex flex-row justify-between items-end gap-4">
+    <div class="flex-1 grid grid-cols-4 justify-start items-start gap-4">
       <UFormField :label="t('job.filter.search')" name="search">
         <UInput
-          v-model="filters.search"
+          class="w-full"
+          :model-value="localFilters.search"
           :placeholder="t('job.filter.search-placeholder')"
           icon="i-lucide-search"
           clearable
+          @update:model-value="updateLocalFilter('search', $event)"
         />
       </UFormField>
 
       <UFormField :label="t('job.filter.status')" name="status">
         <USelectMenu
-          v-model="filters.status"
+          class="w-full"
+          :model-value="localFilters.status"
           :options="statusOptions"
           :placeholder="t('job.filter.status-placeholder')"
           clearable
+          @update:model-value="handleStatusChange"
         />
       </UFormField>
 
       <UFormField :label="t('job.filter.company')" name="company">
         <UInput
-          v-model="filters.company"
+          class="w-full"
+          :model-value="localFilters.company"
           :placeholder="t('job.filter.company-placeholder')"
           clearable
+          @update:model-value="updateLocalFilter('company', $event)"
         />
       </UFormField>
 
       <UFormField :label="t('job.filter.location')" name="location">
         <UInput
-          v-model="filters.location"
+          class="w-full"
+          :model-value="localFilters.location"
           :placeholder="t('job.filter.location-placeholder')"
           clearable
+          @update:model-value="updateLocalFilter('location', $event)"
         />
       </UFormField>
     </div>
 
     <div class="flex items-center justify-end gap-2">
       <UButton
+        v-if="hasActiveFilters"
         color="neutral"
         variant="ghost"
-        size="sm"
+        size="md"
         @click="handleReset"
       >
-        {{ t('job.filter.reset') }}
+        {{ t("job.filter.reset") }}
       </UButton>
-      <UButton
-        color="primary"
-        size="sm"
-        @click="handleApply"
-      >
-        {{ t('job.filter.apply') }}
+      <UButton color="primary" variant="soft" size="md" @click="handleApply">
+        {{ t("job.filter.apply") }}
       </UButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { JobFilter, JobStatus } from '@job/types/job'
+import type { JobFilter } from "@job/types/job";
+import { useJobFilters } from "@job/composables/use-job-filters";
+import { useJobFilterOptions } from "@job/composables/use-job-filter-options";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
-interface Props {
-  // No props needed - using defineModel
-}
+type Emits = {
+  (e: "apply"): void;
+  (e: "reset"): void;
+};
 
-interface Emits {
-  (e: 'apply'): void
-  (e: 'reset'): void
-}
+const emit = defineEmits<Emits>();
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+// Use query params composable
+const {
+  filters: queryFilters,
+  updateFilters,
+  resetFilters,
+  hasActiveFilters,
+} = useJobFilters();
 
-const filters = defineModel<JobFilter>({ required: true })
+// Use filter options composable
+const filterOptions = useJobFilterOptions();
 
-const statusOptions = computed(() => [
-  { label: t('job.status.draft'), value: 'draft' as JobStatus },
-  { label: t('job.status.published'), value: 'published' as JobStatus },
-  { label: t('job.status.closed'), value: 'closed' as JobStatus },
-])
+// Load filter options on mount
+onMounted(async () => {
+  try {
+    await filterOptions.fetchOptions();
+  } catch (error) {
+    console.error("Failed to load filter options:", error);
+  }
+});
+
+// Local filter state for form inputs (synced with query params)
+const localFilters = ref<JobFilter>({
+  search: queryFilters.value.search,
+  status: queryFilters.value.status,
+  company: queryFilters.value.company,
+  location: queryFilters.value.location,
+});
+
+// Sync local filters with query params when they change
+watch(
+  queryFilters,
+  (newFilters) => {
+    localFilters.value = {
+      search: newFilters.search,
+      status: newFilters.status,
+      company: newFilters.company,
+      location: newFilters.location,
+    };
+  },
+  { immediate: true, deep: true }
+);
+
+// Use status options from API
+const statusOptions = computed(() => {
+  // Fallback to i18n if options not loaded yet
+  if (filterOptions.statusOptions.value.length === 0) {
+    return [
+      { label: t("job.status.draft"), value: "draft" },
+      { label: t("job.status.published"), value: "published" },
+      { label: t("job.status.closed"), value: "closed" },
+    ];
+  }
+  return filterOptions.statusOptions.value;
+});
+
+const updateLocalFilter = (
+  key: keyof JobFilter,
+  value: string | number | undefined
+) => {
+  localFilters.value = {
+    ...localFilters.value,
+    [key]: value as JobFilter[keyof JobFilter],
+  };
+};
+
+const handleStatusChange = (value: unknown) => {
+  // Handle USelectMenu value type
+  const statusValue =
+    typeof value === "string"
+      ? value
+      : typeof value === "number"
+        ? String(value)
+        : value === null || value === undefined
+          ? undefined
+          : String(value);
+  updateLocalFilter("status", statusValue as JobFilter["status"]);
+};
 
 const handleApply = () => {
-  emit('apply')
-}
+  // Update query params with local filters
+  updateFilters(localFilters.value);
+  emit("apply");
+};
 
 const handleReset = () => {
-  emit('update:modelValue', {})
-  emit('reset')
-}
+  // Reset query params
+  resetFilters();
+  // Reset local filters
+  localFilters.value = {};
+  emit("reset");
+};
 </script>
-

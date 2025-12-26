@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-row justify-between space-y-4">
-    <div class="grid grid-cols-4 justify-start items-start gap-4">
+  <div class="flex flex-row justify-between items-end gap-4">
+    <div class="flex-1 grid grid-cols-4 justify-start items-start gap-4">
       <UFormField :label="t('candidate.filter.search')" name="search">
         <UInput
           class="w-full"
@@ -68,20 +68,20 @@
       </UFormField>
     </div>
 
-      <div class="flex items-center justify-end gap-2">
-       <UButton 
-         v-if="hasActiveFilters"
-         color="neutral" 
-         variant="ghost" 
-         size="md" 
-         @click="handleReset"
-       >
-         {{ t("candidate.filter.reset") }}
-       </UButton>
-       <UButton color="primary" variant="soft" size="md" @click="handleApply">
-         {{ t("candidate.filter.apply") }}
-       </UButton>
-      </div>
+    <div class="flex items-center justify-end gap-2">
+      <UButton
+        v-if="hasActiveFilters"
+        color="neutral"
+        variant="ghost"
+        size="md"
+        @click="handleReset"
+      >
+        {{ t("candidate.filter.reset") }}
+      </UButton>
+      <UButton color="primary" variant="soft" size="md" @click="handleApply">
+        {{ t("candidate.filter.apply") }}
+      </UButton>
+    </div>
   </div>
 </template>
 

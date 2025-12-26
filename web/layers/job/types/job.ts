@@ -48,3 +48,17 @@ export interface JobFilter {
   company?: string
   location?: string
 }
+
+/**
+ * Filter option types
+ */
+export interface FilterOption {
+  label: string
+  value: string | number
+}
+
+export interface JobFilterOptions {
+  status: FilterOption[]
+  companies?: FilterOption[]
+  locations?: FilterOption[]
+}
