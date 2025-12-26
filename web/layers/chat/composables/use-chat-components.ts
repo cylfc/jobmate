@@ -6,6 +6,7 @@ import ChatCandidateInput from '@chat/components/chat-components/candidate-input
 import ChatInputMethodSelector from '@chat/components/chat-components/input-method-selector.vue'
 import ChatSourceTable from '@chat/components/chat-components/source-table.vue'
 import ChatUploadHandler from '@chat/components/chat-components/upload-handler.vue'
+import ChatCandidateFormPreview from '@chat/components/chat-components/candidate-form-preview.vue'
 
 export const useChatComponents = () => {
   const registerDefaultComponents = () => {
@@ -16,6 +17,7 @@ export const useChatComponents = () => {
     registerChatComponent('input-method-selector', ChatInputMethodSelector)
     registerChatComponent('source-table', ChatSourceTable)
     registerChatComponent('upload-handler', ChatUploadHandler)
+    registerChatComponent('candidate-form-preview', ChatCandidateFormPreview)
   }
 
   return {

@@ -69,6 +69,7 @@ export const initChatHandlers = () => {
   const store = useChatHandlersStore()
   if (!store.isInitialized) {
     store.registerFeature('matching')
+    store.registerFeature('create-candidate')
   }
 }
 
