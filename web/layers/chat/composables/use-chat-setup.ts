@@ -104,16 +104,7 @@ const _useChatSetup = (options: ChatSetupOptions = {}) => {
   const purposes = reactive<PurposeConfig[]>([...defaultPurposes])
   const selectedPurpose = ref<ChatFeature>('matching')
   const _initialized = ref(false)
-
-  let isLoading = ref(false);
-  if (syncStatus) {
-    try {
-      const chat = useChat();
-      isLoading = chat.isLoading;
-    } catch {
-      isLoading = ref(false);
-    }
-  }
+  const isLoading = ref(false)
 
   const computedStatus = computed(() => {
     if (syncStatus && isLoading.value) {
