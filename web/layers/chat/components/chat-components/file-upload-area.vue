@@ -66,34 +66,24 @@ interface Props {
   accept?: string
   multiple?: boolean
   hint?: string
-  modelValue?: File[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
   accept: '.pdf,.doc,.docx,.txt',
   multiple: false,
   hint: undefined,
-  modelValue: () => [],
 })
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', files: File[]): void
   (e: 'update', data: { files: File[] }): void
 }>()
 
-const fileInputRef = ref<HTMLInputElement>()
-const files = ref<File[]>(props.modelValue || [])
+const files = defineModel<File[]>({ default: () => [] })
 
-// Watch for external changes to modelValue
-watch(() => props.modelValue, (newFiles) => {
-  if (newFiles) {
-    files.value = [...newFiles]
-  }
-}, { deep: true })
+const fileInputRef = ref<HTMLInputElement>()
 
 // Emit updates when files change
 watch(files, (newFiles) => {
-  emit('update:modelValue', newFiles)
   emit('update', { files: newFiles })
 }, { deep: true })
 
@@ -118,7 +108,9 @@ const handleFileChange = (event: Event) => {
 }
 
 const removeFile = (index: number) => {
-  files.value.splice(index, 1)
+  if (files.value) {
+    files.value.splice(index, 1)
+  }
 }
 
 const formatFileSize = (bytes: number) => {
@@ -132,7 +124,9 @@ const formatFileSize = (bytes: number) => {
 // Expose methods for parent components
 defineExpose({
   clearFiles: () => {
-    files.value = []
+    if (files.value) {
+      files.value = []
+    }
   },
   getFiles: () => files.value,
 })

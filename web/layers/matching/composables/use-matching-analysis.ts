@@ -1,16 +1,20 @@
 /**
  * Use Matching Analysis Composable
  * Handles all analysis-related operations for matching
+ * Layer 2: Shared composable with createSharedComposable
  */
+import { createSharedComposable } from '@vueuse/core'
 import type { Job, Candidate, Matching } from '@matching/types/matching'
+import { useMatchingApi } from '@matching/utils/matching-api'
 
-export const useMatchingAnalysis = () => {
+const _useMatchingAnalysis = () => {
   const isAnalyzing = ref(false)
   const analysisProgress = ref(0)
+  const api = useMatchingApi()
 
   /**
    * Analyze job-candidate matches
-   * Uses $fetch for client-side API call with progress tracking
+   * Uses API from utils with progress tracking
    */
   const analyzeMatchings = async (
     job: Job,
@@ -28,15 +32,7 @@ export const useMatchingAnalysis = () => {
       }, 500)
 
       // Call API to analyze matches
-      const { matchings: analyzedMatchings } = await $fetch<{
-        matchings: (Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]
-      }>('/api/matching/analyze', {
-        method: 'POST',
-        body: {
-          job,
-          candidates,
-        },
-      })
+      const result = await api.analyzeMatchings(job, candidates)
 
       clearInterval(progressInterval)
       analysisProgress.value = 100
@@ -44,7 +40,7 @@ export const useMatchingAnalysis = () => {
       // Wait a bit to show 100% progress
       await new Promise(resolve => setTimeout(resolve, 300))
 
-      return analyzedMatchings
+      return result
     } catch (error) {
       console.error('Error analyzing matchings:', error)
       throw error
@@ -55,45 +51,32 @@ export const useMatchingAnalysis = () => {
 
   /**
    * Get matchings
-   * Uses $fetch for client-side API call (called after component mount)
    */
   const getMatchings = async (): Promise<
     (Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]
   > => {
-    try {
-      const response = await $fetch<{
-        matchings: (Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]
-      }>('/api/matching/matchings', {
-        method: 'GET',
-      })
-
-      return response.matchings || []
-    } catch (error) {
-      console.error('Error fetching matchings:', error)
-      return []
-    }
+    return await api.getMatchings()
   }
 
   /**
    * Create matching
-   * Uses $fetch for client-side API call
    */
-  const createMatching = async (_candidateId: string, _jobId: string): Promise<Matching | null> => {
-    try {
-      // TODO: Implement create matching API endpoint
-      return null
-    } catch (error) {
-      console.error('Error creating matching:', error)
-      return null
-    }
+  const createMatching = async (candidateId: string, jobId: string): Promise<Matching | null> => {
+    return await api.createMatching(candidateId, jobId)
   }
 
+  onUnmounted(() => {
+    // Optional cleanup
+  })
+
   return {
-    isAnalyzing: readonly(isAnalyzing),
-    analysisProgress: readonly(analysisProgress),
+    isAnalyzing,
+    analysisProgress,
     analyzeMatchings,
     getMatchings,
     createMatching,
   }
 }
+
+export const useMatchingAnalysis = createSharedComposable(_useMatchingAnalysis)
 

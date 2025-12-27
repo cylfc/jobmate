@@ -68,7 +68,9 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const { getMatchings } = useMatching()
+import { useMatchingAnalysis } from '@matching/composables/use-matching-analysis'
+
+const { getMatchings } = useMatchingAnalysis()
 const isLoading = ref(false)
 const localMatchings = ref<(Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]>([])
 

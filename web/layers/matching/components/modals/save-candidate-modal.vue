@@ -81,7 +81,9 @@ const modelValue = defineModel<boolean>({ default: false })
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const { saveCandidate } = useMatching()
+import { useMatchingCandidate } from '@matching/composables/use-matching-candidate'
+
+const { saveCandidate } = useMatchingCandidate()
 
 const isSaving = ref(false)
 const skillsText = ref('')

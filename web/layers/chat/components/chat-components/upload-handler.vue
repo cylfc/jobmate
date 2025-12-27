@@ -4,8 +4,7 @@
       :accept="accept"
       :multiple="multiple"
       :hint="hint"
-      :model-value="files"
-      @update:model-value="handleFilesUpdate"
+      v-model="files"
       @update="handleUpdate"
     />
   </div>
@@ -35,10 +34,6 @@ const emit = defineEmits<{
 }>()
 
 const files = ref<File[]>([])
-
-const handleFilesUpdate = (newFiles: File[]) => {
-  files.value = newFiles
-}
 
 const handleUpdate = (data: { files: File[] }) => {
   emit('update', data)

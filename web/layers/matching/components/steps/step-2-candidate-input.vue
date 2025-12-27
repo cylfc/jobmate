@@ -202,7 +202,9 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const { getCandidatesFromDatabase, parseCandidatesFromText } = useMatching()
+import { useMatchingCandidate } from '@matching/composables/use-matching-candidate'
+
+const { getCandidatesFromDatabase, parseCandidatesFromText } = useMatchingCandidate()
 
 const selectedMode = ref<CandidateInputMode>(CANDIDATE_INPUT_MODE.INPUT)
 const uploadedFiles = ref<File[]>([])
