@@ -2,10 +2,7 @@
   <header class="border-b border-default bg-default">
     <UContainer>
       <div class="flex items-center justify-between h-16">
-        <NuxtLink to="/" class="flex items-center gap-2">
-          <UIcon name="i-lucide-briefcase" class="w-8 h-8 text-primary" />
-            <span class="text-xl font-bold text-default">JobMate</span>
-        </NuxtLink>
+        <TheLogo to="/" />
         <div class="flex items-center gap-4">
           <UButton
             v-if="!isLoginPage"

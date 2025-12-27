@@ -2,8 +2,8 @@
 <template>
   <!-- Notification Button Trigger -->
   <UButton
-    color="neutral"
-    variant="outline"
+    color="primary"
+    variant="soft"
     icon="i-lucide-bell"
     :aria-label="t('dashboard.notifications')"
     class="relative"
