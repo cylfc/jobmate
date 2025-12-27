@@ -1,11 +1,13 @@
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { z } from 'zod'
 import type { LoginInput } from '@auth/composables/auth/schemas'
+import { useAuthApi } from '@auth/utils/auth-api'
 
 export function useLogin() {
   const { t } = useI18n()
   const toast = useToast()
   const router = useRouter()
+  const api = useAuthApi()
 
   const state = reactive<LoginInput>({
     email: '',
@@ -27,14 +29,10 @@ export function useLogin() {
     isLoading.value = true
 
     try {
-      // TODO: Implement API call
-      // const response = await $fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   body: event.data,
-      // })
+      const response = await api.login(state)
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // TODO: Store auth state (token, user info, etc.)
+      // For example: useAuthState().setAuth(response.user, response.token)
 
       toast.add({
         title: t('auth.login-success-title', 'Đăng nhập thành công'),
@@ -47,7 +45,7 @@ export function useLogin() {
     } catch (error: unknown) {
       toast.add({
         title: t('auth.login-error-title', 'Đăng nhập thất bại'),
-        description: error.message || t('auth.login-error-description', 'Email hoặc mật khẩu không đúng'),
+        description: (error as Error).message || t('auth.login-error-description', 'Email hoặc mật khẩu không đúng'),
         color: 'error',
       })
     } finally {

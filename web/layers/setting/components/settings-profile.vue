@@ -73,7 +73,7 @@
         <UButton
           type="submit"
           color="primary"
-          :loading="isSaving"
+          :loading="loading"
         >
           {{ t('setting.profile.save-button') }}
         </UButton>
@@ -84,27 +84,27 @@
 
 <script setup lang="ts">
 import { z } from 'zod'
+import { useSettingProfile } from '@setting/composables/use-setting-profile'
+import type { UserProfile } from '@setting/types/setting'
 
 const { t } = useI18n()
 const toast = useToast()
 
-interface ProfileForm {
-  firstName: string
-  lastName: string
-  email: string
-  phone?: string
-  bio?: string
-}
+const {
+  profile,
+  loading,
+  error,
+  fetchProfile,
+  updateProfile,
+} = useSettingProfile()
 
-const form = ref<ProfileForm>({
+const form = ref<UserProfile>({
   firstName: '',
   lastName: '',
   email: '',
   phone: '',
   bio: '',
 })
-
-const isSaving = ref(false)
 
 const schema = computed(() => z.object({
   firstName: z
@@ -122,37 +122,22 @@ const schema = computed(() => z.object({
 
 // Load user profile data
 onMounted(async () => {
-  await loadProfile()
+  await fetchProfile()
+  if (profile.value) {
+    form.value = { ...profile.value }
+  }
 })
 
-const loadProfile = async () => {
-  try {
-    // TODO: Call API to load user profile
-    // const profile = await $fetch('/api/settings/profile')
-    // form.value = profile
-    
-    // Mock data for now
-    form.value = {
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john.doe@example.com',
-      phone: '+84 123 456 789',
-      bio: 'Software developer with 5+ years of experience',
-    }
-  } catch (error) {
-    console.error('Error loading profile:', error)
+// Watch for profile changes
+watch(profile, (newProfile) => {
+  if (newProfile) {
+    form.value = { ...newProfile }
   }
-}
+}, { immediate: true })
 
 const handleSubmit = async () => {
-  isSaving.value = true
   try {
-    // TODO: Call API to save profile
-    // await $fetch('/api/settings/profile', {
-    //   method: 'PUT',
-    //   body: form.value,
-    // })
-    
+    await updateProfile(form.value)
     toast.add({
       title: t('setting.profile.success.title'),
       description: t('setting.profile.success.description'),
@@ -161,16 +146,17 @@ const handleSubmit = async () => {
   } catch (_error) {
     toast.add({
       title: t('setting.profile.error.title'),
-      description: t('setting.profile.error.description'),
+      description: error.value || t('setting.profile.error.description'),
       color: 'error',
     })
-  } finally {
-    isSaving.value = false
   }
 }
 
-const handleReset = () => {
-  loadProfile()
+const handleReset = async () => {
+  await fetchProfile()
+  if (profile.value) {
+    form.value = { ...profile.value }
+  }
 }
 </script>
 

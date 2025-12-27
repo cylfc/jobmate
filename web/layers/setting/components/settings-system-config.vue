@@ -90,7 +90,7 @@
         </UButton>
         <UButton
           color="primary"
-          :loading="isSaving"
+          :loading="loading"
           @click="handleSubmit"
         >
           {{ t('setting.system-config.save-button') }}
@@ -101,23 +101,26 @@
 </template>
 
 <script setup lang="ts">
+import { useSettingSystem } from '@setting/composables/use-setting-system'
+import type { SystemConfig } from '@setting/types/setting'
+
 const { t } = useI18n()
 const toast = useToast()
 const colorMode = useColorMode()
 
-interface SystemConfigForm {
-  timezone: string
-  dateFormat: string
-  timeFormat: string
-}
+const {
+  config,
+  loading,
+  error,
+  fetchConfig,
+  updateConfig,
+} = useSettingSystem()
 
-const form = ref<SystemConfigForm>({
+const form = ref<SystemConfig>({
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   dateFormat: 'DD/MM/YYYY',
   timeFormat: '24h',
 })
-
-const isSaving = ref(false)
 
 // Get all timezones
 const timezoneOptions = computed(() => {
@@ -142,42 +145,22 @@ const timeFormatOptions = computed(() => [
 
 // Load system config
 onMounted(async () => {
-  await loadSettings()
+  await fetchConfig()
+  if (config.value) {
+    form.value = { ...config.value }
+  }
 })
 
-const loadSettings = async () => {
-  try {
-    // TODO: Call API to load system config
-    // const settings = await $fetch('/api/settings/system-config')
-    // form.value = settings
-    
-    // Load from localStorage or use defaults
-    const savedTimezone = localStorage.getItem('timezone')
-    const savedDateFormat = localStorage.getItem('dateFormat')
-    const savedTimeFormat = localStorage.getItem('timeFormat')
-    
-    if (savedTimezone) form.value.timezone = savedTimezone
-    if (savedDateFormat) form.value.dateFormat = savedDateFormat
-    if (savedTimeFormat) form.value.timeFormat = savedTimeFormat
-  } catch (error) {
-    console.error('Error loading system config:', error)
+// Watch for config changes
+watch(config, (newConfig) => {
+  if (newConfig) {
+    form.value = { ...newConfig }
   }
-}
+}, { immediate: true })
 
 const handleSubmit = async () => {
-  isSaving.value = true
   try {
-    // TODO: Call API to save system config
-    // await $fetch('/api/settings/system-config', {
-    //   method: 'PUT',
-    //   body: form.value,
-    // })
-    
-    // Save to localStorage for now
-    localStorage.setItem('timezone', form.value.timezone)
-    localStorage.setItem('dateFormat', form.value.dateFormat)
-    localStorage.setItem('timeFormat', form.value.timeFormat)
-    
+    await updateConfig(form.value)
     toast.add({
       title: t('setting.system-config.success.title'),
       description: t('setting.system-config.success.description'),
@@ -186,16 +169,17 @@ const handleSubmit = async () => {
   } catch (_error) {
     toast.add({
       title: t('setting.system-config.error.title'),
-      description: t('setting.system-config.error.description'),
+      description: error.value || t('setting.system-config.error.description'),
       color: 'error',
     })
-  } finally {
-    isSaving.value = false
   }
 }
 
-const handleReset = () => {
-  loadSettings()
+const handleReset = async () => {
+  await fetchConfig()
+  if (config.value) {
+    form.value = { ...config.value }
+  }
 }
 </script>
 

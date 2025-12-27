@@ -12,8 +12,8 @@
     <div class="grid grid-cols-1 lg:grid-cols-4 justify-start items-stretch gap-4">
       <div class="lg:col-span-1">
         <UTabs
-          v-model="selectedTab"
-          :items="tabs"
+          :model-value="selectedTab"
+          :items="tabsWithLabels"
           orientation="vertical"
           class="w-full items-stretch gap-0"
           :ui="{
@@ -21,6 +21,7 @@
             leadingIcon: 'size-4',
             content: 'hidden'
           }"
+          @update:model-value="updateTab"
         />
       </div>
 
@@ -28,64 +29,25 @@
         <SettingsProfile v-if="selectedTab === 'profile'" />
         <SettingsSecurity v-else-if="selectedTab === 'security'" />
         <SettingsNotification v-else-if="selectedTab === 'notification'" />
-        <SettingsSystemConfig v-else-if="selectedTab === 'system'" />
+        <SettingsSystemConfig v-else-if="selectedTab === 'system-config'" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const { t } = useI18n();
-const route = useRoute();
-const router = useRouter();
+import { useSettingTabs } from '@setting/composables/use-setting-tabs'
+
+const { t } = useI18n()
 
 definePageMeta({
   layout: "dashboard",
-});
+})
 
-// Get initial tab from query params or default to 'profile'
-const selectedTab = ref((route.query.tab as string) || "profile");
+const { tabs, selectedTab, updateTab } = useSettingTabs()
 
-// Watch for tab changes in query params
-watch(
-  () => route.query.tab,
-  (newTab) => {
-    if (newTab && typeof newTab === "string") {
-      selectedTab.value = newTab;
-    }
-  }
-);
-
-// Watch for tab selection changes and update URL
-watch(selectedTab, (newTab) => {
-  router.replace({
-    query: {
-      ...route.query,
-      tab: newTab,
-    },
-  });
-});
-
-const tabs = computed(() => [
-  {
-    label: t("setting.profile.title"),
-    value: "profile",
-    icon: "i-lucide-user",
-  },
-  {
-    label: t("setting.security.title"),
-    value: "security",
-    icon: "i-lucide-lock",
-  },
-  {
-    label: t("setting.notification.title"),
-    value: "notification",
-    icon: "i-lucide-bell",
-  },
-  {
-    label: t("setting.system-config.title"),
-    value: "system",
-    icon: "i-lucide-settings",
-  },
-]);
+const tabsWithLabels = computed(() => tabs.map(tab => ({
+  ...tab,
+  label: t(`setting.${tab.value}.title`),
+})))
 </script>
