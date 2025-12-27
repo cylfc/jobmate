@@ -78,10 +78,9 @@ const _useJobFilterOptions = () => {
   })
   
   return {
-    // Readonly state
-    options: readonly(options),
-    loading: readonly(loading),
-    error: readonly(error),
+    options,
+    loading,
+    error,
     // Computed options
     statusOptions,
     companiesOptions,

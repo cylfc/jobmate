@@ -151,4 +151,76 @@ export interface RecentActivitiesResponse {
   hasMore?: boolean
 }
 
+/**
+ * Dashboard API Response Types
+ */
+export interface DashboardKpisResponse {
+  openJobs: number
+  candidatesInPipeline: number
+  matchesThisWeek: number
+  averageMatchScore: number
+  timeToShortlist: number
+}
+
+export interface DashboardKpisNormalized {
+  openJobs: number
+  candidatesInPipeline: number
+  matchesThisWeek: number
+  averageMatchScore: number
+  timeToShortlist: number
+}
+
+export interface ActiveJobsApiItem {
+  id: string
+  title: string
+  status: JobStatus
+  candidatesCount: number
+  topMatchScore: number | null
+  lastActivityAt: string
+  lastMatchingRunAt: string | null
+}
+
+export interface ActiveJobsApiResponse {
+  jobs: ActiveJobsApiItem[]
+}
+
+export interface ActiveJob {
+  id: string
+  title: string
+  status: JobStatus
+  candidatesCount: number
+  topMatchScore: number | null
+  lastActivityAt: string
+  lastMatchingRunAt: string | null
+}
+
+export interface DashboardAlertsApiItem {
+  id?: string
+  type?: string
+  message?: string
+  actionUrl?: string
+  severity?: string
+  [key: string]: unknown
+}
+
+export interface DashboardAlertsApiResponse {
+  alerts: DashboardAlertsApiItem[]
+}
+
+export interface MatchingHealthApiResponse {
+  scoreDistribution: MatchScoreDistributionBin[]
+  highQualityRatio: number
+  lowQualityRatio: number
+}
+
+export interface CandidatePipelineApiItem {
+  id: CandidatePipelineStageId
+  count: number
+  [key: string]: unknown
+}
+
+export interface CandidatePipelineApiResponse {
+  stages: CandidatePipelineApiItem[]
+}
+
 

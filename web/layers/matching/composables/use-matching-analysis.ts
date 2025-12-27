@@ -55,21 +55,19 @@ export const useMatchingAnalysis = () => {
 
   /**
    * Get matchings
-   * Uses useAsyncData for SSR-safe data fetching
+   * Uses $fetch for client-side API call (called after component mount)
    */
   const getMatchings = async (): Promise<
     (Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]
   > => {
     try {
-      const { data } = await useAsyncData('matching:matchings', () =>
-        $fetch<{
-          matchings: (Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]
-        }>('/api/matching/matchings', {
-          method: 'GET',
-        })
-      )
+      const response = await $fetch<{
+        matchings: (Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]
+      }>('/api/matching/matchings', {
+        method: 'GET',
+      })
 
-      return data.value?.matchings || []
+      return response.matchings || []
     } catch (error) {
       console.error('Error fetching matchings:', error)
       return []

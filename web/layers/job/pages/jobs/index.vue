@@ -28,9 +28,9 @@
     <!-- Table Card -->
     <UCard>
       <TablesJobsTable
-        :jobs="jobList.jobs.value"
-        :loading="jobList.loading.value"
-        :error="jobList.error.value"
+        :jobs="jobs"
+        :loading="loading"
+        :error="error"
         @view-detail="handleViewDetail"
         @delete="handleDelete"
         @match-candidates="handleMatchCandidates"
@@ -61,7 +61,15 @@ definePageMeta({
 })
 
 // Layer 2: Shared composable for job list state
-const jobList = useJobList()
+const {
+  jobs,
+  loading,
+  error,
+  fetchJobs,
+  addJob,
+  removeJob,
+  removeJobs,
+} = useJobList()
 
 // Layer 3: Query params for filters
 const { filters, updateFilters, resetFilters } = useJobFilters()
@@ -81,17 +89,17 @@ onMounted(async () => {
 // Watch filters and reload when they change (but not on initial load)
 watch(filters, async (newFilters) => {
   if (isInitialLoad.value) return
-  await jobList.fetchJobs(newFilters)
+  await fetchJobs(newFilters)
 }, { deep: true })
 
 const loadJobs = async () => {
   try {
     // Server handles all filtering based on query params
-    await jobList.fetchJobs(filters.value)
-  } catch (error) {
+    await fetchJobs(filters.value)
+  } catch (err) {
     toast.add({
       title: t('job.error.load-failed'),
-      description: jobList.error.value || t('job.error.load-failed-description'),
+      description: error.value || t('job.error.load-failed-description'),
       color: 'error',
     })
   }
@@ -113,7 +121,7 @@ const handleCreateJob = async (input: CreateJobInput) => {
     const newJob = await jobOps.createJob(input)
     if (newJob) {
       // Optimistically add to list
-      jobList.addJob(newJob)
+      addJob(newJob)
       toast.add({
         title: t('job.success.create-success'),
         description: t('job.success.create-success-description'),
@@ -150,7 +158,7 @@ const handleDelete = async (job: Job) => {
   try {
     await jobOps.deleteJob(job.id)
     // Optimistically remove from list
-    jobList.removeJob(job.id)
+    removeJob(job.id)
     toast.add({
       title: t('job.success.delete-success'),
       description: t('job.success.delete-success-description'),
@@ -184,7 +192,7 @@ const handleBulkDelete = async (jobIds: string[]) => {
   try {
     await Promise.all(jobIds.map(id => jobOps.deleteJob(id)))
     // Optimistically remove from list
-    jobList.removeJobs(jobIds)
+    removeJobs(jobIds)
     toast.add({
       title: t('job.success.bulk-delete-success'),
       description: t('job.success.bulk-delete-success-description', { count: jobIds.length }),

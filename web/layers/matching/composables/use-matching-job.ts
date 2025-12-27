@@ -27,17 +27,15 @@ export const useMatchingJob = () => {
 
   /**
    * Get jobs from database
-   * Uses useAsyncData for SSR-safe data fetching
+   * Uses $fetch for client-side API call (called after component mount)
    */
   const getJobsFromDatabase = async (): Promise<Job[]> => {
     try {
-      const { data } = await useAsyncData('matching:jobs', () =>
-        $fetch<{ jobs: Job[] }>('/api/matching/jobs', {
-          method: 'GET',
-        })
-      )
+      const response = await $fetch<{ jobs: Job[] }>('/api/matching/jobs', {
+        method: 'GET',
+      })
 
-      return data.value?.jobs || []
+      return response.jobs || []
     } catch (error) {
       console.error('Error fetching jobs from database:', error)
       return []

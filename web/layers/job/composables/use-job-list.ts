@@ -8,7 +8,7 @@ import type { Job, JobFilter } from '@job/types/job'
 import { useJob } from '@job/utils/job-api'
 
 const _useJobList = () => {
-  const jobs = ref<Job[]>([])
+  const jobs = reactive<Job[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
   
@@ -22,7 +22,7 @@ const _useJobList = () => {
     error.value = null
     try {
       const data = await jobOps.getJobs(filters)
-      jobs.value = data
+      jobs.splice(0, jobs.length, ...data)
       return data
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Failed to fetch jobs'
@@ -45,7 +45,7 @@ const _useJobList = () => {
    * Reset all state
    */
   const reset = () => {
-    jobs.value = []
+    jobs.splice(0, jobs.length)
     loading.value = false
     error.value = null
   }
@@ -54,16 +54,16 @@ const _useJobList = () => {
    * Add a job to the list (optimistic update)
    */
   const addJob = (job: Job) => {
-    jobs.value = [job, ...jobs.value]
+    jobs.unshift(job)
   }
   
   /**
    * Update a job in the list
    */
   const updateJobInList = (updatedJob: Job) => {
-    const index = jobs.value.findIndex(j => j.id === updatedJob.id)
+    const index = jobs.findIndex(j => j.id === updatedJob.id)
     if (index !== -1) {
-      jobs.value[index] = updatedJob
+      jobs[index] = updatedJob
     }
   }
   
@@ -71,14 +71,22 @@ const _useJobList = () => {
    * Remove a job from the list
    */
   const removeJob = (jobId: string) => {
-    jobs.value = jobs.value.filter(j => j.id !== jobId)
+    const index = jobs.findIndex(j => j.id === jobId)
+    if (index !== -1) {
+      jobs.splice(index, 1)
+    }
   }
   
   /**
    * Remove multiple jobs from the list
    */
   const removeJobs = (jobIds: string[]) => {
-    jobs.value = jobs.value.filter(j => !jobIds.includes(j.id))
+    jobIds.forEach(id => {
+      const index = jobs.findIndex(j => j.id === id)
+      if (index !== -1) {
+        jobs.splice(index, 1)
+      }
+    })
   }
   
   // Auto-cleanup on unmount (optional - only if component unmounts)
@@ -91,10 +99,9 @@ const _useJobList = () => {
   })
   
   return {
-    // Readonly state - prevent external mutation
-    jobs: readonly(jobs),
-    loading: readonly(loading),
-    error: readonly(error),
+    jobs,
+    loading,
+    error,
     // Actions
     fetchJobs,
     refresh,

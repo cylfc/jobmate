@@ -8,7 +8,7 @@ import type { Candidate, CandidateFilter } from '@candidate/types/candidate'
 import { useCandidate } from '@candidate/utils/candidate-api'
 
 const _useCandidateList = () => {
-  const candidates = ref<Candidate[]>([])
+  const candidates = reactive<Candidate[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
   
@@ -22,7 +22,7 @@ const _useCandidateList = () => {
     error.value = null
     try {
       const data = await candidateOps.getCandidates(filters)
-      candidates.value = data
+      candidates.splice(0, candidates.length, ...data)
       return data
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Failed to fetch candidates'
@@ -45,7 +45,7 @@ const _useCandidateList = () => {
    * Reset all state
    */
   const reset = () => {
-    candidates.value = []
+    candidates.splice(0, candidates.length)
     loading.value = false
     error.value = null
   }
@@ -54,16 +54,16 @@ const _useCandidateList = () => {
    * Add a candidate to the list (optimistic update)
    */
   const addCandidate = (candidate: Candidate) => {
-    candidates.value = [candidate, ...candidates.value]
+    candidates.unshift(candidate)
   }
   
   /**
    * Update a candidate in the list
    */
   const updateCandidateInList = (updatedCandidate: Candidate) => {
-    const index = candidates.value.findIndex(c => c.id === updatedCandidate.id)
+    const index = candidates.findIndex(c => c.id === updatedCandidate.id)
     if (index !== -1) {
-      candidates.value[index] = updatedCandidate
+      candidates[index] = updatedCandidate
     }
   }
   
@@ -71,14 +71,22 @@ const _useCandidateList = () => {
    * Remove a candidate from the list
    */
   const removeCandidate = (candidateId: string) => {
-    candidates.value = candidates.value.filter(c => c.id !== candidateId)
+    const index = candidates.findIndex(c => c.id === candidateId)
+    if (index !== -1) {
+      candidates.splice(index, 1)
+    }
   }
   
   /**
    * Remove multiple candidates from the list
    */
   const removeCandidates = (candidateIds: string[]) => {
-    candidates.value = candidates.value.filter(c => !candidateIds.includes(c.id))
+    candidateIds.forEach(id => {
+      const index = candidates.findIndex(c => c.id === id)
+      if (index !== -1) {
+        candidates.splice(index, 1)
+      }
+    })
   }
   
   // Auto-cleanup on unmount (optional - only if component unmounts)
@@ -91,10 +99,9 @@ const _useCandidateList = () => {
   })
   
   return {
-    // Readonly state - prevent external mutation
-    candidates: readonly(candidates),
-    loading: readonly(loading),
-    error: readonly(error),
+    candidates,
+    loading,
+    error,
     // Actions
     fetchCandidates,
     refresh,

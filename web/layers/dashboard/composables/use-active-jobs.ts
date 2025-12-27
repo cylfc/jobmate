@@ -1,30 +1,11 @@
-import type { JobStatus } from '@dashboard/types/dashboard'
-
-export interface ActiveJobsApiItem {
-  id: string
-  title: string
-  status: JobStatus
-  candidatesCount: number
-  topMatchScore: number | null
-  lastActivityAt: string // ISO string
-  lastMatchingRunAt: string | null // ISO string
-}
-
-export interface ActiveJobsApiResponse {
-  jobs: ActiveJobsApiItem[]
-}
-
-export interface ActiveJob {
-  id: string
-  title: string
-  status: JobStatus
-  candidatesCount: number
-  topMatchScore: number | null
-  lastActivityAt: string
-  lastMatchingRunAt: string | null
-}
-
-const ACTIVE_JOBS_ASYNC_KEY = 'dashboard:active-jobs'
+/**
+ * Use Active Jobs Composable
+ * Shared composable for managing active jobs state
+ * Uses Layer 2: createSharedComposable for module-scoped state
+ */
+import { createSharedComposable } from '@vueuse/core'
+import type { ActiveJob, ActiveJobsApiItem } from '@dashboard/types/dashboard'
+import { useDashboardApi } from '@dashboard/utils/dashboard-api'
 
 const toEpoch = (iso: string | null | undefined) => {
   if (!iso) return 0
@@ -42,19 +23,18 @@ export function needsAttention(job: Pick<ActiveJob, 'status' | 'lastMatchingRunA
   return job.status === 'published' && !hasRunMatching(job)
 }
 
-export function useActiveJobs() {
-  const { data, pending, error, refresh } = useAsyncData<ActiveJobsApiResponse>(
-    ACTIVE_JOBS_ASYNC_KEY,
-    () => $fetch('/api/dashboard/active-jobs'),
-    {
-      // prepare for caching later
-      dedupe: 'defer',
-    }
-  )
-
-  const jobs = computed<ActiveJob[]>(() => {
-    const raw = data.value?.jobs ?? []
-    return raw
+const _useActiveJobs = () => {
+  const jobs = reactive<ActiveJob[]>([])
+  const loading = ref(false)
+  const error = ref<string | null>(null)
+  
+  const dashboardApi = useDashboardApi()
+  
+  /**
+   * Normalize active jobs data
+   */
+  const normalizeJobs = (rawJobs: ActiveJobsApiItem[]): ActiveJob[] => {
+    return rawJobs
       .map((j) => ({
         id: String(j.id),
         title: String(j.title ?? ''),
@@ -70,19 +50,65 @@ export function useActiveJobs() {
         lastMatchingRunAt: j.lastMatchingRunAt ?? null,
       }))
       .sort((a, b) => toEpoch(b.lastActivityAt) - toEpoch(a.lastActivityAt))
+  }
+  
+  /**
+   * Fetch active jobs
+   */
+  const fetchActiveJobs = async () => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await dashboardApi.getActiveJobs()
+      const normalized = normalizeJobs(response.jobs ?? [])
+      jobs.splice(0, jobs.length, ...normalized)
+      return normalized
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Failed to fetch active jobs'
+      error.value = errorMessage
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  /**
+   * Refresh active jobs
+   */
+  const refresh = async () => {
+    return await fetchActiveJobs()
+  }
+  
+  /**
+   * Reset all state
+   */
+  const reset = () => {
+    jobs.splice(0, jobs.length)
+    loading.value = false
+    error.value = null
+  }
+  
+  // Auto-cleanup on unmount (optional - only if component unmounts)
+  // Note: Shared composable may be used by multiple components,
+  // so cleanup is optional and should be called explicitly if needed
+  onUnmounted(() => {
+    // Optional: Reset state when all components using this composable unmount
+    // Uncomment if you want auto-cleanup:
+    // reset()
   })
-
+  
   return {
-    data,
-    pending,
-    error,
-    refresh,
     jobs,
+    loading,
+    error,
+    // Actions
+    fetchActiveJobs,
+    refresh,
+    reset,
+    // Utility functions
     hasRunMatching,
     needsAttention,
   }
 }
 
-
-
-
+export const useActiveJobs = createSharedComposable(_useActiveJobs)

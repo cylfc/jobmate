@@ -28,9 +28,9 @@
     <!-- Table Card -->
     <UCard>
       <TablesCandidatesTable
-        :candidates="candidateList.candidates.value"
-        :loading="candidateList.loading.value"
-        :error="candidateList.error.value"
+        :candidates="candidates"
+        :loading="loading"
+        :error="error"
         @view-detail="handleViewDetail"
         @invite="handleInvite"
         @delete="handleDelete"
@@ -64,7 +64,15 @@ definePageMeta({
 })
 
 // Layer 2: Shared composable for candidate list state
-const candidateList = useCandidateList()
+const {
+  candidates,
+  loading,
+  error,
+  fetchCandidates,
+  addCandidate,
+  removeCandidate,
+  removeCandidates,
+} = useCandidateList()
 
 // Layer 3: Query params for filters
 const { filters, updateFilters, resetFilters } = useCandidateFilters()
@@ -84,17 +92,17 @@ onMounted(async () => {
 // Watch filters and reload when they change (but not on initial load)
 watch(filters, async (newFilters) => {
   if (isInitialLoad.value) return
-  await candidateList.fetchCandidates(newFilters)
+  await fetchCandidates(newFilters)
 }, { deep: true })
 
 const loadCandidates = async () => {
   try {
     // Server handles all filtering based on query params
-    await candidateList.fetchCandidates(filters.value)
-  } catch (error) {
+    await fetchCandidates(filters.value)
+  } catch (err) {
     toast.add({
       title: t('candidate.error.load-failed'),
-      description: candidateList.error.value || t('candidate.error.load-failed-description'),
+      description: error.value || t('candidate.error.load-failed-description'),
       color: 'error',
     })
   }
@@ -115,7 +123,7 @@ const handleCreateCandidate = async (input: CreateCandidateInput) => {
   try {
     const newCandidate = await candidateOps.createCandidate(input)
     // Optimistically add to list
-    candidateList.addCandidate(newCandidate)
+    addCandidate(newCandidate)
     toast.add({
       title: t('candidate.success.create-success'),
       description: t('candidate.success.create-success-description'),
@@ -170,7 +178,7 @@ const handleDelete = async (candidate: Candidate) => {
   try {
     await candidateOps.deleteCandidate(candidate.id)
     // Optimistically remove from list
-    candidateList.removeCandidate(candidate.id)
+    removeCandidate(candidate.id)
     toast.add({
       title: t('candidate.success.delete-success'),
       description: t('candidate.success.delete-success-description'),
@@ -222,7 +230,7 @@ const handleBulkDelete = async (candidateIds: string[]) => {
   try {
     await Promise.all(candidateIds.map(id => candidateOps.deleteCandidate(id)))
     // Optimistically remove from list
-    candidateList.removeCandidates(candidateIds)
+    removeCandidates(candidateIds)
     toast.add({
       title: t('candidate.success.bulk-delete-success'),
       description: t('candidate.success.bulk-delete-success-description', { count: candidateIds.length }),

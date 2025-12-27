@@ -16,7 +16,7 @@
         <USelectMenu
           class="w-full"
           :model-value="localFilters.status"
-          :options="statusOptions"
+          :options="statusOptionsWithFallback"
           :placeholder="t('job.filter.status-placeholder')"
           clearable
           @update:model-value="handleStatusChange"
@@ -84,14 +84,17 @@ const {
 } = useJobFilters();
 
 // Use filter options composable
-const filterOptions = useJobFilterOptions();
+const {
+  statusOptions,
+  fetchOptions,
+} = useJobFilterOptions();
 
 // Load filter options on mount
 onMounted(async () => {
   try {
-    await filterOptions.fetchOptions();
-  } catch (error) {
-    console.error("Failed to load filter options:", error);
+    await fetchOptions();
+  } catch (err) {
+    console.error("Failed to load filter options:", err);
   }
 });
 
@@ -117,17 +120,17 @@ watch(
   { immediate: true, deep: true }
 );
 
-// Use status options from API
-const statusOptions = computed(() => {
+// Use status options from API (with fallback)
+const statusOptionsWithFallback = computed(() => {
   // Fallback to i18n if options not loaded yet
-  if (filterOptions.statusOptions.value.length === 0) {
+  if (statusOptions.value.length === 0) {
     return [
       { label: t("job.status.draft"), value: "draft" },
       { label: t("job.status.published"), value: "published" },
       { label: t("job.status.closed"), value: "closed" },
     ];
   }
-  return filterOptions.statusOptions.value;
+  return statusOptions.value;
 });
 
 const updateLocalFilter = (
