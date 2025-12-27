@@ -15,7 +15,7 @@
     >
       <div class="flex-1">
         <ChatMessages
-          :messages="[...chat.messages.value]"
+          :messages="[...messages]"
           @component-update="handleComponentUpdate"
           @component-action="handleComponentAction"
         />
@@ -61,7 +61,6 @@
 
 <script setup lang="ts">
 import type { ChatFeature } from "@chat/types/chat";
-import { useChatState } from '@chat/composables/use-chat-state'
 import { useChat } from '@chat/composables/use-chat'
 import { useChatSetup } from '@chat/composables/use-chat-setup'
 import { useChatHandlers } from '@chat/composables/use-chat-handlers'
@@ -75,20 +74,29 @@ interface Props {
   stickyFooter?: boolean;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   showPurposeButtons: true,
   stickyFooter: true,
 });
 
-const chat = useChat()
-const chatSetup = useChatSetup()
-const chatState = useChatState()
-const chatHandlers = useChatHandlers()
+const {
+  messages,
+  isLoading,
+  context,
+  currentHandler,
+  initializeChat,
+  sendMessage,
+  handleComponentUpdate: chatHandleComponentUpdate,
+} = useChat()
+
+const { selectedPurpose, setSelectedPurpose } = useChatSetup()
+
+const { initializeChatWithFeature, hasHandler } = useChatHandlers()
 
 const input = ref("");
 
 const chatStatus = computed(() => {
-  if (chat.isLoading.value) {
+  if (isLoading.value) {
     return "submitted" as const;
   }
   return "ready" as const;
@@ -96,10 +104,10 @@ const chatStatus = computed(() => {
 
 // Initialize chat on mount if not already initialized
 onMounted(() => {
-  const purpose = chatSetup.selectedPurpose.value;
-  if (chat.messages.value.length === 0 || 
-      chat.context.value?.feature !== purpose) {
-    const success = chatHandlers.initializeChatWithFeature(purpose, chat.initializeChat);
+  const purpose = selectedPurpose.value;
+  if (messages.length === 0 || 
+      (context.value && context.value.feature !== purpose)) {
+    const success = initializeChatWithFeature(purpose, initializeChat);
     if (!success) {
       console.error(`Failed to initialize chat with feature: ${purpose} on mount`);
     }
@@ -109,51 +117,51 @@ onMounted(() => {
 const handleSubmit = async (e: Event) => {
   e.preventDefault();
   if (input.value.trim()) {
-    await chat.sendMessage(input.value.trim());
+    await sendMessage(input.value.trim());
     input.value = "";
   }
 };
 
 const handlePurposeSelect = (purpose: ChatFeature) => {
-  chatSetup.setSelectedPurpose(purpose);
+  setSelectedPurpose(purpose);
   // Always reinitialize when purpose changes
   // Ensure handlers are ready before initializing
-  if (!chatHandlers.hasHandler(purpose)) {
+  if (!hasHandler(purpose)) {
     console.warn(`Handler for feature ${purpose} not found. Attempting to initialize...`);
   }
-  const success = chatHandlers.initializeChatWithFeature(purpose, chat.initializeChat);
+  const success = initializeChatWithFeature(purpose, initializeChat);
   if (!success) {
     console.error(`Failed to initialize chat with feature: ${purpose}`);
   }
 };
 
 const handleComponentUpdate = (messageId: string, data: any) => {
-  chat.handleComponentUpdate(messageId, data);
+  chatHandleComponentUpdate(messageId, data);
 };
 
 const handleComponentAction = (messageId: string, action: string) => {
   if (action === 'back') {
     // Go back to previous step
-    const currentStepIndex = chat.context.value?.data?.stepIndex || 0
+    if (!context.value) return
+    const currentStepIndex = context.value.data?.stepIndex || 0
     if (currentStepIndex > 0) {
-      chat.context.value = {
-        ...chat.context.value!,
-        data: {
-          ...chat.context.value!.data,
-          stepIndex: currentStepIndex - 1,
-        },
+      context.value.data = {
+        ...context.value.data,
+        stepIndex: currentStepIndex - 1,
       }
       // Reload the previous step message
-      const script = chat.currentHandler.value?.getScript?.()
-      if (script && script.steps[currentStepIndex - 1]) {
-        const prevStep = script.steps[currentStepIndex - 1]
-        chat.messages.value.push({
-          id: `msg-${Date.now()}`,
-          role: 'assistant',
-          content: prevStep.message,
-          timestamp: new Date(),
-          component: prevStep.component,
-        })
+      if (currentHandler.value) {
+        const script = (currentHandler.value as any).getScript?.()
+        if (script && script.steps[currentStepIndex - 1]) {
+          const prevStep = script.steps[currentStepIndex - 1]
+          messages.push({
+            id: `msg-${Date.now()}`,
+            role: 'assistant',
+            content: prevStep.message,
+            timestamp: new Date(),
+            component: prevStep.component,
+          })
+        }
       }
     }
   } else if (action === 'clear') {

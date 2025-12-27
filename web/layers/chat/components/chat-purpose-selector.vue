@@ -19,10 +19,9 @@
 
 <script setup lang="ts">
 import type { ChatFeature } from '@chat/types/chat'
-import type { PurposeConfig } from '@chat/composables/use-chat-setup'
 
 const { t } = useI18n()
-const chatSetup = useChatSetup()
+const { purposes } = useChatSetup()
 
 interface Props {
   /**
@@ -46,9 +45,6 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<Emits>()
-
-// Get purposes from chat setup
-const purposes = computed(() => chatSetup.purposes.value || [])
 
 const handleSelect = (purpose: ChatFeature) => {
   emit('select', purpose)

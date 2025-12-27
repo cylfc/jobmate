@@ -1,11 +1,13 @@
 /**
  * Use Chat Composable
  * Main composable for chat functionality
+ * Layer 2: Shared composable with createSharedComposable
  */
+import { createSharedComposable } from '@vueuse/core'
 import type { ChatMessage, ChatContext, ChatFeature, ChatHandler } from '@chat/types/chat'
 
-export const useChat = () => {
-  const messages = ref<ChatMessage[]>([])
+const _useChat = () => {
+  const messages = reactive<ChatMessage[]>([])
   const isLoading = ref(false)
   const context = ref<ChatContext | null>(null)
   const currentHandler = ref<ChatHandler | null>(null)
@@ -15,7 +17,7 @@ export const useChat = () => {
    */
   const initializeChat = (feature: ChatFeature, handler: ChatHandler) => {
     // Clear existing messages first to prevent duplicates
-    messages.value = []
+    messages.splice(0, messages.length)
     
     context.value = {
       feature,
@@ -28,24 +30,20 @@ export const useChat = () => {
     const script = (handler as any).getScript?.()
     if (script && script.steps && script.steps.length > 0) {
       const firstStep = script.steps[0]
-      messages.value = [
-        {
-          id: `msg-${Date.now()}`,
-          role: 'assistant',
-          content: firstStep.message,
-          timestamp: new Date(),
-          component: firstStep.component,
-        },
-      ]
+      messages.push({
+        id: `msg-${Date.now()}`,
+        role: 'assistant',
+        content: firstStep.message,
+        timestamp: new Date(),
+        component: firstStep.component,
+      })
     } else {
-      messages.value = [
-        {
-          id: `msg-${Date.now()}`,
-          role: 'assistant',
-          content: initialMessage,
-          timestamp: new Date(),
-        },
-      ]
+      messages.push({
+        id: `msg-${Date.now()}`,
+        role: 'assistant',
+        content: initialMessage,
+        timestamp: new Date(),
+      })
     }
   }
 
@@ -64,14 +62,14 @@ export const useChat = () => {
       content,
       timestamp: new Date(),
     }
-    messages.value.push(userMessage)
+    messages.push(userMessage)
 
     // Process message
     isLoading.value = true
     try {
       const response = await currentHandler.value.handleMessage(content, context.value)
       if (response) {
-        messages.value.push(response)
+        messages.push(response)
       }
     } catch (error) {
       console.error('Error processing message:', error)
@@ -81,7 +79,7 @@ export const useChat = () => {
         content: 'Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại.',
         timestamp: new Date(),
       }
-      messages.value.push(errorMessage)
+      messages.push(errorMessage)
     } finally {
       isLoading.value = false
     }
@@ -91,7 +89,7 @@ export const useChat = () => {
    * Clear chat
    */
   const clearChat = () => {
-    messages.value = []
+    messages.splice(0, messages.length)
     context.value = null
     currentHandler.value = null
   }
@@ -112,7 +110,7 @@ export const useChat = () => {
         step: previousStep,
       }
       const stepMessage = currentHandler.value.getStepMessage(previousStep)
-      messages.value.push({
+      messages.push({
         id: `msg-${Date.now()}`,
         role: 'assistant',
         content: stepMessage,
@@ -129,7 +127,7 @@ export const useChat = () => {
       return
     }
 
-    const message = messages.value.find((m) => m.id === messageId)
+    const message = messages.find((m) => m.id === messageId)
     if (!message) {
       return
     }
@@ -145,7 +143,7 @@ export const useChat = () => {
     try {
       const response = await currentHandler.value.handleComponentUpdate?.(messageId, data, context.value)
       if (response) {
-        messages.value.push(response)
+        messages.push(response)
       }
     } catch (error) {
       console.error('Error processing component update:', error)
@@ -155,22 +153,39 @@ export const useChat = () => {
         content: 'Xin lỗi, đã có lỗi xảy ra khi xử lý dữ liệu. Vui lòng thử lại.',
         timestamp: new Date(),
       }
-      messages.value.push(errorMessage)
+      messages.push(errorMessage)
     } finally {
       isLoading.value = false
     }
   }
 
+  /**
+   * Reset chat state
+   */
+  const reset = () => {
+    messages.splice(0, messages.length)
+    isLoading.value = false
+    context.value = null
+    currentHandler.value = null
+  }
+
+  onUnmounted(() => {
+    // Optional cleanup
+  })
+
   return {
-    messages: readonly(messages),
-    isLoading: readonly(isLoading),
-    context: readonly(context),
-    currentHandler: readonly(currentHandler),
+    messages,
+    isLoading,
+    context,
+    currentHandler,
     initializeChat,
     sendMessage,
     clearChat,
     goBack,
     handleComponentUpdate,
+    reset,
   }
 }
+
+export const useChat = createSharedComposable(_useChat)
 

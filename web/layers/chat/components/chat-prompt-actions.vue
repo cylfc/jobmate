@@ -42,7 +42,6 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>()
 
 const route = useRoute()
-const chatSetup = useChatSetup()
 
 // Check if we're on chat page
 const isChatPage = computed(() => route.path === '/chat')

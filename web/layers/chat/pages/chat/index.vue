@@ -19,9 +19,9 @@ definePageMeta({
 
 const route = useRoute()
 
-const chatSetup = useChatSetup()
-const chatHandlers = useChatHandlers()
-const chat = useChat()
+const { selectedPurpose, setDisplayMode, setSelectedPurpose } = useChatSetup()
+const { initializeChatWithFeature } = useChatHandlers()
+const { messages, context, initializeChat } = useChat()
 
 initChatSetup({
   status: 'ready',
@@ -38,12 +38,12 @@ initChatSetup({
 })
 
 onMounted(() => {
-  chatSetup.setDisplayMode('inline')
-  const feature = (route.query.feature as ChatFeature) || chatSetup.selectedPurpose.value
-  chatSetup.setSelectedPurpose(feature)
+  setDisplayMode('inline')
+  const feature = (route.query.feature as ChatFeature) || selectedPurpose.value
+  setSelectedPurpose(feature)
   // Only initialize if messages are empty or feature changed
-  if (chat.messages.value.length === 0 || chat.context.value?.feature !== feature) {
-    chatHandlers.initializeChatWithFeature(feature, chat.initializeChat)
+  if (messages.length === 0 || (context.value && context.value.feature !== feature)) {
+    initializeChatWithFeature(feature, initializeChat)
   }
 })
 </script>
