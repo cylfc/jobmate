@@ -1,10 +1,12 @@
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { z } from 'zod'
 import type { ChangePasswordInput } from '@auth/composables/auth/schemas'
+import { useAuthApi } from '@auth/utils/auth-api'
 
 export function useChangePassword() {
   const { t } = useI18n()
   const toast = useToast()
+  const api = useAuthApi()
 
   const state = reactive<ChangePasswordInput>({
     currentPassword: '',
@@ -41,17 +43,10 @@ export function useChangePassword() {
     isLoading.value = true
 
     try {
-      // TODO: Implement API call
-      // const response = await $fetch('/api/auth/change-password', {
-      //   method: 'POST',
-      //   body: {
-      //     currentPassword: event.data.currentPassword,
-      //     newPassword: event.data.newPassword,
-      //   },
-      // })
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await api.changePassword({
+        currentPassword: state.currentPassword,
+        newPassword: state.newPassword,
+      })
 
       toast.add({
         title: t('auth.change-password-success-title', 'Đổi mật khẩu thành công'),
@@ -69,7 +64,7 @@ export function useChangePassword() {
     } catch (error: unknown) {
       toast.add({
         title: t('auth.change-password-error-title', 'Đổi mật khẩu thất bại'),
-        description: error.message || t('auth.change-password-error-description', 'Mật khẩu hiện tại không đúng'),
+        description: (error as Error).message || t('auth.change-password-error-description', 'Mật khẩu hiện tại không đúng'),
         color: 'error',
       })
     } finally {

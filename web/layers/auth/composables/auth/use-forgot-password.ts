@@ -1,10 +1,12 @@
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { z } from 'zod'
 import type { ForgotPasswordInput } from '@auth/composables/auth/schemas'
+import { useAuthApi } from '@auth/utils/auth-api'
 
 export function useForgotPassword() {
   const { t } = useI18n()
   const toast = useToast()
+  const api = useAuthApi()
 
   const state = reactive<ForgotPasswordInput>({
     email: '',
@@ -23,14 +25,7 @@ export function useForgotPassword() {
     isLoading.value = true
 
     try {
-      // TODO: Implement API call
-      // const response = await $fetch('/api/auth/forgot-password', {
-      //   method: 'POST',
-      //   body: event.data,
-      // })
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await api.forgotPassword(state)
 
       isEmailSent.value = true
 
@@ -42,7 +37,7 @@ export function useForgotPassword() {
     } catch (error: unknown) {
       toast.add({
         title: t('auth.forgot-password-error-title', 'Gửi email thất bại'),
-        description: error.message || t('auth.forgot-password-error-description', 'Có lỗi xảy ra khi gửi email'),
+        description: (error as Error).message || t('auth.forgot-password-error-description', 'Có lỗi xảy ra khi gửi email'),
         color: 'error',
       })
     } finally {

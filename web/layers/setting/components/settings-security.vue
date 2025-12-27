@@ -17,7 +17,7 @@
       :schema="schema"
       :state="form"
       class="space-y-4"
-      @submit="handleSubmit"
+      @submit="handleFormSubmit"
     >
       <UFormField :label="t('auth.current-password')" name="currentPassword" required class="w-full">
         <UInput
@@ -72,60 +72,29 @@
 </template>
 
 <script setup lang="ts">
-import { z } from 'zod'
+import type { FormSubmitEvent } from '@nuxt/ui'
+import { useChangePassword } from '@auth/composables/auth/use-change-password'
 
 const { t } = useI18n()
 const toast = useToast()
 
-interface SecurityForm {
-  currentPassword: string
-  newPassword: string
-  confirmPassword: string
-}
+const {
+  schema,
+  state: form,
+  isLoading: isSaving,
+  handleSubmit: changePassword,
+} = useChangePassword()
 
-const form = ref<SecurityForm>({
-  currentPassword: '',
-  newPassword: '',
-  confirmPassword: '',
-})
-
-const isSaving = ref(false)
-
-const schema = computed(() => z.object({
-  currentPassword: z
-    .string({ required_error: t('auth.validation.password-required') })
-    .min(1, t('auth.validation.password-required')),
-  newPassword: z
-    .string({ required_error: t('auth.validation.password-required') })
-    .min(8, t('auth.validation.password-min', { min: 8 }))
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, t('auth.validation.password-pattern')),
-  confirmPassword: z
-    .string({ required_error: t('auth.validation.confirm-password-required') })
-    .min(1, t('auth.validation.confirm-password-required')),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: t('auth.validation.confirm-password-mismatch'),
-  path: ['confirmPassword'],
-}))
-
-const handleSubmit = async () => {
-  isSaving.value = true
+const handleFormSubmit = async (event: FormSubmitEvent<any>) => {
   try {
-    // TODO: Call API to change password
-    // await $fetch('/api/settings/security/change-password', {
-    //   method: 'POST',
-    //   body: {
-    //     currentPassword: form.value.currentPassword,
-    //     newPassword: form.value.newPassword,
-    //   },
-    // })
-    
+    await changePassword(event)
     toast.add({
       title: t('setting.security.success.title'),
       description: t('setting.security.success.description'),
       color: 'success',
     })
     
-    // Reset form after success
+    // Reset form after success (already handled by useChangePassword)
     handleReset()
   } catch (_error) {
     toast.add({
@@ -133,17 +102,13 @@ const handleSubmit = async () => {
       description: t('setting.security.error.description'),
       color: 'error',
     })
-  } finally {
-    isSaving.value = false
   }
 }
 
 const handleReset = () => {
-  form.value = {
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-  }
+  form.currentPassword = ''
+  form.newPassword = ''
+  form.confirmPassword = ''
 }
 </script>
 

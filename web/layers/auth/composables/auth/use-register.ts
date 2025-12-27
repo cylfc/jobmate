@@ -1,11 +1,13 @@
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { z } from 'zod'
 import type { RegisterInput } from '@auth/composables/auth/schemas'
+import { useAuthApi } from '@auth/utils/auth-api'
 
 export function useRegister() {
   const { t } = useI18n()
   const toast = useToast()
   const router = useRouter()
+  const api = useAuthApi()
 
   const state = reactive<RegisterInput>({
     firstName: '',
@@ -46,19 +48,15 @@ export function useRegister() {
     isLoading.value = true
 
     try {
-      // TODO: Implement API call
-      // const response = await $fetch('/api/auth/register', {
-      //   method: 'POST',
-      //   body: {
-      //     firstName: event.data.firstName,
-      //     lastName: event.data.lastName,
-      //     email: event.data.email,
-      //     password: event.data.password,
-      //   },
-      // })
+      const response = await api.register({
+        firstName: state.firstName,
+        lastName: state.lastName,
+        email: state.email,
+        password: state.password,
+      })
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // TODO: Store auth state (token, user info, etc.)
+      // For example: useAuthState().setAuth(response.user, response.token)
 
       toast.add({
         title: t('auth.register-success-title', 'Đăng ký thành công'),
@@ -71,7 +69,7 @@ export function useRegister() {
     } catch (error: unknown) {
       toast.add({
         title: t('auth.register-error-title', 'Đăng ký thất bại'),
-        description: error.message || t('auth.register-error-description', 'Có lỗi xảy ra khi đăng ký'),
+        description: (error as Error).message || t('auth.register-error-description', 'Có lỗi xảy ra khi đăng ký'),
         color: 'error',
       })
     } finally {

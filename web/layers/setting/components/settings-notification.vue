@@ -91,7 +91,7 @@
         </UButton>
         <UButton
           color="primary"
-          :loading="isSaving"
+          :loading="loading"
           @click="handleSubmit"
         >
           {{ t('setting.notification.save-button') }}
@@ -102,22 +102,21 @@
 </template>
 
 <script setup lang="ts">
+import { useSettingNotification } from '@setting/composables/use-setting-notification'
+import type { NotificationSettings } from '@setting/types/setting'
+
 const { t } = useI18n()
 const toast = useToast()
 
-interface NotificationForm {
-  emailJobMatches: boolean
-  emailNewCandidates: boolean
-  emailWeeklyDigest: boolean
-  pushJobMatches: boolean
-  pushNewCandidates: boolean
-  pushMessages: boolean
-  inAppJobMatches: boolean
-  inAppNewCandidates: boolean
-  inAppMessages: boolean
-}
+const {
+  settings,
+  loading,
+  error,
+  fetchSettings,
+  updateSettings,
+} = useSettingNotification()
 
-const form = ref<NotificationForm>({
+const form = ref<NotificationSettings>({
   emailJobMatches: true,
   emailNewCandidates: true,
   emailWeeklyDigest: false,
@@ -129,32 +128,24 @@ const form = ref<NotificationForm>({
   inAppMessages: true,
 })
 
-const isSaving = ref(false)
-
 // Load notification settings
 onMounted(async () => {
-  await loadSettings()
+  await fetchSettings()
+  if (settings.value) {
+    form.value = { ...settings.value }
+  }
 })
 
-const loadSettings = async () => {
-  try {
-    // TODO: Call API to load notification settings
-    // const settings = await $fetch('/api/settings/notification')
-    // form.value = settings
-  } catch (error) {
-    console.error('Error loading notification settings:', error)
+// Watch for settings changes
+watch(settings, (newSettings) => {
+  if (newSettings) {
+    form.value = { ...newSettings }
   }
-}
+}, { immediate: true })
 
 const handleSubmit = async () => {
-  isSaving.value = true
   try {
-    // TODO: Call API to save notification settings
-    // await $fetch('/api/settings/notification', {
-    //   method: 'PUT',
-    //   body: form.value,
-    // })
-    
+    await updateSettings(form.value)
     toast.add({
       title: t('setting.notification.success.title'),
       description: t('setting.notification.success.description'),
@@ -163,16 +154,17 @@ const handleSubmit = async () => {
   } catch (_error) {
     toast.add({
       title: t('setting.notification.error.title'),
-      description: t('setting.notification.error.description'),
+      description: error.value || t('setting.notification.error.description'),
       color: 'error',
     })
-  } finally {
-    isSaving.value = false
   }
 }
 
-const handleReset = () => {
-  loadSettings()
+const handleReset = async () => {
+  await fetchSettings()
+  if (settings.value) {
+    form.value = { ...settings.value }
+  }
 }
 </script>
 
