@@ -16,7 +16,7 @@
         <USelectMenu
           class="w-full"
           :model-value="localFilters.status"
-          :options="statusOptions"
+          :options="statusOptionsWithFallback"
           :placeholder="t('candidate.filter.status-placeholder')"
           clearable
           @update:model-value="handleStatusChange"
@@ -108,14 +108,18 @@ const {
 } = useCandidateFilters();
 
 // Use filter options composable
-const filterOptions = useCandidateFilterOptions();
+const {
+  statusOptions,
+  experienceRange,
+  fetchOptions,
+} = useCandidateFilterOptions();
 
 // Load filter options on mount
 onMounted(async () => {
   try {
-    await filterOptions.fetchOptions();
-  } catch (error) {
-    console.error("Failed to load filter options:", error);
+    await fetchOptions();
+  } catch (err) {
+    console.error("Failed to load filter options:", err);
   }
 });
 
@@ -141,21 +145,18 @@ watch(
   { immediate: true, deep: true }
 );
 
-// Use status options from API
-const statusOptions = computed(() => {
+// Use status options from API (with fallback)
+const statusOptionsWithFallback = computed(() => {
   // Fallback to i18n if options not loaded yet
-  if (filterOptions.statusOptions.value.length === 0) {
+  if (statusOptions.value.length === 0) {
     return [
       { label: t("candidate.status.active"), value: "active" },
       { label: t("candidate.status.inactive"), value: "inactive" },
       { label: t("candidate.status.archived"), value: "archived" },
     ];
   }
-  return filterOptions.statusOptions.value;
+  return statusOptions.value;
 });
-
-// Experience range from API
-const experienceRange = computed(() => filterOptions.experienceRange.value);
 
 const updateLocalFilter = (
   key: keyof CandidateFilter,

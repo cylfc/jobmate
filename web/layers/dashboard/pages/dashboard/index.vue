@@ -24,7 +24,7 @@
     <div class="grid grid-cols-1 gap-6 xl:grid-cols-12">
       <!-- Active jobs -->
       <div class="xl:col-span-8">
-        <SectionsActiveJobsTable :jobs="activeJobs">
+        <SectionsActiveJobsTable :jobs="activeJobsData">
           <template #card-actions>
             <UButton
               to="/jobs"
@@ -41,7 +41,7 @@
 
       <!-- Tasks & alerts -->
       <div class="xl:col-span-4">
-        <SectionsTasksAndAlertsPanel :items="alerts">
+        <SectionsTasksAndAlertsPanel :items="alertsData">
           <template #actions>
             <UButton color="neutral" variant="outline" size="sm" icon="i-lucide-list-todo">
               {{ t('dashboard.tasks.view-all') }}
@@ -119,16 +119,14 @@
 <script setup lang="ts">
 import { DASHBOARD_ROLE } from '@dashboard/constants/roles'
 import { useDashboardKpis } from '@dashboard/composables/use-dashboard-kpis'
-import { useDashboardRole } from '@dashboard/composables/use-dashboard-role'
+import { useDashboardFilters } from '@dashboard/composables/use-dashboard-filters'
 import { useActiveJobs } from '@dashboard/composables/use-active-jobs'
 import { useDashboardAlerts } from '@dashboard/composables/use-dashboard-alerts'
 import { useMatchingHealth } from '@dashboard/composables/use-matching-health'
 import { useCandidatePipeline } from '@dashboard/composables/use-candidate-pipeline'
 import { useRecentActivities } from '@dashboard/composables/use-recent-activities'
 import type {
-  ActiveJobRow,
   KpiCard,
-  PipelineStage,
 } from '@dashboard/types/dashboard'
 
 definePageMeta({
@@ -136,34 +134,76 @@ definePageMeta({
 })
 
 const { t } = useI18n()
-const { role } = useDashboardRole()
-const { normalized: kpiValues, pending: isKpiLoading } = useDashboardKpis()
-const { jobs: activeJobs } = useActiveJobs()
-const { alerts } = useDashboardAlerts()
+
+// Layer 3: Query params for filters
+const { role } = useDashboardFilters()
+
+// Layer 2: Shared composables for dashboard data
+const {
+  normalized,
+  loading: kpisLoading,
+  fetchKpis,
+} = useDashboardKpis()
+
+const {
+  jobs: activeJobsData,
+  fetchActiveJobs,
+} = useActiveJobs()
+
+const {
+  alerts: alertsData,
+  fetchAlerts,
+} = useDashboardAlerts()
+
 const {
   scoreDistribution: matchingScoreDistribution,
   highQualityRatio,
   lowQualityRatio,
+  fetchMatchingHealth,
 } = useMatchingHealth()
-const { stages: candidatePipelineStages } = useCandidatePipeline()
-const { events: recentActivityEvents } = useRecentActivities()
+
+const {
+  stages: candidatePipelineStages,
+  fetchCandidatePipeline,
+} = useCandidatePipeline()
+
+const {
+  events: recentActivityEvents,
+  fetchRecentActivities,
+} = useRecentActivities()
+
+// Load all dashboard data on mount
+onMounted(async () => {
+  try {
+    await Promise.all([
+      fetchKpis(),
+      fetchActiveJobs(),
+      fetchAlerts(),
+      fetchMatchingHealth(),
+      fetchCandidatePipeline(),
+      fetchRecentActivities(),
+    ])
+  } catch (err) {
+    console.error('Failed to load dashboard data:', err)
+  }
+})
 
 const canSeeMatchingHealth = computed(() => role.value === DASHBOARD_ROLE.RECRUITER)
 const canSeePipeline = computed(() => role.value === DASHBOARD_ROLE.RECRUITER)
 
 // Pipeline charts data
 const pipelineBarChartItems = computed(() => {
-  return candidatePipelineStages.value.map((stage) => ({
+  return candidatePipelineStages.map((stage) => ({
     label: t(`dashboard.pipeline.stages.${stage.id}`),
     value: stage.count,
   }))
 })
 
 const pipelinePieChartItems = computed(() => {
-  const total = candidatePipelineStages.value.reduce((sum, s) => sum + s.count, 0)
+  const total = candidatePipelineStages.reduce((sum, s) => sum + s.count, 0)
   if (total === 0) return []
   
-  return candidatePipelineStages.value
+  return candidatePipelineStages
     .filter((stage) => stage.count > 0)
     .map((stage) => ({
       name: t(`dashboard.pipeline.stages.${stage.id}`),
@@ -172,7 +212,7 @@ const pipelinePieChartItems = computed(() => {
 })
 
 const kpis = computed<KpiCard[]>(() => {
-  const baseValue = kpiValues.value
+  const baseValue = normalized.value
 
   // Mock trend data (last 7 days) - in real app, this would come from API
   const generateTrend = (current: number, variance: number = 0.2) => {
@@ -191,7 +231,7 @@ const kpis = computed<KpiCard[]>(() => {
       label: t('dashboard.kpi.open-jobs'),
       value: baseValue.openJobs,
       icon: 'i-lucide-briefcase',
-      loading: isKpiLoading.value,
+      loading: kpisLoading.value,
       delta: 2,
       trendData: generateTrend(baseValue.openJobs),
       // Line chart: Trend số lượng job theo thời gian
@@ -202,7 +242,7 @@ const kpis = computed<KpiCard[]>(() => {
       label: t('dashboard.kpi.new-candidates'),
       value: baseValue.candidatesInPipeline,
       icon: 'i-lucide-users',
-      loading: isKpiLoading.value,
+      loading: kpisLoading.value,
       delta: 5,
       trendData: generateTrend(baseValue.candidatesInPipeline),
       // Line chart: Trend số lượng ứng viên mới theo thời gian (continuous trend)
@@ -213,7 +253,7 @@ const kpis = computed<KpiCard[]>(() => {
       label: t('dashboard.kpi.avg-match'),
       value: `${baseValue.averageMatchScore}%`,
       icon: 'i-lucide-sparkles',
-      loading: isKpiLoading.value,
+      loading: kpisLoading.value,
       delta: 3,
       trendData: generateTrend(baseValue.averageMatchScore, 0.15),
       // Line chart: Trend của percentage score theo thời gian
@@ -224,7 +264,7 @@ const kpis = computed<KpiCard[]>(() => {
       label: t('dashboard.kpi.time-to-hire'),
       value: `${baseValue.timeToShortlist}d`,
       icon: 'i-lucide-timer',
-      loading: isKpiLoading.value,
+      loading: kpisLoading.value,
       delta: -1, // Negative is good (faster hiring)
       trendData: generateTrend(baseValue.timeToShortlist, 0.1).reverse(), // Reversed: lower is better
       // Line chart: Trend thời gian tuyển (muốn giảm theo thời gian)
@@ -233,16 +273,8 @@ const kpis = computed<KpiCard[]>(() => {
   ]
 })
 
-// Active jobs are now fetched via `useActiveJobs()`
-// (kept as computed in the composable for consistent sorting/normalization)
-void (activeJobs satisfies Readonly<Ref<ActiveJobRow[]>>)
-// Tasks & alerts are now fetched via `useDashboardAlerts()`
-
-// Matching health is now fetched via `useMatchingHealth()`.
-
-// Candidate pipeline is now fetched via `useCandidatePipeline()`.
-
-// Recent activity is now fetched via `useRecentActivities()`.
+// All dashboard data is now managed via shared composables (Layer 2)
+// Filters are managed via query params (Layer 3)
 </script>
 
 

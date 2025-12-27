@@ -26,7 +26,7 @@ export const useMatchingCandidate = () => {
 
   /**
    * Get candidates from database with filters
-   * Uses useAsyncData for SSR-safe data fetching
+   * Uses $fetch for client-side API call (called after component mount)
    */
   const getCandidatesFromDatabase = async (filters?: CandidateFilter): Promise<Candidate[]> => {
     try {
@@ -41,13 +41,11 @@ export const useMatchingCandidate = () => {
       const queryString = queryParams.toString()
       const url = `/api/matching/candidates${queryString ? `?${queryString}` : ''}`
 
-      const { data } = await useAsyncData(`matching:candidates:${queryString}`, () =>
-        $fetch<{ candidates: Candidate[] }>(url, {
-          method: 'GET',
-        })
-      )
+      const response = await $fetch<{ candidates: Candidate[] }>(url, {
+        method: 'GET',
+      })
 
-      return data.value?.candidates || []
+      return response.candidates || []
     } catch (error) {
       console.error('Error fetching candidates from database:', error)
       return []
