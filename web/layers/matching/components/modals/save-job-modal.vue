@@ -96,7 +96,9 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const { saveJob } = useMatching()
+import { useMatchingJob } from '@matching/composables/use-matching-job'
+
+const { saveJob } = useMatchingJob()
 
 const isOpen = defineModel<boolean>({ default: false })
 

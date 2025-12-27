@@ -113,7 +113,9 @@ interface Emits {
 defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const { getJobsFromDatabase, parseJobFromText } = useMatching()
+import { useMatchingJob } from '@matching/composables/use-matching-job'
+
+const { getJobsFromDatabase, parseJobFromText } = useMatchingJob()
 
 const selectedMode = ref<JobInputMode>(JOB_INPUT_MODE.INPUT)
 const jobDescription = ref('')

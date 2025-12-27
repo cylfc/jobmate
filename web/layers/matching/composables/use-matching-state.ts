@@ -1,14 +1,16 @@
 /**
  * Use Matching State Composable
  * Manages state for matching workflow (steps, selected items, matchings)
+ * Layer 2: Shared composable with createSharedComposable
  */
+import { createSharedComposable } from '@vueuse/core'
 import type { Job, Candidate, Matching } from '@matching/types/matching'
 
-export const useMatchingState = () => {
+const _useMatchingState = () => {
   const currentStep = ref(1)
   const selectedJob = ref<Job | null>(null)
-  const selectedCandidates = ref<Candidate[]>([])
-  const matchings = ref<(Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]>([])
+  const selectedCandidates = reactive<Candidate[]>([])
+  const matchings = reactive<(Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]>([])
 
   const nextStep = () => {
     if (currentStep.value < 4) {
@@ -31,9 +33,13 @@ export const useMatchingState = () => {
   const reset = () => {
     currentStep.value = 1
     selectedJob.value = null
-    selectedCandidates.value = []
-    matchings.value = []
+    selectedCandidates.splice(0, selectedCandidates.length)
+    matchings.splice(0, matchings.length)
   }
+
+  onUnmounted(() => {
+    // Optional cleanup
+  })
 
   return {
     currentStep,
@@ -46,4 +52,6 @@ export const useMatchingState = () => {
     reset,
   }
 }
+
+export const useMatchingState = createSharedComposable(_useMatchingState)
 

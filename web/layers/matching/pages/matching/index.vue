@@ -45,7 +45,7 @@
         @reset="handleReset"
         @save-candidate="handleSaveCandidateFromResults"
         @refresh="handleRefreshMatchings"
-        @update:matchings="matchings = $event"
+        @update:matchings="matchings.splice(0, matchings.length, ...$event)"
       />
     </div>
 
@@ -65,6 +65,8 @@
 
 <script setup lang="ts">
 import type { Candidate, Matching } from '@matching/types/matching'
+import { useMatchingState } from '@matching/composables/use-matching-state'
+import { useMatchingAnalysis } from '@matching/composables/use-matching-analysis'
 import { useJob } from '@job/utils/job-api'
 import { useCandidate } from '@candidate/utils/candidate-api'
 
@@ -79,15 +81,18 @@ const {
   selectedJob,
   selectedCandidates,
   matchings,
-  isAnalyzing,
-  analysisProgress,
-  analyzeMatchings,
-  getMatchings,
   nextStep,
   previousStep,
   goToStep,
   reset,
-} = useMatching()
+} = useMatchingState()
+
+const {
+  isAnalyzing,
+  analysisProgress,
+  analyzeMatchings,
+  getMatchings,
+} = useMatchingAnalysis()
 
 const showSaveJobModal = ref(false)
 const showSaveCandidateModal = ref(false)
@@ -99,8 +104,10 @@ const { getCandidateById } = useCandidate()
 const handleNext = async () => {
   if (currentStep.value === 2) {
     // Start analysis when moving from step 2 to step 3
-    if (selectedJob.value && selectedCandidates.value.length > 0) {
-      await analyzeMatchings(selectedJob.value, selectedCandidates.value)
+    if (selectedJob.value && selectedCandidates.length > 0) {
+      const result = await analyzeMatchings(selectedJob.value, selectedCandidates)
+      // Update matchings in state
+      matchings.splice(0, matchings.length, ...result)
     }
   }
   nextStep()
@@ -133,15 +140,16 @@ const handleSaveCandidateFromResults = (_matching: Matching) => {
 
 const handleRefreshMatchings = async () => {
   // Refresh matchings by re-analyzing with current job and candidates
-  if (selectedJob.value && selectedCandidates.value.length > 0) {
-      await analyzeMatchings(selectedJob.value, selectedCandidates.value)
-      // matchings.value is updated by analyzeMatchings, which will trigger props update in Step 4
-      console.log('Parent - Refreshed matchings:', matchings.value)
+  if (selectedJob.value && selectedCandidates.length > 0) {
+      const result = await analyzeMatchings(selectedJob.value, selectedCandidates)
+      // Update matchings in state
+      matchings.splice(0, matchings.length, ...result)
+      console.log('Parent - Refreshed matchings:', matchings)
   } else {
     // If no job/candidates, try to get from API
     const apiMatchings = await getMatchings()
     if (apiMatchings && apiMatchings.length > 0) {
-      matchings.value = apiMatchings
+      matchings.splice(0, matchings.length, ...apiMatchings)
     }
   }
 }
@@ -175,7 +183,7 @@ onMounted(async () => {
     // Prefill candidate from candidate layer
     const candidate = await getCandidateById(candidateId)
     if (candidate) {
-      selectedCandidates.value = [{
+      selectedCandidates.splice(0, selectedCandidates.length, {
         id: candidate.id,
         firstName: candidate.firstName,
         lastName: candidate.lastName,
@@ -184,7 +192,7 @@ onMounted(async () => {
         skills: candidate.skills,
         experience: candidate.experience,
         status: candidate.status,
-      }]
+      })
       // Stay at step 1 to select job, then candidate is already selected
       goToStep(1)
     }
