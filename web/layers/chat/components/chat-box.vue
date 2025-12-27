@@ -2,20 +2,19 @@
   <UCard
     class="h-full flex flex-col overflow-hidden"
     :ui="{
-      body: 'h-full',
+      body: mode === 'inline' ? 'h-full max-h-[calc(100dvh-6rem)]' : 'h-full',
     }"
   >
     <UChatPalette
       class="h-full flex flex-col min-h-0"
       :ui="{
         root: 'h-full flex flex-col justify-start items-stretch',
-        prompt: 'border-none border-t-0',
-        content: 'max-h-[calc(100vh - 96px)]',
+        prompt: 'border-none border-t-0 !pb-0',
       }"
     >
       <div class="flex-1">
         <ChatMessages
-          :messages="[...messages]"
+          :messages="messages"
           @component-update="handleComponentUpdate"
           @component-action="handleComponentAction"
         />
@@ -61,38 +60,25 @@
 
 <script setup lang="ts">
 import type { ChatFeature } from "@chat/types/chat";
-import { useChat } from '@chat/composables/use-chat'
 import { useChatSetup } from '@chat/composables/use-chat-setup'
-import { useChatHandlers } from '@chat/composables/use-chat-handlers'
-import { useChatComponents } from '@chat/composables/use-chat-components'
-
-const chatComponents = useChatComponents()
-chatComponents.registerDefaultComponents()
 
 interface Props {
   showPurposeButtons?: boolean;
   stickyFooter?: boolean;
+  mode: 'inline' | 'modal';
 }
 
 withDefaults(defineProps<Props>(), {
   showPurposeButtons: true,
   stickyFooter: true,
+  mode: 'inline',
 });
-
-const {
-  messages,
-  isLoading,
-  context,
-  currentHandler,
-  initializeChat,
-  sendMessage,
-  handleComponentUpdate: chatHandleComponentUpdate,
-} = useChat()
 
 const { selectedPurpose, setSelectedPurpose } = useChatSetup()
 
-const { initializeChatWithFeature, hasHandler } = useChatHandlers()
-
+// Simple message state (UI only)
+const messages = reactive<Array<{ id: string; role: 'user' | 'assistant'; content: string; timestamp: Date; component?: any }>>([])
+const isLoading = ref(false)
 const input = ref("");
 
 const chatStatus = computed(() => {
@@ -102,71 +88,32 @@ const chatStatus = computed(() => {
   return "ready" as const;
 });
 
-// Initialize chat on mount if not already initialized
-onMounted(() => {
-  const purpose = selectedPurpose.value;
-  if (messages.length === 0 || 
-      (context.value && context.value.feature !== purpose)) {
-    const success = initializeChatWithFeature(purpose, initializeChat);
-    if (!success) {
-      console.error(`Failed to initialize chat with feature: ${purpose} on mount`);
-    }
-  }
-});
-
 const handleSubmit = async (e: Event) => {
   e.preventDefault();
   if (input.value.trim()) {
-    await sendMessage(input.value.trim());
+    // Add user message
+    messages.push({
+      id: `msg-${Date.now()}`,
+      role: 'user',
+      content: input.value.trim(),
+      timestamp: new Date(),
+    });
     input.value = "";
+    // TODO: Handle message processing
   }
 };
 
 const handlePurposeSelect = (purpose: ChatFeature) => {
   setSelectedPurpose(purpose);
-  // Always reinitialize when purpose changes
-  // Ensure handlers are ready before initializing
-  if (!hasHandler(purpose)) {
-    console.warn(`Handler for feature ${purpose} not found. Attempting to initialize...`);
-  }
-  const success = initializeChatWithFeature(purpose, initializeChat);
-  if (!success) {
-    console.error(`Failed to initialize chat with feature: ${purpose}`);
-  }
 };
 
 const handleComponentUpdate = (messageId: string, data: any) => {
-  chatHandleComponentUpdate(messageId, data);
+  // TODO: Handle component update
+  console.log('Component update:', messageId, data);
 };
 
 const handleComponentAction = (messageId: string, action: string) => {
-  if (action === 'back') {
-    // Go back to previous step
-    if (!context.value) return
-    const currentStepIndex = context.value.data?.stepIndex || 0
-    if (currentStepIndex > 0) {
-      context.value.data = {
-        ...context.value.data,
-        stepIndex: currentStepIndex - 1,
-      }
-      // Reload the previous step message
-      if (currentHandler.value) {
-        const script = (currentHandler.value as any).getScript?.()
-        if (script && script.steps[currentStepIndex - 1]) {
-          const prevStep = script.steps[currentStepIndex - 1]
-          messages.push({
-            id: `msg-${Date.now()}`,
-            role: 'assistant',
-            content: prevStep.message,
-            timestamp: new Date(),
-            component: prevStep.component,
-          })
-        }
-      }
-    }
-  } else if (action === 'clear') {
-    // Clear current step data - handled by component itself
-    // This is mainly for UI feedback
-  }
+  // TODO: Handle component action
+  console.log('Component action:', messageId, action);
 };
 </script>

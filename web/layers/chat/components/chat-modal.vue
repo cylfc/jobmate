@@ -1,7 +1,7 @@
 <template>
   <UModal
     :ui="{
-      content: 'w-full max-w-2xl p-0',
+      content: 'w-full max-w-2xl p-0 max-h-[80dvh]',
       body: 'sm:p-0 p-0',
     }"
   >
@@ -39,6 +39,7 @@
           class="h-full flex flex-col !border-0 !ring-0"
           :show-purpose-buttons="true"
           :sticky-footer="true"
+          mode="modal"
         />
       </div>
     </template>
@@ -46,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { useChatHandlers } from "@chat/composables/use-chat-handlers";
+import { useChatSetup } from '@chat/composables/use-chat-setup'
 
 interface Props {
   feature?: string;
@@ -60,10 +61,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { t } = useI18n();
 const route = useRoute();
-
-const { displayMode, selectedPurpose } = useChatSetup();
-const { initializeChatWithFeature } = useChatHandlers();
-const { messages, context, initializeChat } = useChat();
+const { displayMode } = useChatSetup();
 
 const isChatPage = computed(() => route.path === "/chat");
 const shouldShow = computed(
@@ -71,33 +69,4 @@ const shouldShow = computed(
 );
 
 const isModalOpen = ref(false);
-
-// Initialize chat when modal opens or when purpose changes
-const initializeChatIfNeeded = () => {
-  const purpose = selectedPurpose.value;
-  // Only initialize if messages are empty or feature changed
-  if (messages.length === 0 || 
-      (context.value && context.value.feature !== purpose)) {
-    const success = initializeChatWithFeature(
-      purpose,
-      initializeChat
-    );
-    if (!success) {
-      console.error(`Failed to initialize chat with feature: ${purpose}`);
-    }
-  }
-};
-
-watch(isModalOpen, (open) => {
-  if (open) {
-    initializeChatIfNeeded();
-  }
-});
-
-// Also watch for purpose changes to reinitialize if needed
-watch(() => selectedPurpose.value, () => {
-  if (isModalOpen.value) {
-    initializeChatIfNeeded();
-  }
-});
 </script>

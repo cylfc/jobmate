@@ -39,13 +39,9 @@
 
 <script setup lang="ts">
 import { initChatSetup, useChatSetup } from '@chat/composables/use-chat-setup'
-import { useChatHandlers } from '@chat/composables/use-chat-handlers'
 
 const route = useRoute()
 const { setDisplayMode } = useChatSetup()
-
-// Initialize chat handlers (automatically registers matching factory)
-useChatHandlers()
 
 initChatSetup({
   status: 'ready',
