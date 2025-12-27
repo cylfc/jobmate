@@ -1,15 +1,15 @@
 <template>
   <UChatMessages
     :messages="formattedMessages"
-    :status="chatSetup.status.value"
-    :user="chatSetup.user.value"
-    :assistant="chatSetup.assistant.value"
-    :should-auto-scroll="chatSetup.shouldAutoScroll.value"
-    :should-scroll-to-bottom="chatSetup.shouldScrollToBottom.value"
-    :auto-scroll="chatSetup.autoScroll.value"
-    :compact="chatSetup.compact.value ?? false"
-    :spacing-offset="chatSetup.spacingOffset.value ?? 0"
-    :ui="chatSetup.ui.value"
+    :status="status"
+    :user="user"
+    :assistant="assistant"
+    :should-auto-scroll="shouldAutoScroll"
+    :should-scroll-to-bottom="shouldScrollToBottom"
+    :auto-scroll="autoScroll"
+    :compact="compact"
+    :spacing-offset="spacingOffset"
+    :ui="ui"
     class="h-full"
   >
     <!-- Content slot - customize message content rendering -->
@@ -65,7 +65,6 @@
 import type { ChatMessage } from "@chat/types/chat";
 import { getTextFromMessage } from "@nuxt/ui/utils/ai";
 import { getChatComponent } from "@chat/stores/component-registry";
-import { useChat } from "@chat/composables/use-chat";
 
 interface Props {
   messages: ChatMessage[];
@@ -73,8 +72,17 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const chatSetup = useChatSetup({ syncStatus: true });
-const chat = useChat();
+const {
+  status,
+  user,
+  assistant,
+  shouldAutoScroll,
+  shouldScrollToBottom,
+  autoScroll,
+  compact,
+  spacingOffset,
+  ui,
+} = useChatSetup({ syncStatus: true });
 
 const emit = defineEmits<{
   (e: "component-update", messageId: string, data: any): void;

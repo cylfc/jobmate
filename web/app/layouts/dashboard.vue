@@ -39,13 +39,12 @@
 
 <script setup lang="ts">
 import { initChatSetup, useChatSetup } from '@chat/composables/use-chat-setup'
-import { initChatHandlers } from '@chat/stores/chat-handlers'
 import { useChatHandlers } from '@chat/composables/use-chat-handlers'
 
 const route = useRoute()
-const chatSetup = useChatSetup()
+const { setDisplayMode } = useChatSetup()
 
-initChatHandlers()
+// Initialize chat handlers (automatically registers matching factory)
 useChatHandlers()
 
 initChatSetup({
@@ -61,9 +60,9 @@ initChatSetup({
 
 watch(() => route.path, (path) => {
   if (path === '/chat') {
-    chatSetup.setDisplayMode('inline')
+    setDisplayMode('inline')
   } else {
-    chatSetup.setDisplayMode('modal')
+    setDisplayMode('modal')
   }
 }, { immediate: true })
 </script>

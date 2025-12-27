@@ -60,11 +60,11 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { t } = useI18n();
 const route = useRoute();
-const chatSetup = useChatSetup();
-const chatHandlers = useChatHandlers();
-const chatComposable = useChat();
 
-const displayMode = computed(() => chatSetup.displayMode.value);
+const { displayMode, selectedPurpose } = useChatSetup();
+const { initializeChatWithFeature } = useChatHandlers();
+const { messages, context, initializeChat } = useChat();
+
 const isChatPage = computed(() => route.path === "/chat");
 const shouldShow = computed(
   () => !isChatPage.value && displayMode.value === "modal"
@@ -74,13 +74,13 @@ const isModalOpen = ref(false);
 
 // Initialize chat when modal opens or when purpose changes
 const initializeChatIfNeeded = () => {
-  const purpose = chatSetup.selectedPurpose.value;
+  const purpose = selectedPurpose.value;
   // Only initialize if messages are empty or feature changed
-  if (chatComposable.messages.value.length === 0 || 
-      chatComposable.context.value?.feature !== purpose) {
-    const success = chatHandlers.initializeChatWithFeature(
+  if (messages.length === 0 || 
+      (context.value && context.value.feature !== purpose)) {
+    const success = initializeChatWithFeature(
       purpose,
-      chatComposable.initializeChat
+      initializeChat
     );
     if (!success) {
       console.error(`Failed to initialize chat with feature: ${purpose}`);
@@ -95,7 +95,7 @@ watch(isModalOpen, (open) => {
 });
 
 // Also watch for purpose changes to reinitialize if needed
-watch(() => chatSetup.selectedPurpose.value, () => {
+watch(() => selectedPurpose.value, () => {
   if (isModalOpen.value) {
     initializeChatIfNeeded();
   }
