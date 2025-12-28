@@ -41,8 +41,14 @@
           v-model="form.email"
           type="email"
           :placeholder="t('auth.login-form.email-placeholder')"
+          :disabled="true"
           class="w-full"
         />
+        <template #hint>
+          <p class="text-sm text-muted mt-1">
+            {{ t('setting.profile.email-readonly-hint', 'Email cannot be changed') }}
+          </p>
+        </template>
       </UFormField>
 
       <UFormField :label="t('setting.profile.phone')" name="phone" class="w-full">
@@ -118,6 +124,9 @@ const schema = computed(() => z.object({
     .email(t('auth.validation.email-invalid')),
   phone: z.string().optional(),
   bio: z.string().optional(),
+}).refine((data) => {
+  // Email is read-only, so we don't validate it for updates
+  return true
 }))
 
 // Load user profile data

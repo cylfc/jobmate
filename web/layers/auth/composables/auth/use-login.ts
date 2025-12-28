@@ -45,8 +45,9 @@ export function useLogin() {
         color: 'success',
       })
 
-      // Redirect to dashboard
-      await router.push('/dashboard')
+      // Redirect to dashboard or redirect query param
+      const redirectPath = (router.currentRoute.value.query.redirect as string) || '/dashboard'
+      await router.push(redirectPath)
     } catch (error: unknown) {
       const errorMessage =
         error && typeof error === 'object' && 'message' in error

@@ -6,15 +6,39 @@
 import type { UserProfile, SecuritySettings, NotificationSettings, SystemConfig } from '@setting/types/setting'
 
 export const useSettingApi = () => {
+  const { $api } = useNuxtApp()
+
   /**
    * Get user profile
+   * Uses auth API endpoint
    */
   const getProfile = async (): Promise<UserProfile> => {
     try {
-      const response = await $fetch<{ profile: UserProfile }>('/api/settings/profile', {
+      const response = await $api<{ user: {
+        id: string
+        email: string
+        firstName?: string
+        lastName?: string
+        phone?: string
+        avatarUrl?: string
+        role: string
+        emailVerified?: boolean
+        isActive?: boolean
+        lastLoginAt?: string
+        createdAt?: string
+        updatedAt?: string
+      } }>('/api/auth/me', {
         method: 'GET',
       })
-      return response.profile
+      
+      // Transform auth user to UserProfile
+      return {
+        firstName: response.user.firstName || '',
+        lastName: response.user.lastName || '',
+        email: response.user.email,
+        phone: response.user.phone,
+        bio: '', // Bio is not in auth API, can be added later
+      }
     } catch (error) {
       console.error('Error fetching profile:', error)
       throw error
@@ -23,14 +47,40 @@ export const useSettingApi = () => {
 
   /**
    * Update user profile
+   * Uses auth API endpoint
    */
   const updateProfile = async (profile: UserProfile): Promise<UserProfile> => {
     try {
-      const response = await $fetch<{ profile: UserProfile }>('/api/settings/profile', {
-        method: 'PUT',
-        body: profile,
+      const response = await $api<{ user: {
+        id: string
+        email: string
+        firstName?: string
+        lastName?: string
+        phone?: string
+        avatarUrl?: string
+        role: string
+        emailVerified?: boolean
+        isActive?: boolean
+        updatedAt?: string
+      } }>('/api/auth/profile', {
+        method: 'PATCH',
+        body: {
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          phone: profile.phone,
+          // Note: bio and email are not updatable via auth API
+          // Email changes might require separate endpoint
+        },
       })
-      return response.profile
+      
+      // Transform auth user to UserProfile
+      return {
+        firstName: response.user.firstName || '',
+        lastName: response.user.lastName || '',
+        email: response.user.email,
+        phone: response.user.phone,
+        bio: profile.bio, // Keep existing bio as it's not in response
+      }
     } catch (error) {
       console.error('Error updating profile:', error)
       throw error
@@ -42,7 +92,7 @@ export const useSettingApi = () => {
    */
   const getSecuritySettings = async (): Promise<SecuritySettings> => {
     try {
-      const response = await $fetch<{ settings: SecuritySettings }>('/api/settings/security', {
+      const response = await $api<{ settings: SecuritySettings }>('/api/settings/security', {
         method: 'GET',
       })
       return response.settings
@@ -57,7 +107,7 @@ export const useSettingApi = () => {
    */
   const updateSecuritySettings = async (settings: SecuritySettings): Promise<SecuritySettings> => {
     try {
-      const response = await $fetch<{ settings: SecuritySettings }>('/api/settings/security', {
+      const response = await $api<{ settings: SecuritySettings }>('/api/settings/security', {
         method: 'PUT',
         body: settings,
       })
@@ -73,7 +123,7 @@ export const useSettingApi = () => {
    */
   const getNotificationSettings = async (): Promise<NotificationSettings> => {
     try {
-      const response = await $fetch<{ settings: NotificationSettings }>('/api/settings/notification', {
+      const response = await $api<{ settings: NotificationSettings }>('/api/settings/notification', {
         method: 'GET',
       })
       return response.settings
@@ -88,7 +138,7 @@ export const useSettingApi = () => {
    */
   const updateNotificationSettings = async (settings: NotificationSettings): Promise<NotificationSettings> => {
     try {
-      const response = await $fetch<{ settings: NotificationSettings }>('/api/settings/notification', {
+      const response = await $api<{ settings: NotificationSettings }>('/api/settings/notification', {
         method: 'PUT',
         body: settings,
       })
@@ -104,7 +154,7 @@ export const useSettingApi = () => {
    */
   const getSystemConfig = async (): Promise<SystemConfig> => {
     try {
-      const response = await $fetch<{ config: SystemConfig }>('/api/settings/system', {
+      const response = await $api<{ config: SystemConfig }>('/api/settings/system', {
         method: 'GET',
       })
       return response.config
@@ -119,7 +169,7 @@ export const useSettingApi = () => {
    */
   const updateSystemConfig = async (config: SystemConfig): Promise<SystemConfig> => {
     try {
-      const response = await $fetch<{ config: SystemConfig }>('/api/settings/system', {
+      const response = await $api<{ config: SystemConfig }>('/api/settings/system', {
         method: 'PUT',
         body: config,
       })

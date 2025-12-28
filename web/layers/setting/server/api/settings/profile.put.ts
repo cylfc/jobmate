@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { useApiClient } from '@auth/utils/api-client'
 import type { UserProfile } from '@setting/types/setting'
 
 const profileSchema = z.object({
@@ -14,14 +15,47 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event)
     const validated = profileSchema.parse(body)
 
-    // TODO: Implement actual profile update logic
-    // For now, return the validated data
+    // Get access token from Authorization header
+    const authHeader = getHeader(event, 'authorization')
+    if (!authHeader) {
+      throw createError({
+        statusCode: 401,
+        message: 'Authorization header required',
+      })
+    }
+
+    const apiClient = useApiClient()
+
+    // Call auth API to update profile
+    const response = await apiClient.patch<{
+      id: string
+      email: string
+      firstName?: string
+      lastName?: string
+      phone?: string
+      avatarUrl?: string
+      role: string
+      emailVerified: boolean
+      isActive: boolean
+      updatedAt: string
+    }>(
+      '/auth/profile',
+      {
+        firstName: validated.firstName,
+        lastName: validated.lastName,
+        phone: validated.phone,
+        // Note: email and bio are not updatable via auth API
+      },
+      { Authorization: authHeader },
+    )
+
+    // Transform to UserProfile format
     const updatedProfile: UserProfile = {
-      firstName: validated.firstName,
-      lastName: validated.lastName,
-      email: validated.email,
-      phone: validated.phone,
-      bio: validated.bio,
+      firstName: response.firstName || '',
+      lastName: response.lastName || '',
+      email: response.email,
+      phone: response.phone,
+      bio: validated.bio, // Keep bio from request as it's not in response
     }
 
     return {
@@ -33,6 +67,17 @@ export default defineEventHandler(async (event) => {
         statusCode: 400,
         message: 'Invalid input',
         data: error.errors,
+      })
+    }
+
+    // Handle backend errors
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      const statusCode = (error as { statusCode: number }).statusCode
+      const message = (error as { message: string }).message || 'Failed to update profile'
+
+      throw createError({
+        statusCode,
+        message,
       })
     }
 

@@ -28,12 +28,14 @@ export interface UserProfileResponse {
 }
 
 export const useAuthApi = () => {
+  const { $api } = useNuxtApp()
+
   /**
    * Login user
    */
   const login = async (input: LoginInput): Promise<AuthResponse> => {
     try {
-      const response = await $fetch<AuthResponse>('/api/auth/login', {
+      const response = await $api<AuthResponse>('/api/auth/login', {
         method: 'POST',
         body: input,
       })
@@ -49,7 +51,7 @@ export const useAuthApi = () => {
    */
   const register = async (input: Omit<RegisterInput, 'confirmPassword'>): Promise<AuthResponse> => {
     try {
-      const response = await $fetch<AuthResponse>('/api/auth/register', {
+      const response = await $api<AuthResponse>('/api/auth/register', {
         method: 'POST',
         body: {
           firstName: input.firstName,
@@ -70,7 +72,7 @@ export const useAuthApi = () => {
    */
   const forgotPassword = async (input: ForgotPasswordInput): Promise<void> => {
     try {
-      await $fetch('/api/auth/forgot-password', {
+      await $api('/api/auth/forgot-password', {
         method: 'POST',
         body: input,
       })
@@ -85,7 +87,7 @@ export const useAuthApi = () => {
    */
   const changePassword = async (input: ChangePasswordInput): Promise<void> => {
     try {
-      await $fetch('/api/auth/change-password', {
+      await $api('/api/auth/change-password', {
         method: 'POST',
         body: {
           currentPassword: input.currentPassword,
@@ -109,7 +111,7 @@ export const useAuthApi = () => {
         headers.Authorization = `Bearer ${accessToken}`
       }
 
-      await $fetch('/api/auth/logout', {
+      await $api('/api/auth/logout', {
         method: 'POST',
         headers,
         body: { refreshToken },
@@ -125,7 +127,7 @@ export const useAuthApi = () => {
    */
   const refreshToken = async (refreshToken: string): Promise<RefreshTokenResponse> => {
     try {
-      const response = await $fetch<RefreshTokenResponse>('/api/auth/refresh', {
+      const response = await $api<RefreshTokenResponse>('/api/auth/refresh', {
         method: 'POST',
         body: { refreshToken },
       })
@@ -141,7 +143,7 @@ export const useAuthApi = () => {
    */
   const getProfile = async (): Promise<UserProfileResponse> => {
     try {
-      const response = await $fetch<UserProfileResponse>('/api/auth/me', {
+      const response = await $api<UserProfileResponse>('/api/auth/me', {
         method: 'GET',
       })
       return response
@@ -161,7 +163,7 @@ export const useAuthApi = () => {
     avatarUrl?: string
   }): Promise<UserProfileResponse> => {
     try {
-      const response = await $fetch<UserProfileResponse>('/api/auth/profile', {
+      const response = await $api<UserProfileResponse>('/api/auth/profile', {
         method: 'PATCH',
         body: profile,
       })
