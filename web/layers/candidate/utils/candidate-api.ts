@@ -6,9 +6,11 @@
 import type { Candidate, CreateCandidateInput, CandidateFilter } from '@candidate/types/candidate'
 
 export const useCandidate = () => {
+  const { $api } = useNuxtApp()
+
   const getCandidates = async (filters?: CandidateFilter) => {
     try {
-      const response = await $fetch<{ candidates: Candidate[] }>('/api/candidates', {
+      const response = await $api<{ candidates: Candidate[] }>('/api/candidates', {
         method: 'GET',
         query: filters,
       })
@@ -21,7 +23,7 @@ export const useCandidate = () => {
 
   const getCandidateById = async (id: string): Promise<Candidate | null> => {
     try {
-      const response = await $fetch<{ candidate: Candidate }>(`/api/candidates/${id}`, {
+      const response = await $api<{ candidate: Candidate }>(`/api/candidates/${id}`, {
         method: 'GET',
       })
       return response.candidate || null
@@ -33,7 +35,7 @@ export const useCandidate = () => {
 
   const createCandidate = async (input: CreateCandidateInput) => {
     try {
-      const response = await $fetch<{ candidate: Candidate }>('/api/candidates', {
+      const response = await $api<{ candidate: Candidate }>('/api/candidates', {
         method: 'POST',
         body: input,
       })
@@ -46,7 +48,7 @@ export const useCandidate = () => {
 
   const updateCandidate = async (id: string, input: Partial<CreateCandidateInput> & { status?: Candidate['status'] }) => {
     try {
-      const response = await $fetch<{ candidate: Candidate }>(`/api/candidates/${id}`, {
+      const response = await $api<{ candidate: Candidate }>(`/api/candidates/${id}`, {
         method: 'PUT',
         body: input,
       })
@@ -59,7 +61,7 @@ export const useCandidate = () => {
 
   const deleteCandidate = async (id: string) => {
     try {
-      await $fetch(`/api/candidates/${id}`, {
+      await $api(`/api/candidates/${id}`, {
         method: 'DELETE',
       })
       return true
@@ -87,7 +89,7 @@ export const useCandidate = () => {
    */
   const parseCandidateFromText = async (text: string): Promise<Candidate | null> => {
     try {
-      const { candidate } = await $fetch<{ candidate: Candidate }>('/api/candidates/parse', {
+      const { candidate } = await $api<{ candidate: Candidate }>('/api/candidates/parse', {
         method: 'POST',
         body: { text },
       })
@@ -103,7 +105,7 @@ export const useCandidate = () => {
    */
   const getFilterOptions = async () => {
     try {
-      const response = await $fetch<{ options: import('@candidate/types/candidate').CandidateFilterOptions }>('/api/candidates/filter-options', {
+      const response = await $api<{ options: import('@candidate/types/candidate').CandidateFilterOptions }>('/api/candidates/filter-options', {
         method: 'GET',
       })
       return response.options

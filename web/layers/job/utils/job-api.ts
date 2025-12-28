@@ -6,9 +6,11 @@
 import type { Job, CreateJobInput, JobFilter } from '@job/types/job'
 
 export const useJob = () => {
+  const { $api } = useNuxtApp()
+
   const getJobs = async (filters?: JobFilter): Promise<Job[]> => {
     try {
-      const response = await $fetch<{ jobs: Job[] }>('/api/jobs', {
+      const response = await $api<{ jobs: Job[] }>('/api/jobs', {
         method: 'GET',
         query: filters,
       })
@@ -21,7 +23,7 @@ export const useJob = () => {
 
   const getJobById = async (id: string): Promise<Job | null> => {
     try {
-      const response = await $fetch<{ job: Job }>(`/api/jobs/${id}`, {
+      const response = await $api<{ job: Job }>(`/api/jobs/${id}`, {
         method: 'GET',
       })
       return response.job || null
@@ -33,7 +35,7 @@ export const useJob = () => {
 
   const createJob = async (input: CreateJobInput): Promise<Job | null> => {
     try {
-      const response = await $fetch<{ job: Job }>('/api/jobs', {
+      const response = await $api<{ job: Job }>('/api/jobs', {
         method: 'POST',
         body: input,
       })
@@ -46,7 +48,7 @@ export const useJob = () => {
 
   const updateJob = async (id: string, input: Partial<CreateJobInput> & { status?: Job['status'] }): Promise<Job | null> => {
     try {
-      const response = await $fetch<{ job: Job }>(`/api/jobs/${id}`, {
+      const response = await $api<{ job: Job }>(`/api/jobs/${id}`, {
         method: 'PUT',
         body: input,
       })
@@ -59,7 +61,7 @@ export const useJob = () => {
 
   const deleteJob = async (id: string): Promise<void> => {
     try {
-      await $fetch(`/api/jobs/${id}`, {
+      await $api(`/api/jobs/${id}`, {
         method: 'DELETE',
       })
     } catch (error) {
@@ -74,7 +76,7 @@ export const useJob = () => {
    */
   const parseJobFromText = async (text: string, link?: string): Promise<Job | null> => {
     try {
-      const { job } = await $fetch<{ job: Job }>('/api/jobs/parse', {
+      const { job } = await $api<{ job: Job }>('/api/jobs/parse', {
         method: 'POST',
         body: { text, link },
       })
@@ -90,7 +92,7 @@ export const useJob = () => {
    */
   const getFilterOptions = async () => {
     try {
-      const response = await $fetch<{ options: import('@job/types/job').JobFilterOptions }>('/api/jobs/filter-options', {
+      const response = await $api<{ options: import('@job/types/job').JobFilterOptions }>('/api/jobs/filter-options', {
         method: 'GET',
       })
       return response.options
