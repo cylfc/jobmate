@@ -13,22 +13,36 @@ export class CandidateService {
     private readonly candidateRepository: Repository<Candidate>,
   ) {}
 
-  async createCandidate(createDto: CreateCandidateDto): Promise<Candidate> {
-    const candidate = this.candidateRepository.create(createDto);
+  async createCandidate(createDto: CreateCandidateDto, userId?: string): Promise<Candidate> {
+    const candidate = this.candidateRepository.create({
+      ...createDto,
+      userId,
+    });
     return this.candidateRepository.save(candidate);
   }
 
-  async findAll(queryDto: QueryCandidateDto) {
+  async findAll(queryDto: QueryCandidateDto, userId?: string) {
     const { page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'DESC' } = queryDto;
     const offset = (page - 1) * limit;
 
     const qb = this.candidateRepository.createQueryBuilder('candidate');
 
+    if (userId) {
+      qb.where('candidate.userId = :userId', { userId });
+    }
+
     if (search) {
-      qb.where(
-        '(candidate.firstName ILIKE :search OR candidate.lastName ILIKE :search OR candidate.email ILIKE :search)',
-        { search: `%${search}%` },
-      );
+      if (userId) {
+        qb.andWhere(
+          '(candidate.firstName ILIKE :search OR candidate.lastName ILIKE :search OR candidate.email ILIKE :search)',
+          { search: `%${search}%` },
+        );
+      } else {
+        qb.where(
+          '(candidate.firstName ILIKE :search OR candidate.lastName ILIKE :search OR candidate.email ILIKE :search)',
+          { search: `%${search}%` },
+        );
+      }
     }
 
     qb.orderBy(`candidate.${sortBy}`, sortOrder);
@@ -46,8 +60,12 @@ export class CandidateService {
     };
   }
 
-  async findOne(id: string): Promise<Candidate> {
-    const candidate = await this.candidateRepository.findOne({ where: { id } });
+  async findOne(id: string, userId?: string): Promise<Candidate> {
+    const where: any = { id };
+    if (userId) {
+      where.userId = userId;
+    }
+    const candidate = await this.candidateRepository.findOne({ where });
     if (!candidate) {
       throw new NotFoundException(`Candidate with ID ${id} not found`);
     }
