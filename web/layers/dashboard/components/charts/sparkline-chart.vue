@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-    <VChart
+    <VChartFull
       class="w-full"
       :style="{ height, width }"
       :option="option"
