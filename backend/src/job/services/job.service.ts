@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Job, JobStatus } from '../entities/job.entity';
@@ -13,8 +13,11 @@ export class JobService {
     private readonly jobRepository: Repository<Job>,
   ) {}
 
-  async createJob(createDto: CreateJobDto): Promise<Job> {
-    const job = this.jobRepository.create(createDto);
+  async createJob(createDto: CreateJobDto, userId?: string): Promise<Job> {
+    const job = this.jobRepository.create({
+      ...createDto,
+      createdById: userId,
+    });
     if (createDto.postedAt) {
       job.postedAt = new Date(createDto.postedAt);
     }
@@ -88,8 +91,11 @@ export class JobService {
     });
   }
 
-  async updateJob(id: string, updateDto: UpdateJobDto): Promise<Job> {
+  async updateJob(id: string, updateDto: UpdateJobDto, userId?: string): Promise<Job> {
     const job = await this.findOne(id);
+    if (userId && job.createdById && job.createdById !== userId) {
+      throw new ForbiddenException('You can only update your own jobs');
+    }
     Object.assign(job, updateDto);
     if (updateDto.postedAt) {
       job.postedAt = new Date(updateDto.postedAt);
@@ -100,8 +106,11 @@ export class JobService {
     return this.jobRepository.save(job);
   }
 
-  async removeJob(id: string): Promise<void> {
+  async removeJob(id: string, userId?: string): Promise<void> {
     const job = await this.findOne(id);
+    if (userId && job.createdById && job.createdById !== userId) {
+      throw new ForbiddenException('You can only delete your own jobs');
+    }
     await this.jobRepository.remove(job);
   }
 }

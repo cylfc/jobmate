@@ -3,9 +3,12 @@ import {
   Column,
   Index,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { BaseEntity } from '../../shared/entities/base.entity';
 import { JobApplication } from '../../job-application/entities/job-application.entity';
+import { User } from '../../auth/entities/user.entity';
 
 export enum EmploymentType {
   FULL_TIME = 'FULL_TIME',
@@ -26,6 +29,7 @@ export enum JobStatus {
 @Index(['status'])
 @Index(['postedAt'])
 @Index(['company'])
+@Index(['createdById'])
 export class Job extends BaseEntity {
   @Column({ type: 'varchar', length: 255 })
   title!: string;
@@ -70,6 +74,13 @@ export class Job extends BaseEntity {
 
   @Column({ type: 'timestamp', nullable: true })
   expiresAt?: Date;
+
+  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'created_by' })
+  createdBy?: User;
+
+  @Column({ type: 'uuid', nullable: true })
+  createdById?: string;
 
   @OneToMany(() => JobApplication, (application) => application.job)
   applications!: JobApplication[];

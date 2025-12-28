@@ -77,6 +77,40 @@ This directory contains comprehensive documentation for implementing the Candida
 
 **Read this** to ensure you're following official NestJS best practices.
 
+## Authentication Module Documentation
+
+### 🔐 [AUTH_IMPLEMENTATION_PLAN.md](./AUTH_IMPLEMENTATION_PLAN.md)
+**Comprehensive authentication module implementation plan**:
+- Database design for User, AuthProvider, RefreshToken
+- Architecture and module structure
+- JWT authentication strategy
+- Guards and decorators
+- Integration with existing modules
+- OAuth extension design
+- Security considerations
+
+**Read this first** for auth module implementation.
+
+### 🗄️ [AUTH_DATABASE_SCHEMA.md](./AUTH_DATABASE_SCHEMA.md)
+**Authentication database schema reference**:
+- User entity structure
+- AuthProvider entity (for OAuth)
+- RefreshToken entity
+- Relationships and indexes
+- Migration SQL
+- Sample data
+
+**Reference this** when working with auth entities.
+
+### ✅ [AUTH_IMPLEMENTATION_CHECKLIST.md](./AUTH_IMPLEMENTATION_CHECKLIST.md)
+**Step-by-step authentication implementation checklist**:
+- Phase-by-phase tasks
+- Integration steps
+- Testing requirements
+- Security review items
+
+**Use this** to track auth implementation progress.
+
 ## Quick Start Guide
 
 ### 1. Read the Documentation
