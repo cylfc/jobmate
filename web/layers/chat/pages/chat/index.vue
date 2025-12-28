@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full container mx-auto">
+  <div class="h-full mx-auto">
     <ChatBox
       class="h-full"
       :show-purpose-buttons="true"

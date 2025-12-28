@@ -3,10 +3,7 @@
     <UContainer>
       <div class="flex items-center justify-between h-16">
         <div class="flex items-center gap-8">
-          <NuxtLink to="/" class="flex items-center gap-2">
-            <UIcon name="i-lucide-briefcase" class="w-8 h-8 text-primary" />
-            <span class="text-xl font-bold text-default">JobMate</span>
-          </NuxtLink>
+          <TheLogo to="/" />
           <nav class="hidden md:flex items-center gap-6">
             <NuxtLink to="/" class="text-sm font-medium text-toned hover:text-primary">
               {{ t('nav.home') }}

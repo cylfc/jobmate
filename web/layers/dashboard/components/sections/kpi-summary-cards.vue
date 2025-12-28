@@ -1,6 +1,6 @@
 <template>
   <section class="space-y-3">
-    <div class="flex items-center justify-between gap-3">
+    <!-- <div class="flex items-center justify-between gap-3">
       <div class="min-w-0">
         <h2 class="text-base font-semibold text-default">
           <slot name="title">{{ t('dashboard.kpi.title') }}</slot>
@@ -10,7 +10,7 @@
         </p>
       </div>
       <slot name="actions" />
-    </div>
+    </div> -->
 
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
       <CardsKpiCard

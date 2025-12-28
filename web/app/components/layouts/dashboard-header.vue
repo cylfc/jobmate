@@ -2,30 +2,28 @@
   <header class="border-b border-default bg-default sticky top-0 z-50 px-4">
     <div class="flex items-center justify-between h-16">
       <div class="flex items-center gap-4">
-        <NuxtLink to="/dashboard" class="flex items-center gap-2">
-          <UIcon name="i-lucide-briefcase" class="w-8 h-8 text-primary" />
-          <span class="text-xl font-bold text-default">JobMate</span>
-        </NuxtLink>
+        <TheLogo to="/dashboard" />
       </div>
       <UFieldGroup class="flex items-center">
         <!-- Locale Selector -->
         <ULocaleSelect
           :model-value="locale || 'vi'"
           :locales="availableLocales"
-          color="neutral"
-          variant="outline"
+          color="primary"
+          variant="soft"
           class="w-auto"
           :ui="{
-            leadingIcon: 'size-4 text-default',
-            trailingIcon: 'size-4 text-default',
-            itemLeadingIcon: 'size-4 text-default',
-            itemLeadingAvatar: 'size-4 text-default',
+            base: 'bg-primary/10 hover:bg-primary/15 active:bg-primary/15 text-primary',
+            leadingIcon: 'size-4 text-primary',
+            trailingIcon: 'size-4 text-primary',
+            itemLeadingIcon: 'size-4 text-primary',
+            itemLeadingAvatar: 'size-4 text-primary',
           }"
           @update:model-value="handleLocaleChange($event)"
         />
 
         <!-- Color Mode Button -->
-        <UColorModeButton color="neutral" variant="outline" square />
+        <UColorModeButton color="primary" variant="soft" square />
 
         <!-- Notification Drawer (includes trigger button) -->
         <LayoutsNotificationDrawer v-model="isNotificationDrawerOpen" />
@@ -34,12 +32,9 @@
         <UButton
           to="/chat?feature=matching"
           color="primary"
-          variant="outline"
+          variant="soft"
           square
           icon="i-lucide-message-circle"
-          :ui="{
-            square: 'rounded-lg'
-          }"
         >
           <span class="sr-only">{{ t('nav.chat') }}</span>
         </UButton>
@@ -47,12 +42,12 @@
         <!-- User Profile -->
         <UDropdownMenu :items="userMenuItems">
           <UButton
-            color="neutral"
-            variant="outline"
+            color="primary"
+            variant="soft"
             size="sm"
             class="flex items-center gap-2"
           >
-            <UIcon name="i-lucide-user" class="w-4 h-4" />
+            <UIcon name="i-lucide-user" class="w-5 h-5" />
             <span class="hidden md:inline text-sm font-medium">John Doe</span>
             <UIcon name="i-lucide-chevron-down" class="w-4 h-4" />
           </UButton>
