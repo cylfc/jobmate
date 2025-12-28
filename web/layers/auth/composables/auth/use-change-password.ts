@@ -46,6 +46,7 @@ export function useChangePassword() {
       await api.changePassword({
         currentPassword: state.currentPassword,
         newPassword: state.newPassword,
+        confirmPassword: state.confirmPassword,
       })
 
       toast.add({

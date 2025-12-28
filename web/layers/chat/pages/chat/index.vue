@@ -15,6 +15,7 @@ import type { ChatFeature } from '@chat/types/chat'
 
 definePageMeta({
   layout: 'dashboard',
+  middleware: '01-auth',
 })
 
 const route = useRoute()

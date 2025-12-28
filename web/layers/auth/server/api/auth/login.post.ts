@@ -1,8 +1,9 @@
 import { z } from 'zod'
+import { useApiClient } from '@auth/utils/api-client'
 
 const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z.string().min(1),
 })
 
 export default defineEventHandler(async (event) => {
@@ -10,21 +11,39 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event)
     const validated = loginSchema.parse(body)
 
-    // TODO: Implement actual authentication logic
-    // For now, return mock response
-    const mockUser = {
-      id: 'user-1',
+    const apiClient = useApiClient()
+
+    // Call backend API
+    const response = await apiClient.post<{
+      user: {
+        id: string
+        email: string
+        firstName?: string
+        lastName?: string
+        role: string
+        emailVerified: boolean
+        isActive: boolean
+        createdAt: string
+        updatedAt: string
+      }
+      accessToken: string
+      refreshToken: string
+    }>('/auth/login', {
       email: validated.email,
-      firstName: 'John',
-      lastName: 'Doe',
-    }
+      password: validated.password,
+    })
 
-    const mockToken = 'mock-jwt-token-' + Date.now()
-
+    // Transform backend response to frontend format
     return {
-      user: mockUser,
-      token: mockToken,
-      refreshToken: 'mock-refresh-token-' + Date.now(),
+      user: {
+        id: response.user.id,
+        email: response.user.email,
+        firstName: response.user.firstName,
+        lastName: response.user.lastName,
+        role: response.user.role,
+      },
+      token: response.accessToken,
+      refreshToken: response.refreshToken,
     }
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -32,6 +51,17 @@ export default defineEventHandler(async (event) => {
         statusCode: 400,
         message: 'Invalid input',
         data: error.errors,
+      })
+    }
+
+    // Handle backend errors
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      const statusCode = (error as { statusCode: number }).statusCode
+      const message = (error as { message: string }).message || 'Login failed'
+
+      throw createError({
+        statusCode,
+        message,
       })
     }
 

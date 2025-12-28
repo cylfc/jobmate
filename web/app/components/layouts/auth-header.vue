@@ -12,7 +12,7 @@
             to="/auth/login"
             color="neutral"
             variant="ghost"
-            size="sm"
+            size="lg"
           >
             {{ t("auth.login") }}
           </UButton>
@@ -20,7 +20,7 @@
             v-if="!isRegisterPage"
             to="/auth/register"
             color="primary"
-            size="sm"
+            size="lg"
           >
             {{ t("auth.register") }}
           </UButton>

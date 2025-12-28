@@ -131,6 +131,7 @@ import type {
 
 definePageMeta({
   layout: 'dashboard',
+  middleware: '01-auth',
 })
 
 const { t } = useI18n()

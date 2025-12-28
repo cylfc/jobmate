@@ -61,6 +61,7 @@ const router = useRouter()
 
 definePageMeta({
   layout: 'dashboard',
+  middleware: '01-auth',
 })
 
 // Layer 2: Shared composable for candidate list state
