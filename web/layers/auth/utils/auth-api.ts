@@ -4,16 +4,27 @@
  * Stateless functions - no reactive state
  */
 import type { LoginInput, RegisterInput, ForgotPasswordInput, ChangePasswordInput } from '@auth/composables/auth/schemas'
+import type { User } from '@auth/stores/auth'
 
 export interface AuthResponse {
   user: {
     id: string
     email: string
-    firstName: string
-    lastName: string
+    firstName?: string
+    lastName?: string
+    role: string
   }
   token: string
-  refreshToken?: string
+  refreshToken: string
+}
+
+export interface RefreshTokenResponse {
+  token: string
+  refreshToken: string
+}
+
+export interface UserProfileResponse {
+  user: User
 }
 
 export const useAuthApi = () => {
@@ -72,13 +83,14 @@ export const useAuthApi = () => {
   /**
    * Change password
    */
-  const changePassword = async (input: Omit<ChangePasswordInput, 'confirmPassword'>): Promise<void> => {
+  const changePassword = async (input: ChangePasswordInput): Promise<void> => {
     try {
       await $fetch('/api/auth/change-password', {
         method: 'POST',
         body: {
           currentPassword: input.currentPassword,
           newPassword: input.newPassword,
+          confirmPassword: input.confirmPassword,
         },
       })
     } catch (error) {
@@ -90,10 +102,17 @@ export const useAuthApi = () => {
   /**
    * Logout user
    */
-  const logout = async (): Promise<void> => {
+  const logout = async (refreshToken: string, accessToken?: string): Promise<void> => {
     try {
+      const headers: Record<string, string> = {}
+      if (accessToken) {
+        headers.Authorization = `Bearer ${accessToken}`
+      }
+
       await $fetch('/api/auth/logout', {
         method: 'POST',
+        headers,
+        body: { refreshToken },
       })
     } catch (error) {
       console.error('Error logging out:', error)
@@ -104,14 +123,51 @@ export const useAuthApi = () => {
   /**
    * Refresh access token
    */
-  const refreshToken = async (): Promise<AuthResponse> => {
+  const refreshToken = async (refreshToken: string): Promise<RefreshTokenResponse> => {
     try {
-      const response = await $fetch<AuthResponse>('/api/auth/refresh', {
+      const response = await $fetch<RefreshTokenResponse>('/api/auth/refresh', {
         method: 'POST',
+        body: { refreshToken },
       })
       return response
     } catch (error) {
       console.error('Error refreshing token:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Get current user profile
+   */
+  const getProfile = async (): Promise<UserProfileResponse> => {
+    try {
+      const response = await $fetch<UserProfileResponse>('/api/auth/me', {
+        method: 'GET',
+      })
+      return response
+    } catch (error) {
+      console.error('Error getting profile:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Update user profile
+   */
+  const updateProfile = async (profile: {
+    firstName?: string
+    lastName?: string
+    phone?: string
+    avatarUrl?: string
+  }): Promise<UserProfileResponse> => {
+    try {
+      const response = await $fetch<UserProfileResponse>('/api/auth/profile', {
+        method: 'PATCH',
+        body: profile,
+      })
+      return response
+    } catch (error) {
+      console.error('Error updating profile:', error)
       throw error
     }
   }
@@ -123,6 +179,8 @@ export const useAuthApi = () => {
     changePassword,
     logout,
     refreshToken,
+    getProfile,
+    updateProfile,
   }
 }
 

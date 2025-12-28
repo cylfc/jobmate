@@ -74,6 +74,7 @@ const { t } = useI18n()
 
 definePageMeta({
   layout: 'dashboard',
+  middleware: '01-auth',
 })
 
 const {

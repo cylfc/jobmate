@@ -2,12 +2,14 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import { z } from 'zod'
 import type { RegisterInput } from '@auth/composables/auth/schemas'
 import { useAuthApi } from '@auth/utils/auth-api'
+import { useAuthStore } from '@auth/stores/auth'
 
 export function useRegister() {
   const { t } = useI18n()
   const toast = useToast()
   const router = useRouter()
   const api = useAuthApi()
+  const authStore = useAuthStore()
 
   const state = reactive<RegisterInput>({
     firstName: '',
@@ -55,8 +57,11 @@ export function useRegister() {
         password: state.password,
       })
 
-      // TODO: Store auth state (token, user info, etc.)
-      // For example: useAuthState().setAuth(response.user, response.token)
+      // Store auth state
+      await authStore.login(response.user, {
+        accessToken: response.token,
+        refreshToken: response.refreshToken,
+      })
 
       toast.add({
         title: t('auth.register-success-title', 'Đăng ký thành công'),
@@ -64,8 +69,8 @@ export function useRegister() {
         color: 'success',
       })
 
-      // Redirect to login
-      await router.push('/auth/login')
+      // Redirect to dashboard after successful registration
+      await router.push('/dashboard')
     } catch (error: unknown) {
       toast.add({
         title: t('auth.register-error-title', 'Đăng ký thất bại'),

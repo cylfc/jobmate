@@ -23,10 +23,10 @@
           </nav>
         </div>
         <div class="flex items-center gap-4">
-          <UButton to="/auth/login" color="neutral" variant="ghost" size="sm">
+          <UButton to="/auth/login" color="neutral" variant="ghost" size="lg">
             {{ t('auth.login') }}
           </UButton>
-          <UButton to="/auth/register" color="primary" size="sm">
+          <UButton to="/auth/register" color="primary" size="lg">
             {{ t('auth.register') }}
           </UButton>
         </div>
