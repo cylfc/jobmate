@@ -1,0 +1,53 @@
+version: '3.9'
+
+name: jobmate-backend-dev
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: jobmate-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-jobmate_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - '${DB_PORT:-5432}:5432'
+    volumes:
+      - jobmate_postgres_data:/var/lib/postgresql/data
+      # Optional: Mount init scripts
+      # - ./docker/postgres/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-postgres}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - jobmate-network
+
+  # pgAdmin for database management (optional)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: jobmate-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@jobmate.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - '5050:80'
+    depends_on:
+      - postgres
+    networks:
+      - jobmate-network
+    profiles:
+      - tools
+
+volumes:
+  jobmate_postgres_data:
+    name: jobmate-postgres-data
+
+networks:
+  jobmate-network:
+    name: jobmate-network
+

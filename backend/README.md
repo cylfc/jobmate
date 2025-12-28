@@ -26,24 +26,83 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Prerequisites
+
+- Node.js 20+
+- pnpm
+- Docker & Docker Compose (for database)
+
 ## Installation
 
 ```bash
 $ pnpm install
 ```
 
+## Docker Setup (Recommended)
+
+### Quick Start with Docker
+
+```bash
+# Start PostgreSQL database
+docker compose up -d postgres
+
+# Check if database is running
+docker compose ps
+```
+
+Xem [DOCKER_SETUP.md](./docs/DOCKER_SETUP.md) để biết thêm chi tiết.
+
+## Documentation
+
+Tất cả tài liệu chi tiết nằm trong thư mục [`docs/`](./docs/):
+
+- [Implementation Plan](./docs/IMPLEMENTATION_PLAN.md) - Kế hoạch triển khai
+- [Technical Specification](./docs/TECHNICAL_SPEC.md) - Thông số kỹ thuật
+- [Database Schema](./docs/DATABASE_SCHEMA.md) - Schema database
+- [Docker Setup](./docs/DOCKER_SETUP.md) - Hướng dẫn Docker
+- [Environment Setup](./docs/ENV_SETUP.md) - Cấu hình environment
+- [NestJS Best Practices](./docs/NESTJS_BEST_PRACTICES.md) - Best practices
+- [Troubleshooting](./docs/TROUBLESHOOTING.md) - Xử lý lỗi
+- [Index](./docs/INDEX.md) - Mục lục tài liệu
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and update with your configuration:
+
+```bash
+cp .env.example .env
+```
+
+For Docker setup, use:
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=jobmate_db
+PORT=3000
+NODE_ENV=development
+```
+
 ## Running the app
 
 ```bash
+# Make sure database is running first
+docker compose up -d postgres
+
 # development
 $ pnpm run start
 
-# watch mode
+# watch mode (recommended)
 $ pnpm run start:dev
 
 # production mode
 $ pnpm run start:prod
 ```
+
+After starting, access:
+- API: http://localhost:3000
+- Swagger Documentation: http://localhost:3000/api
 
 ## Test
 

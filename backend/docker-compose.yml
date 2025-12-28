@@ -1,0 +1,60 @@
+version: '3.9'
+
+name: jobmate-backend
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: jobmate-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-jobmate_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - '${DB_PORT:-5432}:5432'
+    volumes:
+      - jobmate_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-postgres}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - jobmate-network
+
+  # Optional: Backend service in Docker
+  # Uncomment if you want to run backend in Docker too
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: jobmate-backend
+  #   restart: unless-stopped
+  #   environment:
+  #     NODE_ENV: ${NODE_ENV:-development}
+  #     PORT: ${PORT:-3000}
+  #     DB_HOST: postgres
+  #     DB_PORT: 5432
+  #     DB_USER: ${DB_USER:-postgres}
+  #     DB_PASSWORD: ${DB_PASSWORD:-postgres}
+  #     DB_NAME: ${DB_NAME:-jobmate_db}
+  #   ports:
+  #     - '${PORT:-3000}:3000'
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #   networks:
+  #     - jobmate-network
+
+volumes:
+  jobmate_postgres_data:
+    name: jobmate-postgres-data
+
+networks:
+  jobmate-network:
+    name: jobmate-network
+
