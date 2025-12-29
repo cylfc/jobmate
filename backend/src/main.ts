@@ -29,6 +29,7 @@ async function bootstrap() {
     .addTag('candidates')
     .addTag('jobs')
     .addTag('applications')
+    .addTag('settings')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

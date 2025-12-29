@@ -1,10 +1,11 @@
 import { z } from 'zod'
+import { useApiClient } from '@auth/utils/api-client'
 import type { SystemConfig } from '@setting/types/setting'
 
 const systemConfigSchema = z.object({
-  timezone: z.string(),
-  dateFormat: z.string(),
-  timeFormat: z.enum(['12h', '24h']),
+  timezone: z.string().optional(),
+  dateFormat: z.string().optional(),
+  timeFormat: z.enum(['12h', '24h']).optional(),
   language: z.string().optional(),
   theme: z.enum(['light', 'dark', 'auto']).optional(),
 })
@@ -14,18 +15,28 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event)
     const validated = systemConfigSchema.parse(body)
 
-    // TODO: Implement actual system config update logic
-    // For now, return the validated data
-    const updatedConfig: SystemConfig = {
-      timezone: validated.timezone,
-      dateFormat: validated.dateFormat,
-      timeFormat: validated.timeFormat,
-      language: validated.language,
-      theme: validated.theme,
+    // Get access token from Authorization header
+    const authHeader = getHeader(event, 'authorization')
+    if (!authHeader) {
+      throw createError({
+        statusCode: 401,
+        message: 'Authorization header required',
+      })
     }
 
+    const apiClient = useApiClient()
+
+    // Call backend API
+    const response = await apiClient.put<SystemConfig>(
+      '/settings/system',
+      validated,
+      {
+        Authorization: authHeader,
+      }
+    )
+
     return {
-      config: updatedConfig,
+      config: response,
     }
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -33,6 +44,17 @@ export default defineEventHandler(async (event) => {
         statusCode: 400,
         message: 'Invalid input',
         data: error.errors,
+      })
+    }
+
+    // Handle backend errors
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      const statusCode = (error as { statusCode: number }).statusCode
+      const message = (error as { message: string }).message || 'Failed to update system config'
+
+      throw createError({
+        statusCode,
+        message,
       })
     }
 
