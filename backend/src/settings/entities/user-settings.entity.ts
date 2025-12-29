@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { BaseEntity } from '../../shared/entities/base.entity';
 import { User } from '../../auth/entities/user.entity';
+import { TimeFormat, DateFormat, Theme, Language } from '../models/enums/system-config.enum';
 
 /**
  * UserSettings Entity
@@ -61,18 +62,18 @@ export class UserSettings extends BaseEntity {
     type: 'jsonb',
     default: {
       timezone: 'UTC',
-      dateFormat: 'YYYY-MM-DD',
-      timeFormat: '24h',
-      language: 'en',
-      theme: 'auto',
+      dateFormat: DateFormat.YYYY_MM_DD,
+      timeFormat: TimeFormat.HOUR_24,
+      language: Language.EN,
+      theme: Theme.AUTO,
     },
   })
   systemConfig!: {
     timezone: string;
-    dateFormat: string;
-    timeFormat: '12h' | '24h';
-    language?: string;
-    theme?: 'light' | 'dark' | 'auto';
+    dateFormat: DateFormat;
+    timeFormat: TimeFormat;
+    language?: Language;
+    theme?: Theme;
   };
 
   /**

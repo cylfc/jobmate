@@ -18,6 +18,8 @@ import { User } from '../../auth/entities/user.entity';
 import { UpdateNotificationSettingsDto } from '../models/dto/notification-settings.dto';
 import { UpdateSystemConfigDto } from '../models/dto/system-config.dto';
 import { UpdateSecuritySettingsDto } from '../models/dto/security-settings.dto';
+import { TimeFormat, DateFormat, Theme, Language } from '../models/enums/system-config.enum';
+import { COMMON_TIMEZONES } from '../models/constants/timezone.constants';
 
 /**
  * Settings Controller
@@ -152,6 +154,56 @@ export class SettingsController {
   }
 
   /**
+   * Get system configuration options
+   * Returns available options for dropdowns (timezones, date formats, etc.)
+   */
+  @Get('system/options')
+  @ApiOperation({ summary: 'Get system configuration options' })
+  @ApiResponse({
+    status: 200,
+    description: 'System configuration options retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        timezones: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Available timezone identifiers',
+        },
+        dateFormats: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Available date format options',
+        },
+        timeFormats: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Available time format options',
+        },
+        themes: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Available theme options',
+        },
+        languages: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Available language options',
+        },
+      },
+    },
+  })
+  async getSystemConfigOptions() {
+    return {
+      timezones: COMMON_TIMEZONES,
+      dateFormats: Object.values(DateFormat),
+      timeFormats: Object.values(TimeFormat),
+      themes: Object.values(Theme),
+      languages: Object.values(Language),
+    };
+  }
+
+  /**
    * Smoke test endpoint
    */
   @Get('admin/test')
@@ -161,4 +213,3 @@ export class SettingsController {
     return { status: 'ok', message: 'Settings service is working' };
   }
 }
-

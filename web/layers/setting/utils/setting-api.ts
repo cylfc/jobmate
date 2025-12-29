@@ -3,7 +3,7 @@
  * API utility functions for setting-related operations
  * Stateless functions - no reactive state
  */
-import type { UserProfile, SecuritySettings, NotificationSettings, SystemConfig } from '@setting/types/setting'
+import type { UserProfile, SecuritySettings, NotificationSettings, SystemConfig, SystemConfigOptions } from '@setting/types/setting'
 
 export const useSettingApi = () => {
   const { $api } = useNuxtApp()
@@ -180,6 +180,22 @@ export const useSettingApi = () => {
     }
   }
 
+  /**
+   * Get system configuration options
+   * Returns available options for dropdowns
+   */
+  const getSystemConfigOptions = async (): Promise<SystemConfigOptions> => {
+    try {
+      const response = await $api<SystemConfigOptions>('/api/settings/system-options', {
+        method: 'GET',
+      })
+      return response
+    } catch (error) {
+      console.error('Error fetching system config options:', error)
+      throw error
+    }
+  }
+
   return {
     getProfile,
     updateProfile,
@@ -189,6 +205,7 @@ export const useSettingApi = () => {
     updateNotificationSettings,
     getSystemConfig,
     updateSystemConfig,
+    getSystemConfigOptions,
   }
 }
 

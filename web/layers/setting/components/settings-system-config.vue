@@ -40,7 +40,8 @@
         <UFormField :label="t('setting.system-config.timezone.title')" name="timezone" class="w-full">
           <USelectMenu
             v-model="form.timezone"
-            :options="timezoneOptions"
+            :items="timezoneOptions"
+            value-key="value"
             :placeholder="t('setting.system-config.timezone.placeholder')"
             class="w-full"
           />
@@ -59,7 +60,8 @@
         <UFormField :label="t('setting.system-config.date-format.title')" name="dateFormat" class="w-full">
           <USelectMenu
             v-model="form.dateFormat"
-            :options="dateFormatOptions"
+            :items="dateFormatOptions"
+            value-key="value"
             :placeholder="t('setting.system-config.date-format.placeholder')"
             class="w-full"
           />
@@ -73,7 +75,8 @@
         <UFormField :label="t('setting.system-config.time-format.title')" name="timeFormat" class="w-full">
           <USelectMenu
             v-model="form.timeFormat"
-            :options="timeFormatOptions"
+            :items="timeFormatOptions"
+            value-key="value"
             :placeholder="t('setting.system-config.time-format.placeholder')"
             class="w-full"
           />
@@ -102,7 +105,9 @@
 
 <script setup lang="ts">
 import { useSettingSystem } from '@setting/composables/use-setting-system'
-import type { SystemConfig } from '@setting/types/setting'
+import { useSettingApi } from '@setting/utils/setting-api'
+import { COMMON_TIMEZONES, DATE_FORMATS, TIME_FORMATS, THEMES, LANGUAGES } from '@setting/constants/system-config.constants'
+import type { SystemConfig, SystemConfigOptions } from '@setting/types/setting'
 
 const { t } = useI18n()
 const toast = useToast()
@@ -116,36 +121,69 @@ const {
   updateConfig,
 } = useSettingSystem()
 
+const api = useSettingApi()
+
 const form = ref<SystemConfig>({
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-  dateFormat: 'DD/MM/YYYY',
+  dateFormat: 'YYYY-MM-DD',
   timeFormat: '24h',
 })
 
-// Get all timezones
+// Options for dropdowns
+const options = ref<SystemConfigOptions | null>(null)
+
+// Load options from backend
+const loadOptions = async () => {
+  try {
+    options.value = await api.getSystemConfigOptions()
+  } catch (err) {
+    console.error('Failed to load system config options:', err)
+    // Fallback to default options if API fails
+    options.value = {
+      timezones: [...COMMON_TIMEZONES],
+      dateFormats: [...DATE_FORMATS],
+      timeFormats: [...TIME_FORMATS],
+      themes: [...THEMES],
+      languages: [...LANGUAGES],
+    }
+  }
+}
+
+// Get timezone options
 const timezoneOptions = computed(() => {
-  const timezones = Intl.supportedValuesOf('timeZone')
-  return timezones.map(tz => ({
+  if (!options.value) return []
+  return options.value.timezones.map(tz => ({
     label: tz.replace(/_/g, ' '),
     value: tz,
   }))
 })
 
-const dateFormatOptions = computed(() => [
-  { label: 'DD/MM/YYYY', value: 'DD/MM/YYYY' },
-  { label: 'MM/DD/YYYY', value: 'MM/DD/YYYY' },
-  { label: 'YYYY-MM-DD', value: 'YYYY-MM-DD' },
-  { label: 'DD MMM YYYY', value: 'DD MMM YYYY' },
-])
+// Get date format options
+const dateFormatOptions = computed(() => {
+  if (!options.value) return []
+  return options.value.dateFormats.map(format => ({
+    label: format,
+    value: format,
+  }))
+})
 
-const timeFormatOptions = computed(() => [
-  { label: t('setting.system-config.time-format.24h'), value: '24h' },
-  { label: t('setting.system-config.time-format.12h'), value: '12h' },
-])
+// Get time format options
+const timeFormatOptions = computed(() => {
+  if (!options.value) return []
+  return options.value.timeFormats.map(format => ({
+    label: format === '24h' 
+      ? t('setting.system-config.time-format.24h', '24 hours')
+      : t('setting.system-config.time-format.12h', '12 hours'),
+    value: format,
+  }))
+})
 
-// Load system config
+// Load system config and options
 onMounted(async () => {
-  await fetchConfig()
+  await Promise.all([
+    fetchConfig(),
+    loadOptions(),
+  ])
   if (config.value) {
     form.value = { ...config.value }
   }
