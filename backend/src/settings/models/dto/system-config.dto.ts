@@ -2,9 +2,9 @@ import {
   IsString,
   IsEnum,
   IsOptional,
-  Matches,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { TimeFormat, DateFormat, Theme, Language } from '../enums/system-config.enum';
 
 /**
  * System Configuration DTO
@@ -21,42 +21,41 @@ export class SystemConfigDto {
 
   @ApiProperty({
     description: 'Date format preference',
-    example: 'YYYY-MM-DD',
-    default: 'YYYY-MM-DD',
+    enum: DateFormat,
+    example: DateFormat.YYYY_MM_DD,
+    default: DateFormat.YYYY_MM_DD,
   })
-  @IsString()
-  @Matches(/^(YYYY|YY|MM|DD|HH|mm|ss|[-/])+$/, {
-    message: 'Invalid date format. Use format tokens like YYYY-MM-DD',
-  })
-  dateFormat!: string;
+  @IsEnum(DateFormat)
+  dateFormat!: DateFormat;
 
   @ApiProperty({
     description: 'Time format preference',
-    enum: ['12h', '24h'],
-    example: '24h',
-    default: '24h',
+    enum: TimeFormat,
+    example: TimeFormat.HOUR_24,
+    default: TimeFormat.HOUR_24,
   })
-  @IsEnum(['12h', '24h'])
-  timeFormat!: '12h' | '24h';
+  @IsEnum(TimeFormat)
+  timeFormat!: TimeFormat;
 
   @ApiPropertyOptional({
     description: 'Preferred language (ISO 639-1 code)',
-    example: 'en',
-    default: 'en',
+    enum: Language,
+    example: Language.EN,
+    default: Language.EN,
   })
   @IsOptional()
-  @IsString()
-  language?: string;
+  @IsEnum(Language)
+  language?: Language;
 
   @ApiPropertyOptional({
     description: 'UI theme preference',
-    enum: ['light', 'dark', 'auto'],
-    example: 'auto',
-    default: 'auto',
+    enum: Theme,
+    example: Theme.AUTO,
+    default: Theme.AUTO,
   })
   @IsOptional()
-  @IsEnum(['light', 'dark', 'auto'])
-  theme?: 'light' | 'dark' | 'auto';
+  @IsEnum(Theme)
+  theme?: Theme;
 }
 
 /**
@@ -74,39 +73,38 @@ export class UpdateSystemConfigDto {
 
   @ApiPropertyOptional({
     description: 'Date format preference',
-    example: 'YYYY-MM-DD',
+    enum: DateFormat,
+    example: DateFormat.YYYY_MM_DD,
   })
   @IsOptional()
-  @IsString()
-  @Matches(/^(YYYY|YY|MM|DD|HH|mm|ss|[-/])+$/, {
-    message: 'Invalid date format. Use format tokens like YYYY-MM-DD',
-  })
-  dateFormat?: string;
+  @IsEnum(DateFormat)
+  dateFormat?: DateFormat;
 
   @ApiPropertyOptional({
     description: 'Time format preference',
-    enum: ['12h', '24h'],
-    example: '24h',
+    enum: TimeFormat,
+    example: TimeFormat.HOUR_24,
   })
   @IsOptional()
-  @IsEnum(['12h', '24h'])
-  timeFormat?: '12h' | '24h';
+  @IsEnum(TimeFormat)
+  timeFormat?: TimeFormat;
 
   @ApiPropertyOptional({
     description: 'Preferred language (ISO 639-1 code)',
-    example: 'en',
+    enum: Language,
+    example: Language.EN,
   })
   @IsOptional()
-  @IsString()
-  language?: string;
+  @IsEnum(Language)
+  language?: Language;
 
   @ApiPropertyOptional({
     description: 'UI theme preference',
-    enum: ['light', 'dark', 'auto'],
-    example: 'auto',
+    enum: Theme,
+    example: Theme.AUTO,
   })
   @IsOptional()
-  @IsEnum(['light', 'dark', 'auto'])
-  theme?: 'light' | 'dark' | 'auto';
+  @IsEnum(Theme)
+  theme?: Theme;
 }
 

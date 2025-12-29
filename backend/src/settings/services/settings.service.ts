@@ -5,6 +5,7 @@ import { UserSettings } from '../entities/user-settings.entity';
 import { UpdateNotificationSettingsDto } from '../models/dto/notification-settings.dto';
 import { UpdateSystemConfigDto } from '../models/dto/system-config.dto';
 import { UpdateSecuritySettingsDto } from '../models/dto/security-settings.dto';
+import { TimeFormat, DateFormat, Theme, Language } from '../models/enums/system-config.enum';
 
 /**
  * Settings Service
@@ -43,10 +44,10 @@ export class SettingsService {
         },
         systemConfig: {
           timezone: 'UTC',
-          dateFormat: 'YYYY-MM-DD',
-          timeFormat: '24h',
-          language: 'en',
-          theme: 'auto',
+          dateFormat: DateFormat.YYYY_MM_DD,
+          timeFormat: TimeFormat.HOUR_24,
+          language: Language.EN,
+          theme: Theme.AUTO,
         },
         securitySettings: {
           twoFactorEnabled: false,
