@@ -1,36 +1,47 @@
-export default defineEventHandler(async () => {
-  // UI-only mock data (replace with real logic later)
-  return {
-    alerts: [
-      {
-        id: 'jobs-without-matching',
-        type: 'jobs_without_matching',
-        message: '2 jobs have never run matching. Run matching to get initial recommendations.',
-        actionUrl: '/dashboard#active-jobs',
-        severity: 'critical',
-      },
-      {
-        id: 'cvs-waiting-parse',
-        type: 'cvs_waiting_parse',
-        message: '5 CVs are waiting to be parsed. Parse now to keep the pipeline fresh.',
-        actionUrl: '/candidates?filter=unparsed',
-        severity: 'warning',
-      },
-      {
-        id: 'candidates-awaiting-response',
-        type: 'candidates_awaiting_response',
-        message: '3 candidates are awaiting a response. Reply to maintain engagement.',
-        actionUrl: '/chat?tab=needs-reply',
-        severity: 'warning',
-      },
-      {
-        id: 'ai-recommend-rerun',
-        type: 'ai_recommendation_rerun_matching',
-        message: 'AI recommends rerunning matching for 1 job after recent profile updates.',
-        actionUrl: '/matching',
-        severity: 'info',
-      },
-    ],
+import { useApiClient } from '@auth/utils/api-client'
+
+export default defineEventHandler(async (event) => {
+  try {
+    // Get access token from Authorization header
+    const authHeader = getHeader(event, 'authorization')
+    if (!authHeader) {
+      throw createError({
+        statusCode: 401,
+        message: 'Authorization header required',
+      })
+    }
+
+    const apiClient = useApiClient()
+
+    // Call backend API to get dashboard alerts
+    const response = await apiClient.get<{
+      alerts: Array<{
+        id: string
+        type: string
+        message: string
+        actionUrl: string
+        severity: 'info' | 'warning' | 'critical'
+      }>
+    }>('/dashboard/alerts', {
+      Authorization: authHeader,
+    })
+
+    return response
+  } catch (error) {
+    // Handle backend errors
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      const statusCode = (error as { statusCode: number }).statusCode
+      const message = (error as { message: string }).message || 'Failed to fetch dashboard alerts'
+
+      throw createError({
+        statusCode,
+        message,
+      })
+    }
+
+    throw createError({
+      statusCode: 500,
+      message: 'Failed to fetch dashboard alerts',
+    })
   }
 })
-

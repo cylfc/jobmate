@@ -191,6 +191,18 @@ For questions or issues:
 3. Refer to [NestJS Documentation](https://docs.nestjs.com/)
 4. Refer to [TypeORM Documentation](https://typeorm.io/)
 
+## Dashboard Module Documentation
+
+### 📊 [DASHBOARD_IMPLEMENTATION_PLAN.md](./DASHBOARD_IMPLEMENTATION_PLAN.md)
+**Dashboard module implementation plan**:
+- API endpoints for KPIs, active jobs, pipeline, matching health, alerts, and activities
+- Database query strategies
+- Service architecture
+- Performance considerations
+- Integration with existing modules
+
+**Read this** for dashboard module implementation.
+
 ## Next Steps
 
 1. ✅ Review all documentation

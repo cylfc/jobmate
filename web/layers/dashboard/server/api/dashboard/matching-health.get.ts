@@ -1,21 +1,47 @@
-export default defineEventHandler(async () => {
-  // Backend-aggregated analytics (mocked here for UI; replace with real aggregation).
-  // Ratios are 0..1, distribution ratios are also 0..1.
-  return {
-    scoreDistribution: [
-      { label: '0–10', ratio: 0.02, count: 4 },
-      { label: '10–20', ratio: 0.04, count: 8 },
-      { label: '20–30', ratio: 0.06, count: 12 },
-      { label: '30–40', ratio: 0.06, count: 12 },
-      { label: '40–50', ratio: 0.10, count: 20 },
-      { label: '50–60', ratio: 0.12, count: 24 },
-      { label: '60–70', ratio: 0.14, count: 28 },
-      { label: '70–80', ratio: 0.14, count: 28 },
-      { label: '80–90', ratio: 0.18, count: 36 },
-      { label: '90–100', ratio: 0.14, count: 28 },
-    ],
-    highQualityRatio: 0.32, // score > 80
-    lowQualityRatio: 0.18, // score < 60
+import { useApiClient } from '@auth/utils/api-client'
+
+export default defineEventHandler(async (event) => {
+  try {
+    // Get access token from Authorization header
+    const authHeader = getHeader(event, 'authorization')
+    if (!authHeader) {
+      throw createError({
+        statusCode: 401,
+        message: 'Authorization header required',
+      })
+    }
+
+    const apiClient = useApiClient()
+
+    // Call backend API to get matching health
+    const response = await apiClient.get<{
+      scoreDistribution: Array<{
+        label: string
+        ratio: number
+        count?: number
+      }>
+      highQualityRatio: number
+      lowQualityRatio: number
+    }>('/dashboard/matching-health', {
+      Authorization: authHeader,
+    })
+
+    return response
+  } catch (error) {
+    // Handle backend errors
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      const statusCode = (error as { statusCode: number }).statusCode
+      const message = (error as { message: string }).message || 'Failed to fetch matching health'
+
+      throw createError({
+        statusCode,
+        message,
+      })
+    }
+
+    throw createError({
+      statusCode: 500,
+      message: 'Failed to fetch matching health',
+    })
   }
 })
-

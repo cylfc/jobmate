@@ -18,12 +18,14 @@ export interface UseRecentActivitiesOptions {
 }
 
 export const useDashboardApi = () => {
+  const { $api } = useNuxtApp()
+
   /**
    * Get dashboard KPIs
    */
   const getKpis = async (): Promise<DashboardKpisResponse> => {
     try {
-      const response = await $fetch<DashboardKpisResponse>('/api/dashboard/kpis', {
+      const response = await $api<DashboardKpisResponse>('/api/dashboard/kpis', {
         method: 'GET',
       })
       return response
@@ -38,7 +40,7 @@ export const useDashboardApi = () => {
    */
   const getActiveJobs = async (): Promise<ActiveJobsApiResponse> => {
     try {
-      const response = await $fetch<ActiveJobsApiResponse>('/api/dashboard/active-jobs', {
+      const response = await $api<ActiveJobsApiResponse>('/api/dashboard/active-jobs', {
         method: 'GET',
       })
       return response
@@ -53,7 +55,7 @@ export const useDashboardApi = () => {
    */
   const getAlerts = async (): Promise<DashboardAlertsApiResponse> => {
     try {
-      const response = await $fetch<DashboardAlertsApiResponse>('/api/dashboard/alerts', {
+      const response = await $api<DashboardAlertsApiResponse>('/api/dashboard/alerts', {
         method: 'GET',
       })
       return response
@@ -68,7 +70,7 @@ export const useDashboardApi = () => {
    */
   const getMatchingHealth = async (): Promise<MatchingHealthApiResponse> => {
     try {
-      const response = await $fetch<MatchingHealthApiResponse>('/api/dashboard/matching-health', {
+      const response = await $api<MatchingHealthApiResponse>('/api/dashboard/matching-health', {
         method: 'GET',
       })
       return response
@@ -83,7 +85,7 @@ export const useDashboardApi = () => {
    */
   const getCandidatePipeline = async (): Promise<CandidatePipelineApiResponse> => {
     try {
-      const response = await $fetch<CandidatePipelineApiResponse>('/api/dashboard/pipeline', {
+      const response = await $api<CandidatePipelineApiResponse>('/api/dashboard/pipeline', {
         method: 'GET',
       })
       return response
@@ -105,7 +107,7 @@ export const useDashboardApi = () => {
         : 20
       const cursor = options.cursor ?? undefined
 
-      const response = await $fetch<RecentActivitiesResponse>('/api/dashboard/activities', {
+      const response = await $api<RecentActivitiesResponse>('/api/dashboard/activities', {
         method: 'GET',
         query: {
           limit,

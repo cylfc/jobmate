@@ -1,11 +1,45 @@
-export default defineEventHandler(async () => {
-  // UI-only mock data (replace with real logic later)
-  return {
-    openJobs: 12,
-    candidatesInPipeline: 48,
-    matchesThisWeek: 21,
-    averageMatchScore: 72,
-    timeToShortlist: 3, // days
+import { useApiClient } from '@auth/utils/api-client'
+
+export default defineEventHandler(async (event) => {
+  try {
+    // Get access token from Authorization header
+    const authHeader = getHeader(event, 'authorization')
+    if (!authHeader) {
+      throw createError({
+        statusCode: 401,
+        message: 'Authorization header required',
+      })
+    }
+
+    const apiClient = useApiClient()
+
+    // Call backend API to get dashboard KPIs
+    const response = await apiClient.get<{
+      openJobs: number
+      candidatesInPipeline: number
+      matchesThisWeek: number
+      averageMatchScore: number
+      timeToShortlist: number
+    }>('/dashboard/kpis', {
+      Authorization: authHeader,
+    })
+
+    return response
+  } catch (error) {
+    // Handle backend errors
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      const statusCode = (error as { statusCode: number }).statusCode
+      const message = (error as { message: string }).message || 'Failed to fetch dashboard KPIs'
+
+      throw createError({
+        statusCode,
+        message,
+      })
+    }
+
+    throw createError({
+      statusCode: 500,
+      message: 'Failed to fetch dashboard KPIs',
+    })
   }
 })
-

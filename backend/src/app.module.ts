@@ -7,6 +7,7 @@ import { CandidateModule } from './candidate/candidate.module';
 import { JobModule } from './job/job.module';
 import { JobApplicationModule } from './job-application/job-application.module';
 import { SettingsModule } from './settings/settings.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
@@ -23,6 +24,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     JobModule,
     JobApplicationModule,
     SettingsModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [
