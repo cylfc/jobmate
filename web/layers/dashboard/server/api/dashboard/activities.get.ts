@@ -1,45 +1,61 @@
-export default defineEventHandler(async () => {
-  // Backend-aggregated activity feed (mocked for UI; replace with real source).
-  // Keep it pagination-ready: return events + cursor signals.
+import { useApiClient } from '@auth/utils/api-client'
 
-  const now = Date.now()
-  const iso = (msAgo: number) => new Date(now - msAgo).toISOString()
+export default defineEventHandler(async (event) => {
+  try {
+    // Get access token from Authorization header
+    const authHeader = getHeader(event, 'authorization')
+    if (!authHeader) {
+      throw createError({
+        statusCode: 401,
+        message: 'Authorization header required',
+      })
+    }
 
-  return {
-    events: [
-      {
-        id: 'act-1',
-        type: 'matching_completed',
-        occurredAt: iso(5 * 60 * 1000),
-        meta: { jobTitle: 'Senior Frontend Developer', candidates: 5 },
-      },
-      {
-        id: 'act-2',
-        type: 'cv_uploaded',
-        occurredAt: iso(55 * 60 * 1000),
-        meta: { candidateName: 'Nguyễn Văn A' },
-      },
-      {
-        id: 'act-3',
-        type: 'interview_scheduled',
-        occurredAt: iso(3 * 60 * 60 * 1000),
-        meta: { candidateName: 'Trần Thị B', jobTitle: 'Full Stack Developer' },
-      },
-      {
-        id: 'act-4',
-        type: 'job_saved',
-        occurredAt: iso(26 * 60 * 60 * 1000), // yesterday-ish
-        meta: { jobTitle: 'Backend Developer' },
-      },
-      {
-        id: 'act-5',
-        type: 'cv_uploaded',
-        occurredAt: iso(28 * 60 * 60 * 1000),
-        meta: { candidateName: 'Lê Văn C' },
-      },
-    ].slice(0, 20),
-    nextCursor: null,
-    hasMore: false,
+    // Get query parameters
+    const query = getQuery(event)
+    const limit = query.limit ? Number(query.limit) : 20
+    const cursor = query.cursor ? String(query.cursor) : undefined
+
+    const apiClient = useApiClient()
+
+    // Build query string
+    const queryParams = new URLSearchParams()
+    queryParams.append('limit', String(limit))
+    if (cursor) {
+      queryParams.append('cursor', cursor)
+    }
+    const endpoint = `/dashboard/activities?${queryParams.toString()}`
+
+    // Call backend API to get recent activities
+    const response = await apiClient.get<{
+      events: Array<{
+        id: string
+        type: 'cv_uploaded' | 'job_saved' | 'matching_completed' | 'interview_scheduled'
+        occurredAt: string
+        meta?: Record<string, unknown>
+      }>
+      nextCursor?: string | null
+      hasMore?: boolean
+    }>(endpoint, {
+      Authorization: authHeader,
+    })
+
+    return response
+  } catch (error) {
+    // Handle backend errors
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      const statusCode = (error as { statusCode: number }).statusCode
+      const message = (error as { message: string }).message || 'Failed to fetch recent activities'
+
+      throw createError({
+        statusCode,
+        message,
+      })
+    }
+
+    throw createError({
+      statusCode: 500,
+      message: 'Failed to fetch recent activities',
+    })
   }
 })
-

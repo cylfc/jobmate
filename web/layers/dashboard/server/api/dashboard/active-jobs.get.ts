@@ -1,45 +1,54 @@
-export default defineEventHandler(async () => {
-  // UI-only mock data (replace with real logic later)
-  // Keep this response stable; UI normalizes and computes flags in the composable.
-  return {
-    jobs: [
-      {
-        id: 'job-1',
-        title: 'Senior Frontend Developer',
-        status: 'published',
-        candidatesCount: 32,
-        topMatchScore: 92,
-        lastActivityAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2h ago
-        lastMatchingRunAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6h ago
-      },
-      {
-        id: 'job-2',
-        title: 'Full Stack Developer',
-        status: 'published',
-        candidatesCount: 18,
-        topMatchScore: 84,
-        lastActivityAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1d ago
-        lastMatchingRunAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2d ago
-      },
-      {
-        id: 'job-3',
-        title: 'Backend Developer',
-        status: 'published',
-        candidatesCount: 0,
-        topMatchScore: null,
-        lastActivityAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3d ago
-        lastMatchingRunAt: null, // never ran
-      },
-      {
-        id: 'job-4',
-        title: 'Product Designer',
-        status: 'draft',
-        candidatesCount: 0,
-        topMatchScore: null,
-        lastActivityAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5d ago
-        lastMatchingRunAt: null,
-      },
-    ],
+import { useApiClient } from '@auth/utils/api-client'
+
+export default defineEventHandler(async (event) => {
+  try {
+    // Get access token from Authorization header
+    const authHeader = getHeader(event, 'authorization')
+    if (!authHeader) {
+      throw createError({
+        statusCode: 401,
+        message: 'Authorization header required',
+      })
+    }
+
+    // Get query parameters
+    const query = getQuery(event)
+    const limit = query.limit ? Number(query.limit) : 10
+
+    const apiClient = useApiClient()
+
+    // Call backend API to get active jobs
+    const endpoint = limit ? `/dashboard/active-jobs?limit=${limit}` : '/dashboard/active-jobs'
+    const response = await apiClient.get<{
+      jobs: Array<{
+        id: string
+        title: string
+        status: 'published' | 'draft' | 'closed'
+        candidatesCount: number
+        topMatchScore: number | null
+        lastActivityAt: string
+        lastMatchingRunAt: string | null
+      }>
+    }>(endpoint, {
+      Authorization: authHeader,
+    })
+
+    return response
+  } catch (error) {
+    // Handle backend errors
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      const statusCode = (error as { statusCode: number }).statusCode
+      const message = (error as { message: string }).message || 'Failed to fetch active jobs'
+
+      throw createError({
+        statusCode,
+        message,
+      })
+    }
+
+    throw createError({
+      statusCode: 500,
+      message: 'Failed to fetch active jobs',
+    })
   }
 })
-

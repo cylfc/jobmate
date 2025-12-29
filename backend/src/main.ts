@@ -30,6 +30,7 @@ async function bootstrap() {
     .addTag('jobs')
     .addTag('applications')
     .addTag('settings')
+    .addTag('dashboard')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
