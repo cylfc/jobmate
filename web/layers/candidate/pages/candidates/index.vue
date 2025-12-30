@@ -32,6 +32,7 @@
         :loading="loading"
         :error="error"
         @view-detail="handleViewDetail"
+        @edit="handleEdit"
         @invite="handleInvite"
         @delete="handleDelete"
         @match-jobs="handleMatchJobs"
@@ -45,6 +46,13 @@
     <ModalsCreateCandidateModal
       v-model="showCreateModal"
       @submit="handleCreateCandidate"
+    />
+
+    <!-- Edit Modal -->
+    <ModalsCreateCandidateModal
+      v-model="showEditModal"
+      :candidate="selectedCandidate"
+      @submit="handleUpdateCandidate"
     />
   </div>
 </template>
@@ -71,6 +79,7 @@ const {
   error,
   fetchCandidates,
   addCandidate,
+  updateCandidateInList,
   removeCandidate,
   removeCandidates,
 } = useCandidateList()
@@ -80,6 +89,8 @@ const { filters, updateFilters, resetFilters } = useCandidateFilters()
 
 // Layer 4: Component-local UI state
 const showCreateModal = ref(false)
+const showEditModal = ref(false)
+const selectedCandidate = ref<Candidate | null>(null)
 
 // Track if initial load is done to avoid double fetch
 const isInitialLoad = ref(true)
@@ -150,6 +161,37 @@ const handleViewDetail = (candidate: Candidate) => {
     description: `${candidate.firstName} ${candidate.lastName}`,
     color: 'info',
   })
+}
+
+const handleEdit = (candidate: Candidate) => {
+  selectedCandidate.value = candidate
+  showEditModal.value = true
+}
+
+const handleUpdateCandidate = async (input: CreateCandidateInput) => {
+  if (!selectedCandidate.value?.id) return
+
+  const candidateOps = useCandidate()
+  try {
+    const updatedCandidate = await candidateOps.updateCandidate(selectedCandidate.value.id, input)
+    // Optimistically update in list
+    updateCandidateInList(updatedCandidate)
+    toast.add({
+      title: t('candidate.success.update-success'),
+      description: t('candidate.success.update-success-description'),
+      color: 'success',
+    })
+    showEditModal.value = false
+    selectedCandidate.value = null
+    // Optionally refresh to get server state
+    await loadCandidates()
+  } catch (error) {
+    toast.add({
+      title: t('candidate.error.update-failed'),
+      description: t('candidate.error.update-failed-description'),
+      color: 'error',
+    })
+  }
 }
 
 const handleInvite = async (candidate: Candidate) => {

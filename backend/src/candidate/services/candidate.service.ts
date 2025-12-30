@@ -14,10 +14,24 @@ export class CandidateService {
   ) {}
 
   async createCandidate(createDto: CreateCandidateDto, userId?: string): Promise<Candidate> {
-    const candidate = this.candidateRepository.create({
-      ...createDto,
+    const candidateData: Partial<Candidate> = {
+      email: createDto.email,
+      firstName: createDto.firstName,
+      lastName: createDto.lastName,
       userId,
-    });
+    };
+    
+    // Only set optional fields if they are explicitly provided
+    if (createDto.phone !== undefined) candidateData.phone = createDto.phone;
+    if (createDto.resumeUrl !== undefined) candidateData.resumeUrl = createDto.resumeUrl;
+    if (createDto.currentCompany !== undefined) candidateData.currentCompany = createDto.currentCompany;
+    if (createDto.currentSalary !== undefined) candidateData.currentSalary = createDto.currentSalary;
+    if (createDto.expectedSalary !== undefined) candidateData.expectedSalary = createDto.expectedSalary;
+    if (createDto.skills !== undefined) candidateData.skills = createDto.skills;
+    if (createDto.experience !== undefined) candidateData.experience = createDto.experience;
+    if (createDto.education !== undefined) candidateData.education = createDto.education;
+    
+    const candidate = this.candidateRepository.create(candidateData);
     return this.candidateRepository.save(candidate);
   }
 
@@ -78,7 +92,21 @@ export class CandidateService {
 
   async updateCandidate(id: string, updateDto: UpdateCandidateDto): Promise<Candidate> {
     const candidate = await this.findOne(id);
-    Object.assign(candidate, updateDto);
+    // Only update fields that are explicitly provided
+    if (updateDto.email !== undefined) candidate.email = updateDto.email;
+    if (updateDto.firstName !== undefined) candidate.firstName = updateDto.firstName;
+    if (updateDto.lastName !== undefined) candidate.lastName = updateDto.lastName;
+    if (updateDto.phone !== undefined) candidate.phone = updateDto.phone;
+    if (updateDto.resumeUrl !== undefined) candidate.resumeUrl = updateDto.resumeUrl;
+    if (updateDto.currentCompany !== undefined) candidate.currentCompany = updateDto.currentCompany;
+    if (updateDto.currentSalary !== undefined) candidate.currentSalary = updateDto.currentSalary;
+    if (updateDto.expectedSalary !== undefined) candidate.expectedSalary = updateDto.expectedSalary;
+    if (updateDto.skills !== undefined) candidate.skills = updateDto.skills;
+    if (updateDto.experience !== undefined) {
+      // Ensure experience is an array
+      candidate.experience = Array.isArray(updateDto.experience) ? updateDto.experience : [];
+    }
+    if (updateDto.education !== undefined) candidate.education = updateDto.education;
     return this.candidateRepository.save(candidate);
   }
 

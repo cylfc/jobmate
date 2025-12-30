@@ -2,94 +2,157 @@
  * Get Candidates API
  * Server API route for fetching candidates
  */
+import { useApiClient } from '@auth/utils/api-client'
 import type { Candidate, CandidateFilter } from '@candidate/types/candidate'
 
 export default defineEventHandler(async (event) => {
-  const query = getQuery<CandidateFilter>(event)
+  try {
+    // Get access token from Authorization header
+    const authHeader = getHeader(event, 'authorization')
+    if (!authHeader) {
+      throw createError({
+        statusCode: 401,
+        message: 'Authorization header required',
+      })
+    }
 
-  // TODO: Implement actual database query
-  // Mock data for now
-  const mockCandidates: Candidate[] = [
-    {
-      id: '1',
-      firstName: 'Nguyễn',
-      lastName: 'Văn A',
-      email: 'nguyenvana@example.com',
-      phone: '+84 123 456 789',
-      skills: ['React', 'Vue.js', 'TypeScript', 'Node.js'],
-      experience: 5,
-      currentCompany: 'Tech Solutions Inc.',
-      expectedSalary: {
-        min: 2000,
-        max: 3000,
-        currency: 'USD',
-      },
-      status: 'active',
-      createdAt: new Date('2024-01-15'),
-      updatedAt: new Date('2024-01-15'),
-    },
-    {
-      id: '2',
-      firstName: 'Trần',
-      lastName: 'Thị B',
-      email: 'tranthib@example.com',
-      phone: '+84 987 654 321',
-      skills: ['Python', 'Django', 'PostgreSQL'],
-      experience: 3,
-      currentCompany: 'StartupXYZ',
-      expectedSalary: {
-        min: 1500,
-        max: 2500,
-        currency: 'USD',
-      },
-      status: 'active',
-      createdAt: new Date('2024-02-20'),
-      updatedAt: new Date('2024-02-20'),
-    },
-    {
-      id: '3',
-      firstName: 'Lê',
-      lastName: 'Văn C',
-      email: 'levanc@example.com',
-      skills: ['Java', 'Spring Boot', 'MySQL'],
-      experience: 7,
-      currentCompany: 'Data Solutions',
-      expectedSalary: {
-        min: 2500,
-        max: 3500,
-        currency: 'USD',
-      },
-      status: 'inactive',
-      createdAt: new Date('2024-03-10'),
-      updatedAt: new Date('2024-03-10'),
-    },
-  ]
+    const query = getQuery<CandidateFilter & { page?: string; limit?: string; sortBy?: string; sortOrder?: string }>(event)
 
-  let filtered = [...mockCandidates]
+    const apiClient = useApiClient()
 
-  // Apply filters
-  if (query.search) {
-    const search = query.search.toLowerCase()
-    filtered = filtered.filter(
-      (c) =>
-        `${c.firstName} ${c.lastName}`.toLowerCase().includes(search) ||
-        c.email.toLowerCase().includes(search)
-    )
-  }
+    // Build query params for backend
+    const queryParams = new URLSearchParams()
+    if (query.search) queryParams.append('search', query.search)
+    if (query.page) queryParams.append('page', query.page)
+    if (query.limit) queryParams.append('limit', query.limit)
+    if (query.sortBy) queryParams.append('sortBy', query.sortBy)
+    if (query.sortOrder) queryParams.append('sortOrder', query.sortOrder)
 
-  if (query.status) {
-    filtered = filtered.filter((c) => c.status === query.status)
-  }
+    const queryString = queryParams.toString()
+    const endpoint = `/candidates${queryString ? `?${queryString}` : ''}`
 
-  if (query.minExperience !== undefined) {
-    filtered = filtered.filter((c) => c.experience >= query.minExperience!)
-  }
+    // Call backend API
+    const backendResponse = await apiClient.get<{
+      items: Array<{
+        id: string
+        email: string
+        firstName: string
+        lastName: string
+        phone?: string
+        resumeUrl?: string
+        currentCompany?: string
+        skills: string[]
+        experience: Record<string, unknown>[]
+        education: Record<string, unknown>[]
+        currentSalary?: { amount: number; currency: string }
+        expectedSalary?: { min: number; max: number; currency: string }
+        userId?: string
+        createdAt: string
+        updatedAt: string
+      }>
+      total: number
+      page: number
+      limit: number
+      totalPages: number
+    }>(endpoint, {
+      Authorization: authHeader,
+    })
 
-  if (query.maxExperience !== undefined) {
-    filtered = filtered.filter((c) => c.experience <= query.maxExperience!)
-  }
+    // Transform backend response to frontend format
+    const candidates: Candidate[] = backendResponse.items.map((backendCandidate) => {
+      // Extract salary info - prefer direct fields, fallback to experience array
+      let currentSalary: Candidate['currentSalary'] = backendCandidate.currentSalary
+      let expectedSalary: Candidate['expectedSalary'] = backendCandidate.expectedSalary
+      
+      // Validate and normalize salary objects
+      if (currentSalary && typeof currentSalary === 'object') {
+        // Ensure it has the correct structure
+        if (!('amount' in currentSalary) || !('currency' in currentSalary)) {
+          currentSalary = undefined
+        }
+      }
+      
+      if (expectedSalary && typeof expectedSalary === 'object') {
+        // Ensure it has the correct structure
+        if (!('min' in expectedSalary) || !('max' in expectedSalary) || !('currency' in expectedSalary)) {
+          expectedSalary = undefined
+        }
+      }
+      
+      // Fallback to experience array if direct fields not available
+      if (!currentSalary || !expectedSalary) {
+        if (Array.isArray(backendCandidate.experience)) {
+          for (const exp of backendCandidate.experience) {
+            if (exp.currentSalary && typeof exp.currentSalary === 'object' && !currentSalary) {
+              const cs = exp.currentSalary as Record<string, unknown>
+              if ('amount' in cs && 'currency' in cs) {
+                currentSalary = cs as Candidate['currentSalary']
+              }
+            }
+            if (exp.expectedSalary && typeof exp.expectedSalary === 'object' && !expectedSalary) {
+              const es = exp.expectedSalary as Record<string, unknown>
+              if ('min' in es && 'max' in es && 'currency' in es) {
+                expectedSalary = es as Candidate['expectedSalary']
+              }
+            }
+          }
+        }
+      }
 
-  return {
-    candidates: filtered,
+      return {
+        id: backendCandidate.id,
+        firstName: backendCandidate.firstName,
+        lastName: backendCandidate.lastName,
+        email: backendCandidate.email,
+        phone: backendCandidate.phone,
+        skills: backendCandidate.skills || [],
+        experience: Array.isArray(backendCandidate.experience) && backendCandidate.experience.length > 0
+          ? (backendCandidate.experience.find((e) => e.years !== undefined) as { years?: number })?.years || 0
+          : 0,
+        currentCompany: backendCandidate.currentCompany,
+        currentSalary,
+        expectedSalary,
+        status: 'active' as const,
+        createdAt: new Date(backendCandidate.createdAt),
+        updatedAt: new Date(backendCandidate.updatedAt),
+      }
+    })
+
+    // Apply frontend filters (status, minExperience, maxExperience) if needed
+    let filtered = candidates
+
+    if (query.status) {
+      filtered = filtered.filter((c) => c.status === query.status)
+    }
+
+    if (query.minExperience !== undefined) {
+      filtered = filtered.filter((c) => c.experience >= query.minExperience!)
+    }
+
+    if (query.maxExperience !== undefined) {
+      filtered = filtered.filter((c) => c.experience <= query.maxExperience!)
+    }
+
+    return {
+      candidates: filtered,
+    }
+  } catch (error) {
+    // Handle backend errors
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      const statusCode = (error as { statusCode: number }).statusCode
+      const message = ('message' in error && typeof error.message === 'string')
+        ? error.message
+        : 'Failed to fetch candidates'
+
+      throw createError({
+        statusCode,
+        message,
+      })
+    }
+
+    throw createError({
+      statusCode: 500,
+      message: 'Failed to fetch candidates',
+    })
   }
 })

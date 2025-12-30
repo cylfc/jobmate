@@ -11,6 +11,10 @@ export interface Candidate {
   skills: string[]
   experience: number
   currentCompany?: string
+  currentSalary?: {
+    amount: number
+    currency: string
+  }
   expectedSalary?: {
     min: number
     max: number
@@ -31,6 +35,10 @@ export interface CreateCandidateInput {
   skills: string[]
   experience?: number
   currentCompany?: string
+  currentSalary?: {
+    amount: number
+    currency: string
+  }
   expectedSalary?: {
     min: number
     max: number

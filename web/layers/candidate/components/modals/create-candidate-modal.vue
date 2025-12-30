@@ -3,7 +3,7 @@
     <template #content>
       <UCard>
         <template #header>
-          <h3 class="text-lg font-semibold">{{ t('candidate.create.title') }}</h3>
+          <h3 class="text-lg font-semibold">{{ candidate ? t('candidate.edit.title') : t('candidate.create.title') }}</h3>
         </template>
 
         <div class="space-y-4">
@@ -130,12 +130,69 @@
 
               <UFormField :label="t('candidate.create.experience')" name="experience" class="w-full">
                 <UInput
-                  v-model.number="form.experience"
+                  v-model="form.experience"
                   type="number"
                   :placeholder="t('candidate.create.experience-placeholder')"
+                  :min="0"
                   class="w-full"
                 />
               </UFormField>
+
+              <UFormField :label="t('candidate.current-company')" name="currentCompany" class="w-full">
+                <UInput
+                  v-model="form.currentCompany"
+                  :placeholder="t('candidate.create.current-company-placeholder')"
+                  class="w-full"
+                />
+              </UFormField>
+
+              <!-- Current Salary -->
+              <div class="grid grid-cols-3 gap-4">
+                <UFormField :label="t('candidate.create.current-salary')" name="currentSalaryAmount" class="w-full col-span-2">
+                  <UInput
+                    v-model.number="currentSalaryAmount"
+                    type="number"
+                    :placeholder="t('candidate.create.current-salary-placeholder')"
+                    class="w-full"
+                  />
+                </UFormField>
+                <UFormField :label="t('candidate.create.currency')" name="currentSalaryCurrency" class="w-full">
+                  <USelectMenu
+                    v-model="currentSalaryCurrency"
+                    :options="currencyOptions"
+                    :placeholder="t('candidate.create.currency-placeholder')"
+                    class="w-full"
+                  />
+                </UFormField>
+              </div>
+
+              <!-- Expected Salary -->
+              <div class="grid grid-cols-3 gap-4">
+                <UFormField :label="t('candidate.create.expected-salary-min')" name="expectedSalaryMin" class="w-full">
+                  <UInput
+                    v-model.number="expectedSalaryMin"
+                    type="number"
+                    :placeholder="t('candidate.create.expected-salary-min-placeholder')"
+                    class="w-full"
+                  />
+                </UFormField>
+                <UFormField :label="t('candidate.create.expected-salary-max')" name="expectedSalaryMax" class="w-full">
+                  <UInput
+                    v-model.number="expectedSalaryMax"
+                    type="number"
+                    :placeholder="t('candidate.create.expected-salary-max-placeholder')"
+                    class="w-full"
+                  />
+                </UFormField>
+                <UFormField :label="t('candidate.create.currency')" name="expectedSalaryCurrency" class="w-full">
+                  <USelectMenu
+                    v-model="expectedSalaryCurrency"
+                    :options="currencyOptions"
+                    :placeholder="t('candidate.create.currency-placeholder')"
+                    class="w-full"
+                  />
+                </UFormField>
+              </div>
             </UForm>
           </div>
         </div>
@@ -155,7 +212,7 @@
               :disabled="!canSubmit"
               @click="handleSubmit"
             >
-              {{ t('candidate.create.submit-button') }}
+              {{ candidate ? t('candidate.edit.submit-button') : t('candidate.create.submit-button') }}
             </UButton>
           </div>
         </template>
@@ -166,13 +223,21 @@
 
 <script setup lang="ts">
 import { z } from 'zod'
-import type { CreateCandidateInput } from '@candidate/types/candidate'
+import type { Candidate, CreateCandidateInput } from '@candidate/types/candidate'
 import { CANDIDATE_CREATE_MODE, type CandidateCreateMode } from '@candidate/constants/modes'
 import { useCandidate } from '@candidate/utils/candidate-api'
+
+interface Props {
+  candidate?: Candidate | null
+}
 
 interface Emits {
   (e: 'submit', value: CreateCandidateInput): void
 }
+
+const props = withDefaults(defineProps<Props>(), {
+  candidate: null,
+})
 
 const modelValue = defineModel<boolean>({ default: false })
 const emit = defineEmits<Emits>()
@@ -187,14 +252,59 @@ const skillsText = ref('')
 const candidateText = ref('')
 const uploadedFile = ref<File | null>(null)
 
+// Salary fields
+const currentSalaryAmount = ref<number | undefined>(undefined)
+const currentSalaryCurrency = ref<string>('USD')
+const expectedSalaryMin = ref<number | undefined>(undefined)
+const expectedSalaryMax = ref<number | undefined>(undefined)
+const expectedSalaryCurrency = ref<string>('USD')
+
+const currencyOptions = [
+  { label: 'USD', value: 'USD' },
+  { label: 'EUR', value: 'EUR' },
+  { label: 'VND', value: 'VND' },
+  { label: 'GBP', value: 'GBP' },
+  { label: 'JPY', value: 'JPY' },
+]
+
 const form = ref<CreateCandidateInput>({
   firstName: '',
   lastName: '',
   email: '',
   phone: '',
   skills: [],
-  experience: 0,
+  experience: undefined,
+  currentCompany: '',
 })
+
+// Watch for candidate prop changes to populate form for edit mode
+watch(() => props.candidate, (newCandidate) => {
+  if (newCandidate) {
+    form.value = {
+      firstName: newCandidate.firstName,
+      lastName: newCandidate.lastName,
+      email: newCandidate.email,
+      phone: newCandidate.phone || '',
+      skills: newCandidate.skills || [],
+      experience: newCandidate.experience !== undefined && newCandidate.experience !== null ? Number(newCandidate.experience) : undefined,
+      currentCompany: newCandidate.currentCompany || '',
+      currentSalary: newCandidate.currentSalary,
+      expectedSalary: newCandidate.expectedSalary,
+    }
+    skillsText.value = newCandidate.skills?.join(', ') || ''
+    if (newCandidate.currentSalary) {
+      currentSalaryAmount.value = newCandidate.currentSalary.amount
+      currentSalaryCurrency.value = newCandidate.currentSalary.currency
+    }
+    if (newCandidate.expectedSalary) {
+      expectedSalaryMin.value = newCandidate.expectedSalary.min
+      expectedSalaryMax.value = newCandidate.expectedSalary.max
+      expectedSalaryCurrency.value = newCandidate.expectedSalary.currency
+    }
+    // Set mode to FORM for edit
+    selectedMode.value = CANDIDATE_CREATE_MODE.FORM
+  }
+}, { immediate: true })
 
 const tabs = computed(() => [
   { label: t('candidate.create.mode.input'), value: CANDIDATE_CREATE_MODE.INPUT, icon: 'i-lucide-pencil' },
@@ -227,6 +337,16 @@ const schema = computed(() => z.object({
     .email(t('auth.validation.email-invalid')),
   phone: z.string().optional(),
   skills: z.array(z.string()).optional(),
+  experience: z.number().optional(),
+  currentSalary: z.object({
+    amount: z.number().optional(),
+    currency: z.string().optional(),
+  }).optional(),
+  expectedSalary: z.object({
+    min: z.number().optional(),
+    max: z.number().optional(),
+    currency: z.string().optional(),
+  }).optional(),
 }))
 
 const handleFileUpload = (event: Event) => {
@@ -249,9 +369,20 @@ const handleExtractFromText = async () => {
         email: parsedCandidate.email || '',
         phone: parsedCandidate.phone || '',
         skills: parsedCandidate.skills || [],
-        experience: parsedCandidate.experience || 0,
+        experience: parsedCandidate.experience !== undefined && parsedCandidate.experience !== null ? Number(parsedCandidate.experience) : undefined,
+        currentSalary: parsedCandidate.currentSalary,
+        expectedSalary: parsedCandidate.expectedSalary,
       }
       skillsText.value = parsedCandidate.skills?.join(', ') || ''
+      if (parsedCandidate.currentSalary) {
+        currentSalaryAmount.value = parsedCandidate.currentSalary.amount
+        currentSalaryCurrency.value = parsedCandidate.currentSalary.currency
+      }
+      if (parsedCandidate.expectedSalary) {
+        expectedSalaryMin.value = parsedCandidate.expectedSalary.min
+        expectedSalaryMax.value = parsedCandidate.expectedSalary.max
+        expectedSalaryCurrency.value = parsedCandidate.expectedSalary.currency
+      }
     }
   } catch (error) {
     console.error('Error extracting candidate data:', error)
@@ -275,9 +406,20 @@ const handleExtractFromFile = async () => {
         email: parsedCandidate.email || '',
         phone: parsedCandidate.phone || '',
         skills: parsedCandidate.skills || [],
-        experience: parsedCandidate.experience || 0,
+        experience: parsedCandidate.experience !== undefined && parsedCandidate.experience !== null ? Number(parsedCandidate.experience) : undefined,
+        currentSalary: parsedCandidate.currentSalary,
+        expectedSalary: parsedCandidate.expectedSalary,
       }
       skillsText.value = parsedCandidate.skills?.join(', ') || ''
+      if (parsedCandidate.currentSalary) {
+        currentSalaryAmount.value = parsedCandidate.currentSalary.amount
+        currentSalaryCurrency.value = parsedCandidate.currentSalary.currency
+      }
+      if (parsedCandidate.expectedSalary) {
+        expectedSalaryMin.value = parsedCandidate.expectedSalary.min
+        expectedSalaryMax.value = parsedCandidate.expectedSalary.max
+        expectedSalaryCurrency.value = parsedCandidate.expectedSalary.currency
+      }
     }
   } catch (error) {
     console.error('Error extracting candidate data from file:', error)
@@ -295,11 +437,30 @@ const handleSubmit = async () => {
   isSaving.value = true
 
   const candidateData: CreateCandidateInput = {
-    ...form.value,
+    firstName: form.value.firstName,
+    lastName: form.value.lastName,
+    email: form.value.email,
+    phone: form.value.phone || undefined,
     skills: skillsText.value
       .split(/[,\n]/)
       .map((s) => s.trim())
       .filter((s) => s.length > 0),
+    experience: form.value.experience !== undefined && form.value.experience !== null && !isNaN(Number(form.value.experience)) ? Number(form.value.experience) : undefined,
+    currentCompany: form.value.currentCompany || undefined,
+    currentSalary: currentSalaryAmount.value !== undefined && currentSalaryAmount.value > 0
+      ? {
+          amount: currentSalaryAmount.value,
+          currency: currentSalaryCurrency.value,
+        }
+      : undefined,
+    expectedSalary: expectedSalaryMin.value !== undefined && expectedSalaryMax.value !== undefined
+      && expectedSalaryMin.value > 0 && expectedSalaryMax.value > 0
+      ? {
+          min: expectedSalaryMin.value,
+          max: expectedSalaryMax.value,
+          currency: expectedSalaryCurrency.value,
+        }
+      : undefined,
   }
 
   try {
@@ -314,15 +475,54 @@ const handleSubmit = async () => {
 }
 
 const resetForm = () => {
-  form.value = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    skills: [],
-    experience: 0,
+  if (props.candidate) {
+    // Reset to candidate values for edit mode
+    form.value = {
+      firstName: props.candidate.firstName,
+      lastName: props.candidate.lastName,
+      email: props.candidate.email,
+      phone: props.candidate.phone || '',
+      skills: props.candidate.skills || [],
+      experience: props.candidate.experience || 0,
+      currentCompany: props.candidate.currentCompany || '',
+      currentSalary: props.candidate.currentSalary,
+      expectedSalary: props.candidate.expectedSalary,
+    }
+    skillsText.value = props.candidate.skills?.join(', ') || ''
+    if (props.candidate.currentSalary) {
+      currentSalaryAmount.value = props.candidate.currentSalary.amount
+      currentSalaryCurrency.value = props.candidate.currentSalary.currency
+    } else {
+      currentSalaryAmount.value = undefined
+      currentSalaryCurrency.value = 'USD'
+    }
+    if (props.candidate.expectedSalary) {
+      expectedSalaryMin.value = props.candidate.expectedSalary.min
+      expectedSalaryMax.value = props.candidate.expectedSalary.max
+      expectedSalaryCurrency.value = props.candidate.expectedSalary.currency
+    } else {
+      expectedSalaryMin.value = undefined
+      expectedSalaryMax.value = undefined
+      expectedSalaryCurrency.value = 'USD'
+    }
+  } else {
+    // Reset to empty for create mode
+    form.value = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      skills: [],
+      experience: undefined,
+      currentCompany: '',
+    }
+    skillsText.value = ''
+    currentSalaryAmount.value = undefined
+    currentSalaryCurrency.value = 'USD'
+    expectedSalaryMin.value = undefined
+    expectedSalaryMax.value = undefined
+    expectedSalaryCurrency.value = 'USD'
   }
-  skillsText.value = ''
   candidateText.value = ''
   uploadedFile.value = null
 }

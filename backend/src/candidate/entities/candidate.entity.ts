@@ -31,6 +31,15 @@ export class Candidate extends BaseEntity {
   @Column({ type: 'varchar', length: 500, nullable: true })
   resumeUrl?: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  currentCompany?: string;
+
+  @Column({ type: 'jsonb', nullable: true })
+  currentSalary?: { amount: number; currency: string };
+
+  @Column({ type: 'jsonb', nullable: true })
+  expectedSalary?: { min: number; max: number; currency: string };
+
   @Column({ type: 'jsonb', default: '[]' })
   skills: string[] = [];
 
