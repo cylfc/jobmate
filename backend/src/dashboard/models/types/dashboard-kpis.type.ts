@@ -9,3 +9,4 @@ export interface DashboardKpisResponse {
   timeToShortlist: number;
 }
 
+

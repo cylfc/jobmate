@@ -16,3 +16,4 @@ export interface DashboardActivitiesResponse {
   hasMore?: boolean;
 }
 
+
