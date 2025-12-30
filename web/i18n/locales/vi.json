@@ -180,6 +180,7 @@
     "login": "Đăng nhập",
     "register": "Đăng ký",
     "logout": "Đăng xuất",
+    "guest": "Khách",
     "forgot-password": "Quên mật khẩu",
     "change-password": "Đổi mật khẩu",
     "email": "Email",
@@ -688,6 +689,10 @@
       "reset": "Đặt lại",
       "apply": "Áp dụng"
     },
+    "edit": {
+      "title": "Chỉnh sửa ứng viên",
+      "submit-button": "Cập nhật ứng viên"
+    },
     "create": {
       "title": "Tạo mới ứng viên",
       "phone": "Số điện thoại",
@@ -696,6 +701,15 @@
       "skills-placeholder": "Nhập kỹ năng (mỗi kỹ năng một dòng hoặc cách nhau bằng dấu phẩy)",
       "experience": "Kinh nghiệm (năm)",
       "experience-placeholder": "Nhập số năm kinh nghiệm",
+      "current-company-placeholder": "Nhập tên công ty hiện tại",
+      "current-salary": "Lương hiện tại",
+      "current-salary-placeholder": "Nhập mức lương hiện tại",
+      "expected-salary-min": "Lương mong muốn (Tối thiểu)",
+      "expected-salary-min-placeholder": "Nhập mức lương tối thiểu mong muốn",
+      "expected-salary-max": "Lương mong muốn (Tối đa)",
+      "expected-salary-max-placeholder": "Nhập mức lương tối đa mong muốn",
+      "currency": "Loại tiền tệ",
+      "currency-placeholder": "Chọn loại tiền tệ",
       "submit-button": "Tạo ứng viên",
       "mode": {
         "input": "Nhập text",
@@ -722,6 +736,8 @@
     "success": {
       "create-success": "Tạo ứng viên thành công",
       "create-success-description": "Ứng viên đã được tạo thành công",
+      "update-success": "Cập nhật ứng viên thành công",
+      "update-success-description": "Ứng viên đã được cập nhật thành công",
       "invite-success": "Mời ứng tuyển thành công",
       "invite-success-description": "Đã gửi lời mời ứng tuyển đến {name}",
       "delete-success": "Xóa ứng viên thành công",

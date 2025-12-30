@@ -180,6 +180,7 @@
     "login": "Login",
     "register": "Register",
     "logout": "Logout",
+    "guest": "Guest",
     "forgot-password": "Forgot Password",
     "change-password": "Change Password",
     "email": "Email",
@@ -688,6 +689,10 @@
       "reset": "Reset",
       "apply": "Apply"
     },
+    "edit": {
+      "title": "Edit Candidate",
+      "submit-button": "Update Candidate"
+    },
     "create": {
       "title": "Create New Candidate",
       "phone": "Phone",
@@ -696,6 +701,15 @@
       "skills-placeholder": "Enter skills (one per line or comma-separated)",
       "experience": "Experience (years)",
       "experience-placeholder": "Enter years of experience",
+      "current-company-placeholder": "Enter current company name",
+      "current-salary": "Current Salary",
+      "current-salary-placeholder": "Enter current salary",
+      "expected-salary-min": "Expected Salary (Min)",
+      "expected-salary-min-placeholder": "Enter minimum expected salary",
+      "expected-salary-max": "Expected Salary (Max)",
+      "expected-salary-max-placeholder": "Enter maximum expected salary",
+      "currency": "Currency",
+      "currency-placeholder": "Select currency",
       "submit-button": "Create Candidate",
       "mode": {
         "input": "Text Input",
@@ -736,6 +750,8 @@
       "load-failed-description": "Unable to load candidate list",
       "create-failed": "Failed to create candidate",
       "create-failed-description": "Unable to create new candidate",
+      "update-failed": "Failed to update candidate",
+      "update-failed-description": "Unable to update candidate",
       "invite-failed": "Failed to send invitation",
       "invite-failed-description": "Unable to send invitation",
       "delete-failed": "Failed to delete candidate",

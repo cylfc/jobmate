@@ -36,6 +36,20 @@ export class CreateCandidateDto {
   @IsUrl()
   resumeUrl?: string;
 
+  @ApiPropertyOptional({ example: 'Tech Solutions Inc.' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  currentCompany?: string;
+
+  @ApiPropertyOptional({ example: { amount: 5000, currency: 'USD' } })
+  @IsOptional()
+  currentSalary?: { amount: number; currency: string };
+
+  @ApiPropertyOptional({ example: { min: 6000, max: 8000, currency: 'USD' } })
+  @IsOptional()
+  expectedSalary?: { min: number; max: number; currency: string };
+
   @ApiPropertyOptional({ example: ['JavaScript', 'TypeScript', 'Node.js'] })
   @IsOptional()
   @IsArray()

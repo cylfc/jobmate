@@ -45,7 +45,12 @@
         class="flex items-center gap-2"
       >
         <UIcon name="i-lucide-user" class="w-4 h-4" />
-        <span class="hidden md:inline text-sm font-medium">{{ displayName }}</span>
+        <ClientOnly>
+          <span class="hidden md:inline text-sm font-medium">{{ displayName }}</span>
+          <template #fallback>
+            <span class="hidden md:inline text-sm font-medium">{{ t('auth.guest') }}</span>
+          </template>
+        </ClientOnly>
         <UIcon name="i-lucide-chevron-down" class="w-4 h-4" />
       </UButton>
     </UDropdownMenu>
@@ -71,7 +76,7 @@ const displayName = computed(() => {
   if (authStore.user) {
     return authStore.fullName || authStore.user.email;
   }
-  return t('auth.guest', 'Guest');
+  return t('auth.guest');
 });
 
 const handleLocaleChange = (value: string | undefined) => {

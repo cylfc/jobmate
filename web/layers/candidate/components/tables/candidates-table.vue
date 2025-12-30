@@ -55,11 +55,10 @@
           <span class="text-sm">{{ row.original.currentCompany || '-' }}</span>
         </template>
 
-        <template #expected-salary-cell="{ row }">
-          <span v-if="row.original.expectedSalary" class="text-sm">
+        <template #expectedSalary-cell="{ row }">
+          <span class="text-sm">
             {{ formatSalary(row.original.expectedSalary) }}
           </span>
-          <span v-else class="text-sm text-dimmed">-</span>
         </template>
 
         <template #status-cell="{ row }">
@@ -146,7 +145,7 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'view-detail' | 'invite' | 'delete' | 'match-jobs', candidate: Candidate): void
+  (e: 'view-detail' | 'invite' | 'delete' | 'match-jobs' | 'edit', candidate: Candidate): void
   (e: 'bulk-invite' | 'bulk-delete' | 'bulk-match-jobs', candidateIds: string[]): void
 }
 
@@ -198,7 +197,8 @@ const columns: TableColumn<Candidate>[] = [
     header: t('candidate.current-company'),
   },
   {
-    accessorKey: 'expectedSalary',
+    id: 'expectedSalary',
+    accessorFn: (row: Candidate) => row.expectedSalary,
     header: t('candidate.expected-salary'),
   },
   {
@@ -241,8 +241,17 @@ const getCandidateName = (candidate: Candidate) => {
   return `${candidate.firstName} ${candidate.lastName}`.trim()
 }
 
-const formatSalary = (salary: { min: number; max: number; currency: string }) => {
-  return `${salary.min.toLocaleString()} - ${salary.max.toLocaleString()} ${salary.currency}`
+const formatSalary = (salary?: { min?: number; max?: number; currency?: string }) => {
+  if (!salary || typeof salary !== 'object') {
+    return '-'
+  }
+  if (salary.min !== undefined && salary.max !== undefined && salary.currency) {
+    return `${salary.min.toLocaleString()} - ${salary.max.toLocaleString()} ${salary.currency}`
+  }
+  if (salary.min !== undefined && salary.currency) {
+    return `${salary.min.toLocaleString()} ${salary.currency}`
+  }
+  return '-'
 }
 
 const getStatusColor = (status?: string): 'neutral' | 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' => {
@@ -261,6 +270,11 @@ const getActionItems = (candidate: Candidate): DropdownMenuItem[][] => {
         label: t('candidate.view-detail'),
         icon: 'i-lucide-eye',
         onSelect: () => emit('view-detail', candidate),
+      },
+      {
+        label: t('common.edit'),
+        icon: 'i-lucide-pencil',
+        onSelect: () => emit('edit', candidate),
       },
     ],
     [
