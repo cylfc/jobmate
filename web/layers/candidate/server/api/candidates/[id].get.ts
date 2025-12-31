@@ -2,87 +2,129 @@
  * Get Candidate by ID API
  * Server API route for fetching a single candidate by ID
  */
+import { useApiClient } from '@auth/utils/api-client'
 import type { Candidate } from '@candidate/types/candidate'
 
-// Mock data store (should be replaced with database in production)
-const mockCandidates: Candidate[] = [
-  {
-    id: '1',
-    firstName: 'Nguyễn',
-    lastName: 'Văn A',
-    email: 'nguyenvana@example.com',
-    phone: '+84 123 456 789',
-    skills: ['React', 'Vue.js', 'TypeScript', 'Node.js'],
-    experience: 5,
-    currentCompany: 'Tech Solutions Inc.',
-    expectedSalary: {
-      min: 2000,
-      max: 3000,
-      currency: 'USD',
-    },
-    status: 'active',
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-01-15'),
-  },
-  {
-    id: '2',
-    firstName: 'Trần',
-    lastName: 'Thị B',
-    email: 'tranthib@example.com',
-    phone: '+84 987 654 321',
-    skills: ['Python', 'Django', 'PostgreSQL'],
-    experience: 3,
-    currentCompany: 'StartupXYZ',
-    expectedSalary: {
-      min: 1500,
-      max: 2500,
-      currency: 'USD',
-    },
-    status: 'active',
-    createdAt: new Date('2024-02-20'),
-    updatedAt: new Date('2024-02-20'),
-  },
-  {
-    id: '3',
-    firstName: 'Lê',
-    lastName: 'Văn C',
-    email: 'levanc@example.com',
-    skills: ['Java', 'Spring Boot', 'MySQL'],
-    experience: 7,
-    currentCompany: 'Data Solutions',
-    expectedSalary: {
-      min: 2500,
-      max: 3500,
-      currency: 'USD',
-    },
-    status: 'inactive',
-    createdAt: new Date('2024-03-10'),
-    updatedAt: new Date('2024-03-10'),
-  },
-]
-
 export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, 'id')
+  try {
+    // Get access token from Authorization header
+    const authHeader = getHeader(event, 'authorization')
+    if (!authHeader) {
+      throw createError({
+        statusCode: 401,
+        message: 'Authorization header required',
+      })
+    }
 
-  if (!id) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Candidate ID is required',
+    const id = getRouterParam(event, 'id')
+
+    if (!id) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Candidate ID is required',
+      })
+    }
+
+    const apiClient = useApiClient()
+
+    // Call backend API
+    const backendCandidate = await apiClient.get<{
+      id: string
+      email: string
+      firstName: string
+      lastName: string
+      phone?: string
+      resumeUrl?: string
+      currentCompany?: string
+      skills: string[]
+      experience: Record<string, unknown>[]
+      education: Record<string, unknown>[]
+      currentSalary?: { amount: number; currency: string }
+      expectedSalary?: { min: number; max: number; currency: string }
+      userId?: string
+      createdAt: string
+      updatedAt: string
+    }>(`/candidates/${id}`, {
+      Authorization: authHeader,
     })
-  }
 
-  // TODO: Implement actual database query
-  const candidate = mockCandidates.find((c) => c.id === id)
+    // Extract salary info - prefer direct fields, fallback to experience array
+    let currentSalary: Candidate['currentSalary'] = backendCandidate.currentSalary
+    let expectedSalary: Candidate['expectedSalary'] = backendCandidate.expectedSalary
+    
+    // Validate and normalize salary objects
+    if (currentSalary && typeof currentSalary === 'object') {
+      if (!('amount' in currentSalary) || !('currency' in currentSalary)) {
+        currentSalary = undefined
+      }
+    }
+    
+    if (expectedSalary && typeof expectedSalary === 'object') {
+      if (!('min' in expectedSalary) || !('max' in expectedSalary) || !('currency' in expectedSalary)) {
+        expectedSalary = undefined
+      }
+    }
+    
+    // Fallback to experience array if direct fields not available
+    if (!currentSalary || !expectedSalary) {
+      if (Array.isArray(backendCandidate.experience)) {
+        for (const exp of backendCandidate.experience) {
+          if (exp.currentSalary && typeof exp.currentSalary === 'object' && !currentSalary) {
+            const cs = exp.currentSalary as Record<string, unknown>
+            if ('amount' in cs && 'currency' in cs) {
+              currentSalary = cs as Candidate['currentSalary']
+            }
+          }
+          if (exp.expectedSalary && typeof exp.expectedSalary === 'object' && !expectedSalary) {
+            const es = exp.expectedSalary as Record<string, unknown>
+            if ('min' in es && 'max' in es && 'currency' in es) {
+              expectedSalary = es as Candidate['expectedSalary']
+            }
+          }
+        }
+      }
+    }
 
-  if (!candidate) {
+    // Transform backend response to frontend format
+    const candidate: Candidate = {
+      id: backendCandidate.id,
+      firstName: backendCandidate.firstName,
+      lastName: backendCandidate.lastName,
+      email: backendCandidate.email,
+      phone: backendCandidate.phone,
+      skills: backendCandidate.skills || [],
+      experience: Array.isArray(backendCandidate.experience) && backendCandidate.experience.length > 0
+        ? (backendCandidate.experience.find((e) => e.years !== undefined) as { years?: number })?.years || 0
+        : 0,
+      currentCompany: backendCandidate.currentCompany,
+      currentSalary,
+      expectedSalary,
+      status: 'active' as const,
+      createdAt: new Date(backendCandidate.createdAt),
+      updatedAt: new Date(backendCandidate.updatedAt),
+    }
+
+    return {
+      candidate,
+    }
+  } catch (error) {
+    // Handle backend errors
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      const statusCode = (error as { statusCode: number }).statusCode
+      const message = ('message' in error && typeof error.message === 'string')
+        ? error.message
+        : 'Failed to fetch candidate'
+
+      throw createError({
+        statusCode,
+        message,
+      })
+    }
+
     throw createError({
-      statusCode: 404,
-      statusMessage: `Candidate with ID ${id} not found`,
+      statusCode: 500,
+      message: 'Failed to fetch candidate',
     })
-  }
-
-  return {
-    candidate,
   }
 })
 

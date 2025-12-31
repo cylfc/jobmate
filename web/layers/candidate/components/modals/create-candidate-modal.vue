@@ -1,5 +1,13 @@
 <template>
   <UModal v-model:open="modelValue">
+    <template #title>
+      {{ candidate ? t('candidate.edit.title') : t('candidate.create.title') }}
+    </template>
+
+    <template #description>
+      <span class="sr-only">{{ candidate ? t('candidate.edit.title') : t('candidate.create.title') }}</span>
+    </template>
+
     <template #content>
       <UCard>
         <template #header>

@@ -230,9 +230,20 @@ const handleDelete = async (candidate: Candidate) => {
     // Optionally refresh to sync with server
     await loadCandidates()
   } catch (error) {
+    // Check if error is about open applications
+    const errorMessage = error && typeof error === 'object' && 'message' in error
+      ? String(error.message)
+      : ''
+    
+    const hasOpenApplications = errorMessage.toLowerCase().includes('open application')
+    
     toast.add({
-      title: t('candidate.error.delete-failed'),
-      description: t('candidate.error.delete-failed-description'),
+      title: hasOpenApplications
+        ? t('candidate.error.delete-failed-open-applications')
+        : t('candidate.error.delete-failed'),
+      description: hasOpenApplications
+        ? errorMessage || t('candidate.error.delete-failed-open-applications-description')
+        : t('candidate.error.delete-failed-description'),
       color: 'error',
     })
   }
@@ -271,16 +282,54 @@ const handleBulkDelete = async (candidateIds: string[]) => {
   const candidateOps = useCandidate()
   // TODO: Add confirmation dialog
   try {
-    await Promise.all(candidateIds.map(id => candidateOps.deleteCandidate(id)))
-    // Optimistically remove from list
-    removeCandidates(candidateIds)
-    toast.add({
-      title: t('candidate.success.bulk-delete-success'),
-      description: t('candidate.success.bulk-delete-success-description', { count: candidateIds.length }),
-      color: 'success',
-    })
-    // Optionally refresh to sync with server
-    await loadCandidates()
+    // Use Promise.allSettled to handle partial failures
+    const results = await Promise.allSettled(
+      candidateIds.map(id => candidateOps.deleteCandidate(id))
+    )
+    
+    const successful = results.filter(r => r.status === 'fulfilled').length
+    const failed = results.filter(r => r.status === 'rejected').length
+    
+    if (failed > 0) {
+      // Check if any failures are due to open applications
+      const openAppErrors = results.filter(
+        r => r.status === 'rejected' 
+          && r.reason 
+          && typeof r.reason === 'object' 
+          && 'message' in r.reason
+          && String(r.reason.message).toLowerCase().includes('open application')
+      )
+      
+      if (openAppErrors.length > 0) {
+        toast.add({
+          title: t('candidate.error.bulk-delete-failed'),
+          description: t('candidate.error.delete-failed-open-applications-description'),
+          color: 'error',
+        })
+      } else {
+        toast.add({
+          title: t('candidate.error.bulk-delete-failed'),
+          description: t('candidate.error.bulk-delete-failed-description'),
+          color: 'error',
+        })
+      }
+      
+      // Remove only successfully deleted candidates
+      const successfulIds = candidateIds.filter((_, index) => results[index].status === 'fulfilled')
+      if (successfulIds.length > 0) {
+        removeCandidates(successfulIds)
+        await loadCandidates()
+      }
+    } else {
+      // All succeeded
+      removeCandidates(candidateIds)
+      toast.add({
+        title: t('candidate.success.bulk-delete-success'),
+        description: t('candidate.success.bulk-delete-success-description', { count: candidateIds.length }),
+        color: 'success',
+      })
+      await loadCandidates()
+    }
   } catch (error) {
     toast.add({
       title: t('candidate.error.bulk-delete-failed'),
