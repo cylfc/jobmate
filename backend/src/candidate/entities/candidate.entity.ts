@@ -10,6 +10,10 @@ import {
 import { BaseEntity } from '../../shared/entities/base.entity';
 import { JobApplication } from '../../job-application/entities/job-application.entity';
 import { User } from '../../auth/entities/user.entity';
+import { CandidateEducation } from './candidate-education.entity';
+import { CandidateSkill } from './candidate-skill.entity';
+import { CandidateWorkExperience } from './candidate-work-experience.entity';
+import { CandidateProject } from './candidate-project.entity';
 
 @Entity('candidate')
 @Unique(['email'])
@@ -58,5 +62,17 @@ export class Candidate extends BaseEntity {
 
   @OneToMany(() => JobApplication, (application) => application.candidate)
   applications!: JobApplication[];
+
+  @OneToMany(() => CandidateEducation, (education) => education.candidate)
+  educations!: CandidateEducation[];
+
+  @OneToMany(() => CandidateSkill, (skill) => skill.candidate)
+  skillsDetailed!: CandidateSkill[];
+
+  @OneToMany(() => CandidateWorkExperience, (workExp) => workExp.candidate)
+  workExperiences!: CandidateWorkExperience[];
+
+  @OneToMany(() => CandidateProject, (project) => project.candidate)
+  projects!: CandidateProject[];
 }
 
