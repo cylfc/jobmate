@@ -3,7 +3,15 @@
  * API utility functions for candidate-related operations
  * Stateless functions - no reactive state
  */
-import type { Candidate, CreateCandidateInput, CandidateFilter } from '@candidate/types/candidate'
+import type {
+  Candidate,
+  CreateCandidateInput,
+  CandidateFilter,
+  EducationEntry,
+  SkillEntry,
+  WorkExperienceEntry,
+  ProjectEntry,
+} from '@candidate/types/candidate'
 
 export const useCandidate = () => {
   const { $api } = useNuxtApp()
@@ -115,6 +123,206 @@ export const useCandidate = () => {
     }
   }
 
+  // ========== Education APIs ==========
+  const getEducation = async (candidateId: string): Promise<EducationEntry[]> => {
+    try {
+      const response = await $api<EducationEntry[]>(`/api/candidates/${candidateId}/education`, {
+        method: 'GET',
+      })
+      return response || []
+    } catch (error) {
+      console.error('Error fetching education:', error)
+      throw error
+    }
+  }
+
+  const createEducation = async (candidateId: string, input: Omit<EducationEntry, 'id'>): Promise<EducationEntry> => {
+    try {
+      const response = await $api<EducationEntry>(`/api/candidates/${candidateId}/education`, {
+        method: 'POST',
+        body: input,
+      })
+      return response
+    } catch (error) {
+      console.error('Error creating education:', error)
+      throw error
+    }
+  }
+
+  const updateEducation = async (candidateId: string, id: string, input: Partial<EducationEntry>): Promise<EducationEntry> => {
+    try {
+      const response = await $api<EducationEntry>(`/api/candidates/${candidateId}/education/${id}`, {
+        method: 'PUT',
+        body: input,
+      })
+      return response
+    } catch (error) {
+      console.error('Error updating education:', error)
+      throw error
+    }
+  }
+
+  const deleteEducation = async (candidateId: string, id: string): Promise<void> => {
+    try {
+      await $api(`/api/candidates/${candidateId}/education/${id}`, {
+        method: 'DELETE',
+      })
+    } catch (error) {
+      console.error('Error deleting education:', error)
+      throw error
+    }
+  }
+
+  // ========== Skills APIs ==========
+  const getSkills = async (candidateId: string): Promise<SkillEntry[]> => {
+    try {
+      const response = await $api<SkillEntry[]>(`/api/candidates/${candidateId}/skills`, {
+        method: 'GET',
+      })
+      return response || []
+    } catch (error) {
+      console.error('Error fetching skills:', error)
+      throw error
+    }
+  }
+
+  const createSkill = async (candidateId: string, input: Omit<SkillEntry, 'id'>): Promise<SkillEntry> => {
+    try {
+      const response = await $api<SkillEntry>(`/api/candidates/${candidateId}/skills`, {
+        method: 'POST',
+        body: input,
+      })
+      return response
+    } catch (error) {
+      console.error('Error creating skill:', error)
+      throw error
+    }
+  }
+
+  const updateSkill = async (candidateId: string, id: string, input: Partial<SkillEntry>): Promise<SkillEntry> => {
+    try {
+      const response = await $api<SkillEntry>(`/api/candidates/${candidateId}/skills/${id}`, {
+        method: 'PUT',
+        body: input,
+      })
+      return response
+    } catch (error) {
+      console.error('Error updating skill:', error)
+      throw error
+    }
+  }
+
+  const deleteSkill = async (candidateId: string, id: string): Promise<void> => {
+    try {
+      await $api(`/api/candidates/${candidateId}/skills/${id}`, {
+        method: 'DELETE',
+      })
+    } catch (error) {
+      console.error('Error deleting skill:', error)
+      throw error
+    }
+  }
+
+  // ========== Work Experience APIs ==========
+  const getWorkExperience = async (candidateId: string): Promise<WorkExperienceEntry[]> => {
+    try {
+      const response = await $api<WorkExperienceEntry[]>(`/api/candidates/${candidateId}/work-experience`, {
+        method: 'GET',
+      })
+      return response || []
+    } catch (error) {
+      console.error('Error fetching work experience:', error)
+      throw error
+    }
+  }
+
+  const createWorkExperience = async (candidateId: string, input: Omit<WorkExperienceEntry, 'id'>): Promise<WorkExperienceEntry> => {
+    try {
+      const response = await $api<WorkExperienceEntry>(`/api/candidates/${candidateId}/work-experience`, {
+        method: 'POST',
+        body: input,
+      })
+      return response
+    } catch (error) {
+      console.error('Error creating work experience:', error)
+      throw error
+    }
+  }
+
+  const updateWorkExperience = async (candidateId: string, id: string, input: Partial<WorkExperienceEntry>): Promise<WorkExperienceEntry> => {
+    try {
+      const response = await $api<WorkExperienceEntry>(`/api/candidates/${candidateId}/work-experience/${id}`, {
+        method: 'PUT',
+        body: input,
+      })
+      return response
+    } catch (error) {
+      console.error('Error updating work experience:', error)
+      throw error
+    }
+  }
+
+  const deleteWorkExperience = async (candidateId: string, id: string): Promise<void> => {
+    try {
+      await $api(`/api/candidates/${candidateId}/work-experience/${id}`, {
+        method: 'DELETE',
+      })
+    } catch (error) {
+      console.error('Error deleting work experience:', error)
+      throw error
+    }
+  }
+
+  // ========== Projects APIs ==========
+  const getProjects = async (candidateId: string): Promise<ProjectEntry[]> => {
+    try {
+      const response = await $api<ProjectEntry[]>(`/api/candidates/${candidateId}/projects`, {
+        method: 'GET',
+      })
+      return response || []
+    } catch (error) {
+      console.error('Error fetching projects:', error)
+      throw error
+    }
+  }
+
+  const createProject = async (candidateId: string, input: Omit<ProjectEntry, 'id'>): Promise<ProjectEntry> => {
+    try {
+      const response = await $api<ProjectEntry>(`/api/candidates/${candidateId}/projects`, {
+        method: 'POST',
+        body: input,
+      })
+      return response
+    } catch (error) {
+      console.error('Error creating project:', error)
+      throw error
+    }
+  }
+
+  const updateProject = async (candidateId: string, id: string, input: Partial<ProjectEntry>): Promise<ProjectEntry> => {
+    try {
+      const response = await $api<ProjectEntry>(`/api/candidates/${candidateId}/projects/${id}`, {
+        method: 'PUT',
+        body: input,
+      })
+      return response
+    } catch (error) {
+      console.error('Error updating project:', error)
+      throw error
+    }
+  }
+
+  const deleteProject = async (candidateId: string, id: string): Promise<void> => {
+    try {
+      await $api(`/api/candidates/${candidateId}/projects/${id}`, {
+        method: 'DELETE',
+      })
+    } catch (error) {
+      console.error('Error deleting project:', error)
+      throw error
+    }
+  }
+
   return {
     getCandidates,
     getCandidateById,
@@ -124,6 +332,26 @@ export const useCandidate = () => {
     inviteCandidate,
     parseCandidateFromText,
     getFilterOptions,
+    // Education
+    getEducation,
+    createEducation,
+    updateEducation,
+    deleteEducation,
+    // Skills
+    getSkills,
+    createSkill,
+    updateSkill,
+    deleteSkill,
+    // Work Experience
+    getWorkExperience,
+    createWorkExperience,
+    updateWorkExperience,
+    deleteWorkExperience,
+    // Projects
+    getProjects,
+    createProject,
+    updateProject,
+    deleteProject,
   }
 }
 

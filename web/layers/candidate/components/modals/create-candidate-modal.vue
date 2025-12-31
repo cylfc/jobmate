@@ -14,7 +14,7 @@
           <h3 class="text-lg font-semibold">{{ candidate ? t('candidate.edit.title') : t('candidate.create.title') }}</h3>
         </template>
 
-        <div class="space-y-4">
+        <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-4 -mr-4">
           <!-- Mode Selection Buttons -->
           <div class="flex flex-wrap gap-2">
             <UButton
@@ -201,6 +201,26 @@
                   />
                 </UFormField>
               </div>
+
+              <USeparator class="my-4" />
+
+              <!-- Education Section -->
+              <EducationForm :model-value="form.educations || []" @update:model-value="form.educations = $event" />
+
+              <USeparator class="my-4" />
+
+              <!-- Skills Detailed Section -->
+              <SkillsForm :model-value="form.skillsDetailed || []" @update:model-value="form.skillsDetailed = $event" />
+
+              <USeparator class="my-4" />
+
+              <!-- Work Experience Section -->
+              <WorkExperienceForm :model-value="form.workExperiences || []" @update:model-value="form.workExperiences = $event" />
+
+              <USeparator class="my-4" />
+
+              <!-- Projects Section -->
+              <ProjectsForm :model-value="form.projects || []" @update:model-value="form.projects = $event" />
             </UForm>
           </div>
         </div>
@@ -234,6 +254,10 @@ import { z } from 'zod'
 import type { Candidate, CreateCandidateInput } from '@candidate/types/candidate'
 import { CANDIDATE_CREATE_MODE, type CandidateCreateMode } from '@candidate/constants/modes'
 import { useCandidate } from '@candidate/utils/candidate-api'
+import EducationForm from '../forms/education-form.vue'
+import SkillsForm from '../forms/skills-form.vue'
+import WorkExperienceForm from '../forms/work-experience-form.vue'
+import ProjectsForm from '../forms/projects-form.vue'
 
 interface Props {
   candidate?: Candidate | null
@@ -283,6 +307,10 @@ const form = ref<CreateCandidateInput>({
   skills: [],
   experience: undefined,
   currentCompany: '',
+  educations: [],
+  skillsDetailed: [],
+  workExperiences: [],
+  projects: [],
 })
 
 // Watch for candidate prop changes to populate form for edit mode
@@ -298,6 +326,10 @@ watch(() => props.candidate, (newCandidate) => {
       currentCompany: newCandidate.currentCompany || '',
       currentSalary: newCandidate.currentSalary,
       expectedSalary: newCandidate.expectedSalary,
+      educations: newCandidate.educations || [],
+      skillsDetailed: newCandidate.skillsDetailed || [],
+      workExperiences: newCandidate.workExperiences || [],
+      projects: newCandidate.projects || [],
     }
     skillsText.value = newCandidate.skills?.join(', ') || ''
     if (newCandidate.currentSalary) {
@@ -495,6 +527,10 @@ const resetForm = () => {
       currentCompany: props.candidate.currentCompany || '',
       currentSalary: props.candidate.currentSalary,
       expectedSalary: props.candidate.expectedSalary,
+      educations: props.candidate.educations || [],
+      skillsDetailed: props.candidate.skillsDetailed || [],
+      workExperiences: props.candidate.workExperiences || [],
+      projects: props.candidate.projects || [],
     }
     skillsText.value = props.candidate.skills?.join(', ') || ''
     if (props.candidate.currentSalary) {
@@ -523,6 +559,10 @@ const resetForm = () => {
       skills: [],
       experience: undefined,
       currentCompany: '',
+      educations: [],
+      skillsDetailed: [],
+      workExperiences: [],
+      projects: [],
     }
     skillsText.value = ''
     currentSalaryAmount.value = undefined
