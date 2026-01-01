@@ -6,36 +6,50 @@ import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
  */
 export class AddCandidateSalaryFields1767085127000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Add currentCompany column
-    await queryRunner.addColumn(
-      'candidate',
-      new TableColumn({
-        name: 'currentCompany',
-        type: 'varchar',
-        length: '255',
-        isNullable: true,
-      }),
-    );
+    const table = await queryRunner.getTable('candidate');
+    if (!table) {
+      throw new Error('Candidate table does not exist');
+    }
 
-    // Add currentSalary column (JSONB)
-    await queryRunner.addColumn(
-      'candidate',
-      new TableColumn({
-        name: 'currentSalary',
-        type: 'jsonb',
-        isNullable: true,
-      }),
-    );
+    // Add currentCompany column (if not exists)
+    const currentCompanyColumn = table.findColumnByName('currentCompany');
+    if (!currentCompanyColumn) {
+      await queryRunner.addColumn(
+        'candidate',
+        new TableColumn({
+          name: 'currentCompany',
+          type: 'varchar',
+          length: '255',
+          isNullable: true,
+        }),
+      );
+    }
 
-    // Add expectedSalary column (JSONB)
-    await queryRunner.addColumn(
-      'candidate',
-      new TableColumn({
-        name: 'expectedSalary',
-        type: 'jsonb',
-        isNullable: true,
-      }),
-    );
+    // Add currentSalary column (JSONB) (if not exists)
+    const currentSalaryColumn = table.findColumnByName('currentSalary');
+    if (!currentSalaryColumn) {
+      await queryRunner.addColumn(
+        'candidate',
+        new TableColumn({
+          name: 'currentSalary',
+          type: 'jsonb',
+          isNullable: true,
+        }),
+      );
+    }
+
+    // Add expectedSalary column (JSONB) (if not exists)
+    const expectedSalaryColumn = table.findColumnByName('expectedSalary');
+    if (!expectedSalaryColumn) {
+      await queryRunner.addColumn(
+        'candidate',
+        new TableColumn({
+          name: 'expectedSalary',
+          type: 'jsonb',
+          isNullable: true,
+        }),
+      );
+    }
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
