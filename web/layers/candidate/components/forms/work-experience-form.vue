@@ -297,6 +297,7 @@
 <script setup lang="ts">
 import type { WorkExperienceEntry } from "@candidate/types/candidate";
 import { CalendarDate, parseDate } from "@internationalized/date";
+import { reactive } from 'vue';
 
 const { t } = useI18n();
 
@@ -364,7 +365,7 @@ type WorkExperienceWithCalendarDate = Omit<
   endDate?: CalendarDate;
 };
 
-const workExperiences = ref<WorkExperienceWithCalendarDate[]>([]);
+const workExperiences = reactive<WorkExperienceWithCalendarDate[]>([]);
 let isSyncingFromProps = false;
 
 // Sync with props and convert dates
@@ -372,11 +373,11 @@ watch(
   () => props.modelValue,
   (newValue) => {
     isSyncingFromProps = true;
-    workExperiences.value = newValue.map((exp) => ({
+    workExperiences.splice(0, workExperiences.length, ...newValue.map((exp) => ({
       ...exp,
       startDate: toCalendarDateValue(exp.startDate),
       endDate: toCalendarDateValue(exp.endDate),
-    }));
+    })));
     nextTick(() => {
       isSyncingFromProps = false;
     });
@@ -386,7 +387,7 @@ watch(
 
 // Watch for changes and emit converted values (only when not syncing from props)
 watch(
-  workExperiences,
+  () => workExperiences,
   (newValue) => {
     if (isSyncingFromProps) return;
 
@@ -417,14 +418,14 @@ watch(
   { deep: true }
 );
 
-const technologiesText = ref<string[]>([]);
+const technologiesText = reactive<string[]>([]);
 
 watch(
-  workExperiences,
+  () => workExperiences,
   (newValue) => {
-    technologiesText.value = newValue.map(
+    technologiesText.splice(0, technologiesText.length, ...newValue.map(
       (exp) => exp.technologiesUsed?.join(", ") || ""
-    );
+    ));
   },
   { immediate: true, deep: true }
 );
@@ -435,7 +436,7 @@ const employmentTypeOptions = computed(() => formOptions.value.employmentTypes)
 
 const handleAdd = () => {
   const today = new Date();
-  workExperiences.value.push({
+  workExperiences.push({
     companyName: "",
     position: "",
     role: undefined,
@@ -451,22 +452,22 @@ const handleAdd = () => {
     description: undefined,
     achievements: [],
     technologiesUsed: [],
-    orderIndex: workExperiences.value.length,
+    orderIndex: workExperiences.length,
   });
-  technologiesText.value.push("");
+  technologiesText.push("");
 };
 
 const handleRemove = (index: number) => {
-  workExperiences.value.splice(index, 1);
-  technologiesText.value.splice(index, 1);
+  workExperiences.splice(index, 1);
+  technologiesText.splice(index, 1);
   // Update orderIndex
-  workExperiences.value.forEach((exp, idx) => {
+  workExperiences.forEach((exp, idx) => {
     exp.orderIndex = idx;
   });
 };
 
 const handleTechnologiesChange = (index: number, value: string) => {
-  const exp = workExperiences.value[index];
+  const exp = workExperiences[index];
   if (!exp) return;
   exp.technologiesUsed = value
     .split(",")
@@ -474,7 +475,7 @@ const handleTechnologiesChange = (index: number, value: string) => {
     .filter((t) => t.length > 0);
 };
 
-const dateInputRefs = ref<Record<string, any>>({});
+const dateInputRefs = reactive<Record<string, any>>({});
 
 const setDateInputRef = (
   el: any,
@@ -482,16 +483,16 @@ const setDateInputRef = (
   field: "startDate" | "endDate"
 ) => {
   if (el) {
-    dateInputRefs.value[`${index}-${field}`] = el;
+    dateInputRefs[`${index}-${field}`] = el;
   }
 };
 
 const getDateInputRef = (index: number, field: "startDate" | "endDate") => {
-  return dateInputRefs.value[`${index}-${field}`];
+  return dateInputRefs[`${index}-${field}`];
 };
 
 const addAchievement = (index: number) => {
-  const exp = workExperiences.value[index];
+  const exp = workExperiences[index];
   if (!exp) return;
   if (!exp.achievements) {
     exp.achievements = [];
@@ -500,7 +501,7 @@ const addAchievement = (index: number) => {
 };
 
 const removeAchievement = (expIndex: number, achIndex: number) => {
-  const exp = workExperiences.value[expIndex];
+  const exp = workExperiences[expIndex];
   if (!exp || !exp.achievements) return;
   exp.achievements.splice(achIndex, 1);
 };

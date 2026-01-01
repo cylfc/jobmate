@@ -83,31 +83,55 @@ export default defineNuxtPlugin(() => {
               ? Object.fromEntries(existingHeaders.entries())
               : (existingHeaders as Record<string, string>)
             
-            await api(requestUrl, {
+            // Retry the request
+            const retryResponse = await api(requestUrl, {
               ...options,
               headers: {
                 ...headersObj,
                 Authorization: `Bearer ${tokens.token}`,
               } as unknown as Headers,
             } as Parameters<typeof api>[1])
+
+            // Replace the error response with the successful response
+            // $fetch uses response._data to return the data
+            // We need to modify the response object to return the retry response
+            const responseObj = response as { _data?: unknown; status?: number; statusText?: string; ok?: boolean }
+            responseObj._data = retryResponse
+            responseObj.status = 200
+            responseObj.statusText = 'OK'
+            responseObj.ok = true
+            
+            // Return early to prevent logout/redirect
+            return
           } catch (refreshError) {
-            // Refresh failed, logout user
+            // Refresh failed or retry failed, logout user
             console.error('Token refresh failed:', refreshError)
             authStore.logout()
+            
+            // Redirect to login page if not already there
+            if (router.currentRoute.value.path !== '/auth/login') {
+              await navigateTo({
+                path: '/auth/login',
+                query: {
+                  redirect: router.currentRoute.value.fullPath,
+                },
+              })
+            }
+            return
           }
         } else {
           // No refresh token, logout
           authStore.logout()
-        }
-
-        // Redirect to login page if not already there
-        if (router.currentRoute.value.path !== '/auth/login') {
-          await navigateTo({
-            path: '/auth/login',
-            query: {
-              redirect: router.currentRoute.value.fullPath,
-            },
-          })
+          
+          // Redirect to login page if not already there
+          if (router.currentRoute.value.path !== '/auth/login') {
+            await navigateTo({
+              path: '/auth/login',
+              query: {
+                redirect: router.currentRoute.value.fullPath,
+              },
+            })
+          }
         }
       }
     },

@@ -153,6 +153,7 @@
 <script setup lang="ts">
 import type { SkillEntry } from '@candidate/types/candidate'
 import { CalendarDate, parseDate } from '@internationalized/date'
+import { reactive } from 'vue'
 
 const { t } = useI18n()
 
@@ -219,7 +220,7 @@ type SkillWithCalendarDate = Omit<
   lastUsedDate?: CalendarDate
 }
 
-const skills = ref<SkillWithCalendarDate[]>([])
+const skills = reactive<SkillWithCalendarDate[]>([])
 let isSyncingFromProps = false
 
 // Sync with props and convert dates
@@ -227,10 +228,10 @@ watch(
   () => props.modelValue,
   (newValue) => {
     isSyncingFromProps = true
-    skills.value = newValue.map((skill) => ({
+    skills.splice(0, skills.length, ...newValue.map((skill) => ({
       ...skill,
       lastUsedDate: toCalendarDateValue(skill.lastUsedDate),
-    }))
+    })))
     nextTick(() => {
       isSyncingFromProps = false
     })
@@ -240,7 +241,7 @@ watch(
 
 // Watch for changes and emit converted values (only when not syncing from props)
 watch(
-  skills,
+  () => skills,
   (newValue) => {
     if (isSyncingFromProps) return
 
@@ -269,7 +270,7 @@ const skillTypeOptions = computed(() => formOptions.value.skillTypes)
 const levelOptions = computed(() => formOptions.value.skillLevels)
 
 const handleAdd = () => {
-  skills.value.push({
+  skills.push({
     name: '',
     skillType: 'technical',
     level: undefined,
@@ -277,23 +278,23 @@ const handleAdd = () => {
     proficiencyPercentage: undefined,
     lastUsedDate: undefined,
     description: undefined,
-    orderIndex: skills.value.length,
+    orderIndex: skills.length,
   })
 }
 
 const handleRemove = (index: number) => {
-  skills.value.splice(index, 1)
+  skills.splice(index, 1)
   // Update orderIndex
-  skills.value.forEach((skill, idx) => {
+  skills.forEach((skill, idx) => {
     skill.orderIndex = idx
   })
 }
 
-const dateInputRefs = ref<Record<string, any>>({})
+const dateInputRefs = reactive<Record<string, any>>({})
 
 const setDateInputRef = (el: any, index: number) => {
   if (el) {
-    dateInputRefs.value[`${index}-lastUsedDate`] = el
+    dateInputRefs[`${index}-lastUsedDate`] = el
   }
 }
 
