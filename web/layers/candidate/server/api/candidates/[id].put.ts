@@ -49,6 +49,20 @@ export default defineEventHandler(async (event) => {
     if (body.expectedSalary !== undefined) {
       updatePayload.expectedSalary = body.expectedSalary
     }
+    
+    // Add detailed fields if provided
+    if (body.educations !== undefined) {
+      updatePayload.educations = body.educations
+    }
+    if (body.skillsDetailed !== undefined) {
+      updatePayload.skillsDetailed = body.skillsDetailed
+    }
+    if (body.workExperiences !== undefined) {
+      updatePayload.workExperiences = body.workExperiences
+    }
+    if (body.projects !== undefined) {
+      updatePayload.projects = body.projects
+    }
 
     // Call backend API
     const backendCandidate = await apiClient.patch<{
@@ -64,6 +78,10 @@ export default defineEventHandler(async (event) => {
       education: Record<string, unknown>[]
       currentSalary?: { amount: number; currency: string }
       expectedSalary?: { min: number; max: number; currency: string }
+      educations?: unknown[]
+      skillsDetailed?: unknown[]
+      workExperiences?: unknown[]
+      projects?: unknown[]
       userId?: string
       createdAt: string
       updatedAt: string
@@ -104,6 +122,11 @@ export default defineEventHandler(async (event) => {
       currentSalary,
       expectedSalary,
       status: body.status || 'active',
+      // Map detailed fields from backend response
+      educations: Array.isArray(backendCandidate.educations) ? backendCandidate.educations as Candidate['educations'] : undefined,
+      skillsDetailed: Array.isArray(backendCandidate.skillsDetailed) ? backendCandidate.skillsDetailed as Candidate['skillsDetailed'] : undefined,
+      workExperiences: Array.isArray(backendCandidate.workExperiences) ? backendCandidate.workExperiences as Candidate['workExperiences'] : undefined,
+      projects: Array.isArray(backendCandidate.projects) ? backendCandidate.projects as Candidate['projects'] : undefined,
       createdAt: new Date(backendCandidate.createdAt),
       updatedAt: new Date(backendCandidate.updatedAt),
     }

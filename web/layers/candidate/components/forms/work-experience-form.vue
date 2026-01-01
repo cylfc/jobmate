@@ -113,7 +113,8 @@
               >
                 <USelectMenu
                   v-model="exp.employmentType"
-                  :options="employmentTypeOptions"
+                  :items="employmentTypeOptions"
+                  value-key="value"
                   :placeholder="
                     t(
                       'candidate.create.work-experience.employment-type-placeholder'
@@ -428,13 +429,9 @@ watch(
   { immediate: true, deep: true }
 );
 
-const employmentTypeOptions = [
-  { label: "Full Time", value: "FULL_TIME" },
-  { label: "Part Time", value: "PART_TIME" },
-  { label: "Contract", value: "CONTRACT" },
-  { label: "Internship", value: "INTERNSHIP" },
-  { label: "Remote", value: "REMOTE" },
-];
+// Fetch form options from API
+const { formOptions } = useCandidateFormOptions()
+const employmentTypeOptions = computed(() => formOptions.value.employmentTypes)
 
 const handleAdd = () => {
   const today = new Date();

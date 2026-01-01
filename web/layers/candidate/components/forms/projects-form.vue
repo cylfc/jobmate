@@ -212,6 +212,7 @@
 
 <script setup lang="ts">
 import type { ProjectEntry } from '@candidate/types/candidate'
+import { CalendarDate, parseDate } from '@internationalized/date'
 
 const { t } = useI18n()
 
@@ -226,16 +227,123 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const projects = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value),
-})
+// Helper function to convert date to CalendarDate
+const toCalendarDateValue = (
+  value: Date | string | CalendarDate | undefined
+): CalendarDate | undefined => {
+  if (!value) return undefined
+  if (value instanceof CalendarDate) return value
+  if (typeof value === 'string') {
+    try {
+      // Try parsing as YYYY-MM-DD format first
+      return parseDate(value)
+    } catch {
+      // If parseDate fails, try parsing as ISO string and convert
+      const date = new Date(value)
+      if (!isNaN(date.getTime())) {
+        return new CalendarDate(
+          date.getFullYear(),
+          date.getMonth() + 1,
+          date.getDate()
+        )
+      }
+      return undefined
+    }
+  }
+  if (value instanceof Date) {
+    return new CalendarDate(
+      value.getFullYear(),
+      value.getMonth() + 1,
+      value.getDate()
+    )
+  }
+  return undefined
+}
+
+// Helper function to convert CalendarDate back to string (for API)
+const fromCalendarDateValue = (
+  value: CalendarDate | undefined
+): string | undefined => {
+  if (!value) return undefined
+  if (value instanceof CalendarDate) {
+    return `${value.year}-${String(value.month).padStart(2, '0')}-${String(value.day).padStart(2, '0')}`
+  }
+  return undefined
+}
+
+// Local reactive array with CalendarDate conversions
+type ProjectWithCalendarDate = Omit<
+  ProjectEntry,
+  'startDate' | 'endDate'
+> & {
+  startDate?: CalendarDate
+  endDate?: CalendarDate
+}
+
+const projects = ref<ProjectWithCalendarDate[]>([])
+let isSyncingFromProps = false
+
+// Sync with props and convert dates
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    isSyncingFromProps = true
+    projects.value = newValue.map((proj) => ({
+      ...proj,
+      startDate: toCalendarDateValue(proj.startDate),
+      endDate: toCalendarDateValue(proj.endDate),
+    }))
+    nextTick(() => {
+      isSyncingFromProps = false
+    })
+  },
+  { immediate: true, deep: true }
+)
+
+// Watch for changes and emit converted values (only when not syncing from props)
+watch(
+  projects,
+  (newValue) => {
+    if (isSyncingFromProps) return
+
+    const converted = newValue.map((proj) => {
+      let startDate: Date | string | CalendarDate | undefined = proj.startDate
+      let endDate: Date | string | CalendarDate | undefined = proj.endDate
+
+      if (startDate instanceof CalendarDate) {
+        startDate = fromCalendarDateValue(startDate)
+      } else if (startDate instanceof Date) {
+        startDate = startDate.toISOString().split('T')[0]
+      }
+
+      if (endDate instanceof CalendarDate) {
+        endDate = fromCalendarDateValue(endDate)
+      } else if (endDate instanceof Date) {
+        endDate = endDate.toISOString().split('T')[0]
+      }
+
+      return {
+        ...proj,
+        startDate,
+        endDate,
+      }
+    })
+    emit('update:modelValue', converted as ProjectEntry[])
+  },
+  { deep: true }
+)
 
 const technologiesText = ref<string[]>([])
 
-watch(() => props.modelValue, (newValue) => {
-  technologiesText.value = newValue.map((proj) => proj.technologiesUsed?.join(', ') || '')
-}, { immediate: true, deep: true })
+watch(
+  projects,
+  (newValue) => {
+    technologiesText.value = newValue.map(
+      (proj) => proj.technologiesUsed?.join(', ') || ''
+    )
+  },
+  { immediate: true, deep: true }
+)
 
 const handleAdd = () => {
   projects.value.push({

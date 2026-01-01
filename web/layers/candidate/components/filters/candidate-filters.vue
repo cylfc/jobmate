@@ -16,7 +16,7 @@
         <USelectMenu
           class="w-full"
           :model-value="localFilters.status"
-          :options="statusOptionsWithFallback"
+          :items="statusOptionsWithFallback"
           :placeholder="t('candidate.filter.status-placeholder')"
           clearable
           @update:model-value="handleStatusChange"

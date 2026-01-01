@@ -110,7 +110,8 @@
               >
                 <USelectMenu
                   v-model="edu.degreeType"
-                  :options="degreeTypeOptions"
+                  :items="degreeTypeOptions"
+                  value-key="value"
                   :placeholder="
                     t('candidate.create.education.degree-type-placeholder', {
                       defaultValue: 'Select degree type',
@@ -143,7 +144,8 @@
                   />
                   <USelectMenu
                     v-model.number="edu.gpaScale"
-                    :options="gpaScaleOptions"
+                    :items="gpaScaleOptions"
+                    value-key="value"
                     class="w-24"
                   />
                 </div>
@@ -253,6 +255,7 @@
 
 <script setup lang="ts">
 import type { EducationEntry } from '@candidate/types/candidate'
+import { CalendarDate, parseDate } from '@internationalized/date'
 
 const { t } = useI18n()
 
@@ -267,18 +270,115 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const educations = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value),
-})
+// Helper function to convert date to CalendarDate
+const toCalendarDateValue = (
+  value: Date | string | CalendarDate | undefined
+): CalendarDate | undefined => {
+  if (!value) return undefined
+  if (value instanceof CalendarDate) return value
+  if (typeof value === 'string') {
+    try {
+      // Try parsing as YYYY-MM-DD format first
+      return parseDate(value)
+    } catch {
+      // If parseDate fails, try parsing as ISO string and convert
+      const date = new Date(value)
+      if (!isNaN(date.getTime())) {
+        return new CalendarDate(
+          date.getFullYear(),
+          date.getMonth() + 1,
+          date.getDate()
+        )
+      }
+      return undefined
+    }
+  }
+  if (value instanceof Date) {
+    return new CalendarDate(
+      value.getFullYear(),
+      value.getMonth() + 1,
+      value.getDate()
+    )
+  }
+  return undefined
+}
 
-const degreeTypeOptions = [
-  { label: 'Bachelor', value: 'Bachelor' },
-  { label: 'Master', value: 'Master' },
-  { label: 'PhD', value: 'PhD' },
-  { label: 'Diploma', value: 'Diploma' },
-  { label: 'Certificate', value: 'Certificate' },
-]
+// Helper function to convert CalendarDate back to string (for API)
+const fromCalendarDateValue = (
+  value: CalendarDate | undefined
+): string | undefined => {
+  if (!value) return undefined
+  if (value instanceof CalendarDate) {
+    return `${value.year}-${String(value.month).padStart(2, '0')}-${String(value.day).padStart(2, '0')}`
+  }
+  return undefined
+}
+
+// Local reactive array with CalendarDate conversions
+type EducationWithCalendarDate = Omit<
+  EducationEntry,
+  'startDate' | 'endDate'
+> & {
+  startDate?: CalendarDate
+  endDate?: CalendarDate
+}
+
+const educations = ref<EducationWithCalendarDate[]>([])
+let isSyncingFromProps = false
+
+// Sync with props and convert dates
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    isSyncingFromProps = true
+    educations.value = newValue.map((edu) => ({
+      ...edu,
+      startDate: toCalendarDateValue(edu.startDate),
+      endDate: toCalendarDateValue(edu.endDate),
+    }))
+    nextTick(() => {
+      isSyncingFromProps = false
+    })
+  },
+  { immediate: true, deep: true }
+)
+
+// Watch for changes and emit converted values (only when not syncing from props)
+watch(
+  educations,
+  (newValue) => {
+    if (isSyncingFromProps) return
+
+    const converted = newValue.map((edu) => {
+      let startDate: Date | string | CalendarDate | undefined = edu.startDate
+      let endDate: Date | string | CalendarDate | undefined = edu.endDate
+
+      if (startDate instanceof CalendarDate) {
+        startDate = fromCalendarDateValue(startDate)
+      } else if (startDate instanceof Date) {
+        startDate = startDate.toISOString().split('T')[0]
+      }
+
+      if (endDate instanceof CalendarDate) {
+        endDate = fromCalendarDateValue(endDate)
+      } else if (endDate instanceof Date) {
+        endDate = endDate.toISOString().split('T')[0]
+      }
+
+      return {
+        ...edu,
+        startDate,
+        endDate,
+      }
+    })
+    emit('update:modelValue', converted as EducationEntry[])
+  },
+  { deep: true }
+)
+
+// Fetch form options from API
+const { formOptions } = useCandidateFormOptions()
+const degreeTypeOptions = computed(() => formOptions.value.degreeTypes)
 
 const gpaScaleOptions = [
   { label: '4.0', value: 4.0 },
