@@ -6,6 +6,12 @@ import { MigrationInterface, QueryRunner, Table, TableForeignKey, TableIndex } f
  */
 export class CreateCandidateProjectTable1767151800000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // Check if table already exists
+    const tableExists = await queryRunner.hasTable('candidate_project');
+    if (tableExists) {
+      return; // Table already exists, skip migration
+    }
+
     await queryRunner.createTable(
       new Table({
         name: 'candidate_project',
@@ -104,33 +110,54 @@ export class CreateCandidateProjectTable1767151800000 implements MigrationInterf
       true,
     );
 
-    // Create foreign key
-    await queryRunner.createForeignKey(
-      'candidate_project',
-      new TableForeignKey({
-        columnNames: ['candidate_id'],
-        referencedColumnNames: ['id'],
-        referencedTableName: 'candidate',
-        onDelete: 'CASCADE',
-      }),
-    );
+    // Get table to check for existing constraints/indexes
+    const table = await queryRunner.getTable('candidate_project');
+    if (!table) {
+      throw new Error('Candidate project table was not created');
+    }
 
-    // Create indexes
-    await queryRunner.createIndex(
-      'candidate_project',
-      new TableIndex({
-        name: 'idx_project_candidate_id',
-        columnNames: ['candidate_id'],
-      }),
+    // Create foreign key (if not exists)
+    const foreignKeyExists = table.foreignKeys.some(
+      (fk) => fk.columnNames.indexOf('candidate_id') !== -1,
     );
+    if (!foreignKeyExists) {
+      await queryRunner.createForeignKey(
+        'candidate_project',
+        new TableForeignKey({
+          columnNames: ['candidate_id'],
+          referencedColumnNames: ['id'],
+          referencedTableName: 'candidate',
+          onDelete: 'CASCADE',
+        }),
+      );
+    }
 
-    await queryRunner.createIndex(
-      'candidate_project',
-      new TableIndex({
-        name: 'idx_project_dates',
-        columnNames: ['start_date', 'end_date'],
-      }),
+    // Create indexes (if not exists)
+    const indexCandidateIdExists = table.indices.some(
+      (idx) => idx.name === 'idx_project_candidate_id',
     );
+    if (!indexCandidateIdExists) {
+      await queryRunner.createIndex(
+        'candidate_project',
+        new TableIndex({
+          name: 'idx_project_candidate_id',
+          columnNames: ['candidate_id'],
+        }),
+      );
+    }
+
+    const indexDatesExists = table.indices.some(
+      (idx) => idx.name === 'idx_project_dates',
+    );
+    if (!indexDatesExists) {
+      await queryRunner.createIndex(
+        'candidate_project',
+        new TableIndex({
+          name: 'idx_project_dates',
+          columnNames: ['start_date', 'end_date'],
+        }),
+      );
+    }
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

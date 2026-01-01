@@ -65,5 +65,25 @@ export class CreateCandidateDto {
   @IsOptional()
   @IsArray()
   education?: Record<string, unknown>[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  educations?: unknown[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  skillsDetailed?: unknown[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  workExperiences?: unknown[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  projects?: unknown[];
 }
 

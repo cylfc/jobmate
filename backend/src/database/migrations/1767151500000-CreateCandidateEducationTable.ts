@@ -6,6 +6,12 @@ import { MigrationInterface, QueryRunner, Table, TableForeignKey, TableIndex } f
  */
 export class CreateCandidateEducationTable1767151500000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // Check if table already exists
+    const tableExists = await queryRunner.hasTable('candidate_education');
+    if (tableExists) {
+      return; // Table already exists, skip migration
+    }
+
     await queryRunner.createTable(
       new Table({
         name: 'candidate_education',

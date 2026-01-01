@@ -31,10 +31,10 @@ export class CandidateEducation extends BaseEntity {
   @Column({ type: 'date', nullable: true })
   endDate?: Date;
 
-  @Column({ type: 'decimal', precision: 3, scale: 2, nullable: true })
+  @Column({ type: 'decimal', precision: 4, scale: 2, nullable: true })
   gpa?: number;
 
-  @Column({ type: 'decimal', precision: 3, scale: 2, default: 4.0 })
+  @Column({ type: 'decimal', precision: 4, scale: 2, default: 4.0 })
   gpaScale!: number;
 
   @Column({ type: 'text', nullable: true })
