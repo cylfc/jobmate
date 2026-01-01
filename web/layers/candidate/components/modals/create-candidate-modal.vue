@@ -127,15 +127,6 @@
                 />
               </UFormField>
 
-              <UFormField :label="t('candidate.create.skills')" name="skills" class="w-full">
-                <UTextarea
-                  v-model="skillsText"
-                  :placeholder="t('candidate.create.skills-placeholder')"
-                  :rows="3"
-                  class="w-full"
-                />
-              </UFormField>
-
               <UFormField :label="t('candidate.create.experience')" name="experience" class="w-full">
                 <UInput
                   v-model="form.experience"
@@ -167,7 +158,8 @@
                 <UFormField :label="t('candidate.create.currency')" name="currentSalaryCurrency" class="w-full">
                   <USelectMenu
                     v-model="currentSalaryCurrency"
-                    :options="currencyOptions"
+                    :items="currencyOptions"
+                    value-key="value"
                     :placeholder="t('candidate.create.currency-placeholder')"
                     class="w-full"
                   />
@@ -195,7 +187,8 @@
                 <UFormField :label="t('candidate.create.currency')" name="expectedSalaryCurrency" class="w-full">
                   <USelectMenu
                     v-model="expectedSalaryCurrency"
-                    :options="currencyOptions"
+                    :items="currencyOptions"
+                    value-key="value"
                     :placeholder="t('candidate.create.currency-placeholder')"
                     class="w-full"
                   />
@@ -277,10 +270,11 @@ const emit = defineEmits<Emits>()
 const { t } = useI18n()
 const { parseCandidateFromText } = useCandidate()
 
+const STORAGE_KEY = 'candidate-form-draft'
+
 const selectedMode = ref<CandidateCreateMode>(CANDIDATE_CREATE_MODE.FORM)
 const isSaving = ref(false)
 const isExtracting = ref(false)
-const skillsText = ref('')
 const candidateText = ref('')
 const uploadedFile = ref<File | null>(null)
 
@@ -304,7 +298,6 @@ const form = ref<CreateCandidateInput>({
   lastName: '',
   email: '',
   phone: '',
-  skills: [],
   experience: undefined,
   currentCompany: '',
   educations: [],
@@ -312,6 +305,72 @@ const form = ref<CreateCandidateInput>({
   workExperiences: [],
   projects: [],
 })
+
+// Storage functions
+const saveFormToStorage = () => {
+  if (props.candidate) return // Don't save in edit mode
+  
+  try {
+    const formData = {
+      form: form.value,
+      currentSalaryAmount: currentSalaryAmount.value,
+      currentSalaryCurrency: currentSalaryCurrency.value,
+      expectedSalaryMin: expectedSalaryMin.value,
+      expectedSalaryMax: expectedSalaryMax.value,
+      expectedSalaryCurrency: expectedSalaryCurrency.value,
+      selectedMode: selectedMode.value,
+      candidateText: candidateText.value,
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData))
+  } catch (error) {
+    console.error('Error saving form to storage:', error)
+  }
+}
+
+const loadFormFromStorage = () => {
+  if (props.candidate) return // Don't load in edit mode
+  
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) {
+      const formData = JSON.parse(stored)
+      if (formData.form) {
+        form.value = formData.form
+      }
+      if (formData.currentSalaryAmount !== undefined) {
+        currentSalaryAmount.value = formData.currentSalaryAmount
+      }
+      if (formData.currentSalaryCurrency !== undefined) {
+        currentSalaryCurrency.value = formData.currentSalaryCurrency
+      }
+      if (formData.expectedSalaryMin !== undefined) {
+        expectedSalaryMin.value = formData.expectedSalaryMin
+      }
+      if (formData.expectedSalaryMax !== undefined) {
+        expectedSalaryMax.value = formData.expectedSalaryMax
+      }
+      if (formData.expectedSalaryCurrency !== undefined) {
+        expectedSalaryCurrency.value = formData.expectedSalaryCurrency
+      }
+      if (formData.selectedMode !== undefined) {
+        selectedMode.value = formData.selectedMode
+      }
+      if (formData.candidateText !== undefined) {
+        candidateText.value = formData.candidateText
+      }
+    }
+  } catch (error) {
+    console.error('Error loading form from storage:', error)
+  }
+}
+
+const clearFormStorage = () => {
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+  } catch (error) {
+    console.error('Error clearing form storage:', error)
+  }
+}
 
 // Watch for candidate prop changes to populate form for edit mode
 watch(() => props.candidate, (newCandidate) => {
@@ -321,7 +380,6 @@ watch(() => props.candidate, (newCandidate) => {
       lastName: newCandidate.lastName,
       email: newCandidate.email,
       phone: newCandidate.phone || '',
-      skills: newCandidate.skills || [],
       experience: newCandidate.experience !== undefined && newCandidate.experience !== null ? Number(newCandidate.experience) : undefined,
       currentCompany: newCandidate.currentCompany || '',
       currentSalary: newCandidate.currentSalary,
@@ -331,7 +389,6 @@ watch(() => props.candidate, (newCandidate) => {
       workExperiences: newCandidate.workExperiences || [],
       projects: newCandidate.projects || [],
     }
-    skillsText.value = newCandidate.skills?.join(', ') || ''
     if (newCandidate.currentSalary) {
       currentSalaryAmount.value = newCandidate.currentSalary.amount
       currentSalaryCurrency.value = newCandidate.currentSalary.currency
@@ -343,8 +400,35 @@ watch(() => props.candidate, (newCandidate) => {
     }
     // Set mode to FORM for edit
     selectedMode.value = CANDIDATE_CREATE_MODE.FORM
+    // Clear storage when editing
+    clearFormStorage()
+  } else {
+    // Load from storage when creating new candidate
+    loadFormFromStorage()
   }
 }, { immediate: true })
+
+// Watch for modal open to load from storage
+watch(() => modelValue.value, (isOpen) => {
+  if (isOpen && !props.candidate) {
+    // Load from storage when modal opens in create mode
+    loadFormFromStorage()
+  }
+})
+
+// Watch form changes and save to storage (debounced)
+let saveTimeout: ReturnType<typeof setTimeout> | null = null
+watch([form, currentSalaryAmount, currentSalaryCurrency, expectedSalaryMin, expectedSalaryMax, expectedSalaryCurrency, selectedMode, candidateText], () => {
+  if (props.candidate) return // Don't save in edit mode
+  
+  // Debounce saves to avoid too many writes
+  if (saveTimeout) {
+    clearTimeout(saveTimeout)
+  }
+  saveTimeout = setTimeout(() => {
+    saveFormToStorage()
+  }, 500)
+}, { deep: true })
 
 const tabs = computed(() => [
   { label: t('candidate.create.mode.input'), value: CANDIDATE_CREATE_MODE.INPUT, icon: 'i-lucide-pencil' },
@@ -408,12 +492,14 @@ const handleExtractFromText = async () => {
         lastName: parsedCandidate.lastName || '',
         email: parsedCandidate.email || '',
         phone: parsedCandidate.phone || '',
-        skills: parsedCandidate.skills || [],
         experience: parsedCandidate.experience !== undefined && parsedCandidate.experience !== null ? Number(parsedCandidate.experience) : undefined,
         currentSalary: parsedCandidate.currentSalary,
         expectedSalary: parsedCandidate.expectedSalary,
+        educations: [],
+        skillsDetailed: [],
+        workExperiences: [],
+        projects: [],
       }
-      skillsText.value = parsedCandidate.skills?.join(', ') || ''
       if (parsedCandidate.currentSalary) {
         currentSalaryAmount.value = parsedCandidate.currentSalary.amount
         currentSalaryCurrency.value = parsedCandidate.currentSalary.currency
@@ -445,12 +531,14 @@ const handleExtractFromFile = async () => {
         lastName: parsedCandidate.lastName || '',
         email: parsedCandidate.email || '',
         phone: parsedCandidate.phone || '',
-        skills: parsedCandidate.skills || [],
         experience: parsedCandidate.experience !== undefined && parsedCandidate.experience !== null ? Number(parsedCandidate.experience) : undefined,
         currentSalary: parsedCandidate.currentSalary,
         expectedSalary: parsedCandidate.expectedSalary,
+        educations: [],
+        skillsDetailed: [],
+        workExperiences: [],
+        projects: [],
       }
-      skillsText.value = parsedCandidate.skills?.join(', ') || ''
       if (parsedCandidate.currentSalary) {
         currentSalaryAmount.value = parsedCandidate.currentSalary.amount
         currentSalaryCurrency.value = parsedCandidate.currentSalary.currency
@@ -481,10 +569,6 @@ const handleSubmit = async () => {
     lastName: form.value.lastName,
     email: form.value.email,
     phone: form.value.phone || undefined,
-    skills: skillsText.value
-      .split(/[,\n]/)
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0),
     experience: form.value.experience !== undefined && form.value.experience !== null && !isNaN(Number(form.value.experience)) ? Number(form.value.experience) : undefined,
     currentCompany: form.value.currentCompany || undefined,
     currentSalary: currentSalaryAmount.value !== undefined && currentSalaryAmount.value > 0
@@ -501,10 +585,17 @@ const handleSubmit = async () => {
           currency: expectedSalaryCurrency.value,
         }
       : undefined,
+    // Include detailed fields
+    educations: form.value.educations || [],
+    skillsDetailed: form.value.skillsDetailed || [],
+    workExperiences: form.value.workExperiences || [],
+    projects: form.value.projects || [],
   }
 
   try {
     emit('submit', candidateData)
+    // Clear storage on successful submit
+    clearFormStorage()
     close()
     resetForm()
   } catch (error) {
@@ -522,7 +613,6 @@ const resetForm = () => {
       lastName: props.candidate.lastName,
       email: props.candidate.email,
       phone: props.candidate.phone || '',
-      skills: props.candidate.skills || [],
       experience: props.candidate.experience || 0,
       currentCompany: props.candidate.currentCompany || '',
       currentSalary: props.candidate.currentSalary,
@@ -532,7 +622,6 @@ const resetForm = () => {
       workExperiences: props.candidate.workExperiences || [],
       projects: props.candidate.projects || [],
     }
-    skillsText.value = props.candidate.skills?.join(', ') || ''
     if (props.candidate.currentSalary) {
       currentSalaryAmount.value = props.candidate.currentSalary.amount
       currentSalaryCurrency.value = props.candidate.currentSalary.currency
@@ -556,7 +645,6 @@ const resetForm = () => {
       lastName: '',
       email: '',
       phone: '',
-      skills: [],
       experience: undefined,
       currentCompany: '',
       educations: [],
@@ -564,7 +652,6 @@ const resetForm = () => {
       workExperiences: [],
       projects: [],
     }
-    skillsText.value = ''
     currentSalaryAmount.value = undefined
     currentSalaryCurrency.value = 'USD'
     expectedSalaryMin.value = undefined
@@ -577,6 +664,8 @@ const resetForm = () => {
 
 const close = () => {
   modelValue.value = false
+  // Don't clear storage on close - keep draft for next time
+  // Only clear on successful submit
   resetForm()
 }
 </script>

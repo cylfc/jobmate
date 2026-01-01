@@ -19,6 +19,10 @@ import { QueryCandidateDto } from '../models/dto/query-candidate.dto';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
 import { Public } from '../../auth/decorators/public.decorator';
 import { User } from '../../auth/entities/user.entity';
+import { DegreeType } from '../enums/degree-type.enum';
+import { SkillType } from '../enums/skill-type.enum';
+import { SkillLevel } from '../enums/skill-level.enum';
+import { EmploymentType } from '../../job/entities/job.entity';
 
 @ApiTags('candidates')
 @Controller('candidates')
@@ -48,6 +52,35 @@ export class CandidateController {
     @CurrentUser() user: User,
   ) {
     return this.candidateService.findAll(queryDto, user.id);
+  }
+
+  @Get('form-options')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get form dropdown options' })
+  @ApiResponse({ status: 200, description: 'Form options retrieved successfully' })
+  async getFormOptions() {
+    return {
+      degreeTypes: Object.values(DegreeType).map((value) => ({
+        label: value,
+        value,
+      })),
+      skillTypes: Object.values(SkillType).map((value) => {
+        // Format: technical -> Technical, language -> Language, etc.
+        const formatted = value === 'soft' ? 'Soft Skill' : value.charAt(0).toUpperCase() + value.slice(1)
+        return {
+          label: formatted,
+          value,
+        }
+      }),
+      skillLevels: Object.values(SkillLevel).map((value) => ({
+        label: value.charAt(0).toUpperCase() + value.slice(1),
+        value,
+      })),
+      employmentTypes: Object.values(EmploymentType).map((value) => ({
+        label: value.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+        value,
+      })),
+    };
   }
 
   @Get(':id')

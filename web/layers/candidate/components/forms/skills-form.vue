@@ -67,7 +67,8 @@
               <UFormField :label="t('candidate.create.skills.type', { defaultValue: 'Skill Type' })" name="skillType" class="w-full">
                 <USelectMenu
                   v-model="skill.skillType"
-                  :options="skillTypeOptions"
+                  :items="skillTypeOptions"
+                  value-key="value"
                   :placeholder="t('candidate.create.skills.type-placeholder', { defaultValue: 'Select type' })"
                   class="w-full"
                 />
@@ -78,7 +79,8 @@
               <UFormField :label="t('candidate.create.skills.level', { defaultValue: 'Level' })" name="level" class="w-full">
                 <USelectMenu
                   v-model="skill.level"
-                  :options="levelOptions"
+                  :items="levelOptions"
+                  value-key="value"
                   :placeholder="t('candidate.create.skills.level-placeholder', { defaultValue: 'Select level' })"
                   class="w-full"
                 />
@@ -150,6 +152,7 @@
 
 <script setup lang="ts">
 import type { SkillEntry } from '@candidate/types/candidate'
+import { CalendarDate, parseDate } from '@internationalized/date'
 
 const { t } = useI18n()
 
@@ -164,25 +167,106 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const skills = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value),
-})
+// Helper function to convert date to CalendarDate
+const toCalendarDateValue = (
+  value: Date | string | CalendarDate | undefined
+): CalendarDate | undefined => {
+  if (!value) return undefined
+  if (value instanceof CalendarDate) return value
+  if (typeof value === 'string') {
+    try {
+      // Try parsing as YYYY-MM-DD format first
+      return parseDate(value)
+    } catch {
+      // If parseDate fails, try parsing as ISO string and convert
+      const date = new Date(value)
+      if (!isNaN(date.getTime())) {
+        return new CalendarDate(
+          date.getFullYear(),
+          date.getMonth() + 1,
+          date.getDate()
+        )
+      }
+      return undefined
+    }
+  }
+  if (value instanceof Date) {
+    return new CalendarDate(
+      value.getFullYear(),
+      value.getMonth() + 1,
+      value.getDate()
+    )
+  }
+  return undefined
+}
 
-const skillTypeOptions = [
-  { label: 'Technical', value: 'technical' },
-  { label: 'Language', value: 'language' },
-  { label: 'Soft Skill', value: 'soft' },
-  { label: 'Certification', value: 'certification' },
-]
+// Helper function to convert CalendarDate back to string (for API)
+const fromCalendarDateValue = (
+  value: CalendarDate | undefined
+): string | undefined => {
+  if (!value) return undefined
+  if (value instanceof CalendarDate) {
+    return `${value.year}-${String(value.month).padStart(2, '0')}-${String(value.day).padStart(2, '0')}`
+  }
+  return undefined
+}
 
-const levelOptions = [
-  { label: 'Beginner', value: 'beginner' },
-  { label: 'Intermediate', value: 'intermediate' },
-  { label: 'Advanced', value: 'advanced' },
-  { label: 'Expert', value: 'expert' },
-  { label: 'Native', value: 'native' },
-]
+// Local reactive array with CalendarDate conversions
+type SkillWithCalendarDate = Omit<
+  SkillEntry,
+  'lastUsedDate'
+> & {
+  lastUsedDate?: CalendarDate
+}
+
+const skills = ref<SkillWithCalendarDate[]>([])
+let isSyncingFromProps = false
+
+// Sync with props and convert dates
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    isSyncingFromProps = true
+    skills.value = newValue.map((skill) => ({
+      ...skill,
+      lastUsedDate: toCalendarDateValue(skill.lastUsedDate),
+    }))
+    nextTick(() => {
+      isSyncingFromProps = false
+    })
+  },
+  { immediate: true, deep: true }
+)
+
+// Watch for changes and emit converted values (only when not syncing from props)
+watch(
+  skills,
+  (newValue) => {
+    if (isSyncingFromProps) return
+
+    const converted = newValue.map((skill) => {
+      let lastUsedDate: Date | string | CalendarDate | undefined = skill.lastUsedDate
+
+      if (lastUsedDate instanceof CalendarDate) {
+        lastUsedDate = fromCalendarDateValue(lastUsedDate)
+      } else if (lastUsedDate instanceof Date) {
+        lastUsedDate = lastUsedDate.toISOString().split('T')[0]
+      }
+
+      return {
+        ...skill,
+        lastUsedDate,
+      }
+    })
+    emit('update:modelValue', converted as SkillEntry[])
+  },
+  { deep: true }
+)
+
+// Fetch form options from API
+const { formOptions } = useCandidateFormOptions()
+const skillTypeOptions = computed(() => formOptions.value.skillTypes)
+const levelOptions = computed(() => formOptions.value.skillLevels)
 
 const handleAdd = () => {
   skills.value.push({

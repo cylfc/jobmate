@@ -22,10 +22,13 @@ export class RefreshTokenService {
     );
     const expiresAt = this.calculateExpiration(expiresIn);
 
+    // Add timestamp and random value to payload to ensure uniqueness
     const payload = {
       sub: user.id,
       email: user.email,
       type: 'refresh',
+      iat: Math.floor(Date.now() / 1000), // Issued at timestamp
+      jti: `${user.id}-${Date.now()}-${Math.random()}`, // JWT ID for uniqueness
     };
 
     const token = this.jwtService.sign(payload, {
@@ -39,7 +42,35 @@ export class RefreshTokenService {
       expiresAt,
     });
 
-    await this.refreshTokenRepository.save(refreshToken);
+    try {
+      await this.refreshTokenRepository.save(refreshToken);
+    } catch (error) {
+      // Handle duplicate key error gracefully
+      if (error && typeof error === 'object' && 'code' in error && error.code === '23505') {
+        // PostgreSQL unique constraint violation
+        // This should be extremely rare, but if it happens, try to find existing token
+        const existing = await this.refreshTokenRepository.findOne({
+          where: { token },
+          relations: ['user'],
+        });
+        
+        if (existing && existing.user.id === user.id && !existing.isRevoked && existing.expiresAt > new Date()) {
+          // Return existing valid token
+          return existing.token;
+        }
+        
+        // If existing token is invalid, revoke it and generate a new one
+        if (existing) {
+          existing.isRevoked = true;
+          existing.revokedAt = new Date();
+          await this.refreshTokenRepository.save(existing);
+        }
+        
+        // Retry with a new token (with new timestamp/jti)
+        return this.generateToken(user);
+      }
+      throw error;
+    }
 
     return token;
   }

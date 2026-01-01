@@ -41,6 +41,10 @@ export default defineEventHandler(async (event) => {
       education: Record<string, unknown>[]
       currentSalary?: { amount: number; currency: string }
       expectedSalary?: { min: number; max: number; currency: string }
+      educations?: unknown[]
+      skillsDetailed?: unknown[]
+      workExperiences?: unknown[]
+      projects?: unknown[]
       userId?: string
       createdAt: string
       updatedAt: string
@@ -100,6 +104,11 @@ export default defineEventHandler(async (event) => {
       currentSalary,
       expectedSalary,
       status: 'active' as const,
+      // Map detailed fields from backend response
+      educations: Array.isArray(backendCandidate.educations) ? backendCandidate.educations as Candidate['educations'] : undefined,
+      skillsDetailed: Array.isArray(backendCandidate.skillsDetailed) ? backendCandidate.skillsDetailed as Candidate['skillsDetailed'] : undefined,
+      workExperiences: Array.isArray(backendCandidate.workExperiences) ? backendCandidate.workExperiences as Candidate['workExperiences'] : undefined,
+      projects: Array.isArray(backendCandidate.projects) ? backendCandidate.projects as Candidate['projects'] : undefined,
       createdAt: new Date(backendCandidate.createdAt),
       updatedAt: new Date(backendCandidate.updatedAt),
     }

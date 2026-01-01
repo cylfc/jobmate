@@ -28,7 +28,7 @@
         <template #skills-cell="{ row }">
           <div class="flex flex-wrap gap-1">
             <UBadge
-              v-for="(skill, index) in row.original.skills.slice(0, 3)"
+              v-for="(skill, index) in getSkillsFromDetailed(row.original).slice(0, 3)"
               :key="index"
               color="neutral"
               variant="subtle"
@@ -37,12 +37,12 @@
               {{ skill }}
             </UBadge>
             <UBadge
-              v-if="row.original.skills.length > 3"
+              v-if="getSkillsFromDetailed(row.original).length > 3"
               color="neutral"
               variant="subtle"
               size="md"
             >
-              +{{ row.original.skills.length - 3 }}
+              +{{ getSkillsFromDetailed(row.original).length - 3 }}
             </UBadge>
           </div>
         </template>
@@ -239,6 +239,20 @@ const filteredCandidates = computed(() => {
 
 const getCandidateName = (candidate: Candidate) => {
   return `${candidate.firstName} ${candidate.lastName}`.trim()
+}
+
+const getSkillsFromDetailed = (candidate: Candidate): string[] => {
+  // Get skills from skillsDetailed array
+  if (candidate.skillsDetailed && Array.isArray(candidate.skillsDetailed)) {
+    return candidate.skillsDetailed.map((skill) => {
+      if (typeof skill === 'object' && skill !== null && 'name' in skill) {
+        return String(skill.name)
+      }
+      return String(skill)
+    }).filter((name) => name.length > 0)
+  }
+  // Fallback to old skills array if skillsDetailed is not available
+  return candidate.skills || []
 }
 
 const formatSalary = (salary?: { min?: number; max?: number; currency?: string }) => {
