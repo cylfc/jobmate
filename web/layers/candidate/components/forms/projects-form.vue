@@ -213,6 +213,7 @@
 <script setup lang="ts">
 import type { ProjectEntry } from '@candidate/types/candidate'
 import { CalendarDate, parseDate } from '@internationalized/date'
+import { reactive } from 'vue'
 
 const { t } = useI18n()
 
@@ -280,7 +281,7 @@ type ProjectWithCalendarDate = Omit<
   endDate?: CalendarDate
 }
 
-const projects = ref<ProjectWithCalendarDate[]>([])
+const projects = reactive<ProjectWithCalendarDate[]>([])
 let isSyncingFromProps = false
 
 // Sync with props and convert dates
@@ -288,11 +289,11 @@ watch(
   () => props.modelValue,
   (newValue) => {
     isSyncingFromProps = true
-    projects.value = newValue.map((proj) => ({
+    projects.splice(0, projects.length, ...newValue.map((proj) => ({
       ...proj,
       startDate: toCalendarDateValue(proj.startDate),
       endDate: toCalendarDateValue(proj.endDate),
-    }))
+    })))
     nextTick(() => {
       isSyncingFromProps = false
     })
@@ -302,7 +303,7 @@ watch(
 
 // Watch for changes and emit converted values (only when not syncing from props)
 watch(
-  projects,
+  () => projects,
   (newValue) => {
     if (isSyncingFromProps) return
 
@@ -333,20 +334,20 @@ watch(
   { deep: true }
 )
 
-const technologiesText = ref<string[]>([])
+const technologiesText = reactive<string[]>([])
 
 watch(
-  projects,
+  () => projects,
   (newValue) => {
-    technologiesText.value = newValue.map(
+    technologiesText.splice(0, technologiesText.length, ...newValue.map(
       (proj) => proj.technologiesUsed?.join(', ') || ''
-    )
+    ))
   },
   { immediate: true, deep: true }
 )
 
 const handleAdd = () => {
-  projects.value.push({
+  projects.push({
     name: '',
     company: undefined,
     startDate: undefined,
@@ -358,48 +359,48 @@ const handleAdd = () => {
     achievements: [],
     technologiesUsed: [],
     projectUrl: undefined,
-    orderIndex: projects.value.length,
+    orderIndex: projects.length,
   })
-  technologiesText.value.push('')
+  technologiesText.push('')
 }
 
 const handleRemove = (index: number) => {
-  projects.value.splice(index, 1)
-  technologiesText.value.splice(index, 1)
+  projects.splice(index, 1)
+  technologiesText.splice(index, 1)
   // Update orderIndex
-  projects.value.forEach((proj, idx) => {
+  projects.forEach((proj, idx) => {
     proj.orderIndex = idx
   })
 }
 
 const handleTechnologiesChange = (index: number, value: string) => {
-  projects.value[index].technologiesUsed = value
+  projects[index].technologiesUsed = value
     .split(',')
     .map((t) => t.trim())
     .filter((t) => t.length > 0)
 }
 
-const dateInputRefs = ref<Record<string, any>>({})
+const dateInputRefs = reactive<Record<string, any>>({})
 
 const setDateInputRef = (el: any, index: number, field: 'startDate' | 'endDate') => {
   if (el) {
-    dateInputRefs.value[`${index}-${field}`] = el
+    dateInputRefs[`${index}-${field}`] = el
   }
 }
 
 const getDateInputRef = (index: number, field: 'startDate' | 'endDate') => {
-  return dateInputRefs.value[`${index}-${field}`]
+  return dateInputRefs[`${index}-${field}`]
 }
 
 const addAchievement = (index: number) => {
-  if (!projects.value[index].achievements) {
-    projects.value[index].achievements = []
+  if (!projects[index].achievements) {
+    projects[index].achievements = []
   }
-  projects.value[index].achievements!.push('')
+  projects[index].achievements!.push('')
 }
 
 const removeAchievement = (projIndex: number, achIndex: number) => {
-  projects.value[projIndex].achievements?.splice(achIndex, 1)
+  projects[projIndex].achievements?.splice(achIndex, 1)
 }
 
 </script>

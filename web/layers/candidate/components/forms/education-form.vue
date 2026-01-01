@@ -256,6 +256,7 @@
 <script setup lang="ts">
 import type { EducationEntry } from '@candidate/types/candidate'
 import { CalendarDate, parseDate } from '@internationalized/date'
+import { reactive } from 'vue'
 
 const { t } = useI18n()
 
@@ -323,7 +324,7 @@ type EducationWithCalendarDate = Omit<
   endDate?: CalendarDate
 }
 
-const educations = ref<EducationWithCalendarDate[]>([])
+const educations = reactive<EducationWithCalendarDate[]>([])
 let isSyncingFromProps = false
 
 // Sync with props and convert dates
@@ -331,11 +332,11 @@ watch(
   () => props.modelValue,
   (newValue) => {
     isSyncingFromProps = true
-    educations.value = newValue.map((edu) => ({
+    educations.splice(0, educations.length, ...newValue.map((edu) => ({
       ...edu,
       startDate: toCalendarDateValue(edu.startDate),
       endDate: toCalendarDateValue(edu.endDate),
-    }))
+    })))
     nextTick(() => {
       isSyncingFromProps = false
     })
@@ -345,7 +346,7 @@ watch(
 
 // Watch for changes and emit converted values (only when not syncing from props)
 watch(
-  educations,
+  () => educations,
   (newValue) => {
     if (isSyncingFromProps) return
 
@@ -386,7 +387,7 @@ const gpaScaleOptions = [
 ]
 
 const handleAdd = () => {
-  educations.value.push({
+  educations.push({
     institution: '',
     major: '',
     degreeType: undefined,
@@ -395,28 +396,28 @@ const handleAdd = () => {
     gpa: undefined,
     gpaScale: 4.0,
     description: undefined,
-    orderIndex: educations.value.length,
+    orderIndex: educations.length,
   })
 }
 
 const handleRemove = (index: number) => {
-  educations.value.splice(index, 1)
+  educations.splice(index, 1)
   // Update orderIndex
-  educations.value.forEach((edu, idx) => {
+  educations.forEach((edu, idx) => {
     edu.orderIndex = idx
   })
 }
 
-const dateInputRefs = ref<Record<string, any>>({})
+const dateInputRefs = reactive<Record<string, any>>({})
 
 const setDateInputRef = (el: any, index: number, field: 'startDate' | 'endDate') => {
   if (el) {
-    dateInputRefs.value[`${index}-${field}`] = el
+    dateInputRefs[`${index}-${field}`] = el
   }
 }
 
 const getDateInputRef = (index: number, field: 'startDate' | 'endDate') => {
-  return dateInputRefs.value[`${index}-${field}`]
+  return dateInputRefs[`${index}-${field}`]
 }
 
 
