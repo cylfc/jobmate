@@ -3,111 +3,115 @@
  * Server API route for updating a job by ID
  */
 import type { Job, CreateJobInput } from '@job/types/job'
-
-// Mock data store (should be replaced with database in production)
-const mockJobs: Job[] = [
-  {
-    id: 'j1',
-    title: 'Senior Frontend Developer',
-    description: 'We are looking for an experienced Frontend Developer to join our team.',
-    company: 'Tech Corp',
-    domain: 'Technology',
-    location: 'Ho Chi Minh City',
-    requirements: ['Vue.js', 'TypeScript', '5+ years experience'],
-    salary: {
-      min: 2000,
-      max: 3000,
-      currency: 'USD',
-    },
-    status: 'published',
-    candidates: {
-      active: 5,
-      total: 12,
-    },
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-01-15'),
-  },
-  {
-    id: 'j2',
-    title: 'Full Stack Developer',
-    description: 'Join our team as a Full Stack Developer working with modern technologies.',
-    company: 'StartupXYZ',
-    domain: 'Technology',
-    location: 'Hanoi',
-    requirements: ['React', 'Node.js', 'MongoDB', '3+ years experience'],
-    salary: {
-      min: 1500,
-      max: 2500,
-      currency: 'USD',
-    },
-    status: 'published',
-    candidates: {
-      active: 8,
-      total: 20,
-    },
-    createdAt: new Date('2024-02-20'),
-    updatedAt: new Date('2024-02-20'),
-  },
-  {
-    id: 'j3',
-    title: 'Backend Developer',
-    description: 'We need a skilled Backend Developer to build scalable APIs.',
-    company: 'Data Solutions',
-    domain: 'Technology',
-    location: 'Da Nang',
-    requirements: ['Python', 'Django', 'PostgreSQL', '4+ years experience'],
-    status: 'draft',
-    candidates: {
-      active: 0,
-      total: 3,
-    },
-    createdAt: new Date('2024-03-10'),
-    updatedAt: new Date('2024-03-10'),
-  },
-]
+import { useApiClient } from '@auth/utils/api-client'
 
 export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, 'id')
-  const body = await readBody<Partial<CreateJobInput> & { status?: Job['status'] }>(event)
+  try {
+    const id = getRouterParam(event, 'id')
+    const body = await readBody<Partial<CreateJobInput> & { status?: Job['status'] }>(event)
 
-  if (!id) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Job ID is required',
+    if (!id) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Job ID is required',
+      })
+    }
+
+    const authHeader = getHeader(event, 'authorization')
+    if (!authHeader) {
+      throw createError({
+        statusCode: 401,
+        message: 'Authorization header required',
+      })
+    }
+
+    const apiClient = useApiClient()
+
+    // Map frontend status to backend status (draft -> DRAFT, published -> PUBLISHED, etc.)
+    const updatePayload: Record<string, unknown> = {}
+    if (body.title !== undefined) updatePayload.title = body.title
+    if (body.description !== undefined) updatePayload.description = body.description
+    if (body.company !== undefined) updatePayload.company = body.company
+    if (body.location !== undefined) updatePayload.location = body.location
+    if (body.requirements !== undefined) updatePayload.requirements = body.requirements
+    if (body.salary) {
+      updatePayload.salaryMin = body.salary.min
+      updatePayload.salaryMax = body.salary.max
+    }
+    if (body.status !== undefined) {
+      // Convert frontend status to backend status
+      updatePayload.status = body.status.toUpperCase() // draft -> DRAFT, published -> PUBLISHED, etc.
+    }
+
+    // Call backend API
+    const backendJob = await apiClient.patch<{
+      id: string
+      title: string
+      description?: string
+      company: string
+      location?: string
+      salaryMin?: number
+      salaryMax?: number
+      employmentType: string
+      status: string
+      requirements: string[]
+      benefits: string[]
+      postedAt?: string
+      expiresAt?: string
+      createdAt: string
+      updatedAt: string
+      applications?: Array<{ id: string; status: string }>
+    }>(`/jobs/${id}`, updatePayload, {
+      Authorization: authHeader,
     })
-  }
 
-  // TODO: Implement actual database update
-  const jobIndex = mockJobs.findIndex((j) => j.id === id)
+    // Map backend response to frontend Job type
+    const job: Job = {
+      id: backendJob.id,
+      title: backendJob.title,
+      description: backendJob.description || '',
+      company: backendJob.company,
+      location: backendJob.location || '',
+      requirements: backendJob.requirements || [],
+      salary: backendJob.salaryMin && backendJob.salaryMax
+        ? {
+            min: Number(backendJob.salaryMin),
+            max: Number(backendJob.salaryMax),
+            currency: 'USD', // Default currency
+          }
+        : undefined,
+      status: backendJob.status.toLowerCase() as Job['status'],
+      candidates: backendJob.applications
+        ? {
+            active: backendJob.applications.filter((app) => app.status === 'PENDING' || app.status === 'REVIEWING').length,
+            total: backendJob.applications.length,
+          }
+        : undefined,
+      createdAt: new Date(backendJob.createdAt),
+      updatedAt: new Date(backendJob.updatedAt),
+    }
 
-  if (jobIndex === -1) {
+    return {
+      job,
+    }
+  } catch (error) {
+    console.error('Error in /api/jobs/[id].put.ts:', error)
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      const statusCode = (error as { statusCode: number }).statusCode
+      const message = ('message' in error && typeof error.message === 'string')
+        ? error.message
+        : 'Failed to update job'
+
+      throw createError({
+        statusCode,
+        message,
+      })
+    }
+
     throw createError({
-      statusCode: 404,
-      statusMessage: `Job with ID ${id} not found`,
+      statusCode: 500,
+      message: 'Failed to update job',
     })
-  }
-
-  const existingJob = mockJobs[jobIndex]
-
-  // Update job with provided fields
-  const updatedJob: Job = {
-    ...existingJob,
-    ...body,
-    updatedAt: new Date(),
-  }
-
-  // Preserve fields that shouldn't be updated
-  updatedJob.id = existingJob.id
-  updatedJob.createdAt = existingJob.createdAt
-  // Preserve candidates count if not provided
-  if (!body.candidates) {
-    updatedJob.candidates = existingJob.candidates
-  }
-
-  mockJobs[jobIndex] = updatedJob
-
-  return {
-    job: updatedJob,
   }
 })
 

@@ -117,7 +117,7 @@
                   class="w-full"
                 >
                   <template #trailing>
-                    <UPopover :reference="getDateInputRef(index)?.inputsRef?.[3]?.$el">
+                    <UPopover :reference="getDateInputRef(index)?.inputsRef?.[3]?.$el || undefined">
                       <UButton
                         color="neutral"
                         variant="link"
@@ -283,10 +283,27 @@ const handleAdd = () => {
 }
 
 const handleRemove = (index: number) => {
+  // Clean up ref before removing
+  const key = `${index}-lastUsedDate`
+  if (key in dateInputRefs) {
+    delete dateInputRefs[key]
+  }
+  
   skills.splice(index, 1)
   // Update orderIndex
   skills.forEach((skill, idx) => {
     skill.orderIndex = idx
+  })
+  
+  // Clean up refs for remaining items (reindex)
+  Object.keys(dateInputRefs).forEach((oldKey) => {
+    const oldIndex = parseInt(oldKey.split('-')[0] || '0', 10)
+    if (oldIndex > index) {
+      // Move ref to new index
+      const newKey = `${oldIndex - 1}-lastUsedDate`
+      dateInputRefs[newKey] = dateInputRefs[oldKey]
+      delete dateInputRefs[oldKey]
+    }
   })
 }
 
@@ -299,7 +316,8 @@ const setDateInputRef = (el: any, index: number) => {
 }
 
 const getDateInputRef = (index: number) => {
-  return dateInputRefs.value[`${index}-lastUsedDate`]
+  const key = `${index}-lastUsedDate`
+  return dateInputRefs[key] || undefined
 }
 
 
