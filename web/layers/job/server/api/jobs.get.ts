@@ -3,100 +3,120 @@
  * Server API route for fetching jobs
  */
 import type { Job, JobFilter } from '@job/types/job'
+import { useApiClient } from '@auth/utils/api-client'
 
-// Mock data for jobs
-const mockJobs: Job[] = [
-  {
-    id: 'j1',
-    title: 'Senior Frontend Developer',
-    description: 'We are looking for an experienced Frontend Developer to join our team.',
-    company: 'Tech Corp',
-    domain: 'Technology',
-    location: 'Ho Chi Minh City',
-    requirements: ['Vue.js', 'TypeScript', '5+ years experience'],
-    salary: {
-      min: 2000,
-      max: 3000,
-      currency: 'USD',
-    },
-    status: 'published',
-    candidates: {
-      active: 5,
-      total: 12,
-    },
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'j2',
-    title: 'Full Stack Developer',
-    description: 'Join our team as a Full Stack Developer working with modern technologies.',
-    company: 'StartupXYZ',
-    domain: 'Technology',
-    location: 'Hanoi',
-    requirements: ['React', 'Node.js', 'MongoDB', '3+ years experience'],
-    salary: {
-      min: 1500,
-      max: 2500,
-      currency: 'USD',
-    },
-    status: 'published',
-    candidates: {
-      active: 8,
-      total: 20,
-    },
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'j3',
-    title: 'Backend Developer',
-    description: 'We need a skilled Backend Developer to build scalable APIs.',
-    company: 'Data Solutions',
-    domain: 'Technology',
-    location: 'Da Nang',
-    requirements: ['Python', 'Django', 'PostgreSQL', '4+ years experience'],
-    status: 'draft',
-    candidates: {
-      active: 0,
-      total: 3,
-    },
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-]
-
-/**
- * Get Jobs API
- * Server API route for fetching jobs
- */
 export default defineEventHandler(async (event) => {
-  const query = getQuery<JobFilter>(event)
+  try {
+    const query = getQuery<JobFilter>(event)
+    const authHeader = getHeader(event, 'authorization')
+    
+    const apiClient = useApiClient()
 
-  let jobs = [...mockJobs]
+    // Build query params for backend
+    const queryParams: Record<string, string> = {}
+    if (query.search) {
+      queryParams.search = query.search
+    }
+    if (query.status) {
+      queryParams.status = query.status.toUpperCase() // Backend uses DRAFT, PUBLISHED, CLOSED
+    }
+    if (query.company) {
+      queryParams.company = query.company
+    }
+    if (query.location) {
+      queryParams.location = query.location
+    }
+    if (query.page) {
+      queryParams.page = String(query.page)
+    }
+    if (query.limit) {
+      queryParams.limit = String(query.limit)
+    }
 
-  if (query.search) {
-    const searchTerm = query.search.toLowerCase()
-    jobs = jobs.filter(j =>
-      j.title.toLowerCase().includes(searchTerm) ||
-      j.description.toLowerCase().includes(searchTerm) ||
-      j.company.toLowerCase().includes(searchTerm)
-    )
-  }
+    const queryString = new URLSearchParams(queryParams).toString()
+    const endpoint = `/jobs${queryString ? `?${queryString}` : ''}`
 
-  if (query.status) {
-    jobs = jobs.filter(j => j.status === query.status)
-  }
+    // Backend endpoint is public, but we can pass auth header if available
+    const headers: Record<string, string> = {}
+    if (authHeader) {
+      headers.Authorization = authHeader
+    }
 
-  if (query.company) {
-    jobs = jobs.filter(j => j.company.toLowerCase().includes(query.company!.toLowerCase()))
-  }
+    const backendResponse = await apiClient.get<{
+      items: Array<{
+        id: string
+        title: string
+        description?: string
+        company: string
+        location?: string
+        salaryMin?: number
+        salaryMax?: number
+        employmentType: string
+        status: string
+        requirements: string[]
+        benefits: string[]
+        postedAt?: string
+        expiresAt?: string
+        createdAt: string
+        updatedAt: string
+        applications?: Array<{ id: string; status: string }>
+      }>
+      total: number
+      page: number
+      limit: number
+      totalPages: number
+    }>(endpoint, headers)
 
-  if (query.location) {
-    jobs = jobs.filter(j => j.location.toLowerCase().includes(query.location!.toLowerCase()))
-  }
+    // Map backend response to frontend Job type
+    const jobs: Job[] = backendResponse.items.map((item) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description || '',
+      company: item.company,
+      location: item.location || '',
+      requirements: item.requirements || [],
+      salary: item.salaryMin && item.salaryMax
+        ? {
+            min: Number(item.salaryMin),
+            max: Number(item.salaryMax),
+            currency: 'USD', // Default currency, backend might not have this field
+          }
+        : undefined,
+      status: item.status.toLowerCase() as Job['status'], // DRAFT -> draft, PUBLISHED -> published, etc.
+      candidates: item.applications
+        ? {
+            active: item.applications.filter((app) => app.status === 'PENDING' || app.status === 'REVIEWING').length,
+            total: item.applications.length,
+          }
+        : undefined,
+      createdAt: new Date(item.createdAt),
+      updatedAt: new Date(item.updatedAt),
+    }))
 
-  return {
-    jobs,
+    return {
+      jobs,
+      total: backendResponse.total,
+      page: backendResponse.page,
+      limit: backendResponse.limit,
+      totalPages: backendResponse.totalPages,
+    }
+  } catch (error) {
+    console.error('Error in /api/jobs.get.ts:', error)
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      const statusCode = (error as { statusCode: number }).statusCode
+      const message = ('message' in error && typeof error.message === 'string')
+        ? error.message
+        : 'Failed to fetch jobs'
+
+      throw createError({
+        statusCode,
+        message,
+      })
+    }
+
+    throw createError({
+      statusCode: 500,
+      message: 'Failed to fetch jobs',
+    })
   }
 })

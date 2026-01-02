@@ -3,51 +3,92 @@
  * Returns available options for job filters
  */
 import type { JobFilterOptions, FilterOption } from '@job/types/job'
+import { useApiClient } from '@auth/utils/api-client'
 
 export default defineEventHandler(async (event): Promise<{ options: JobFilterOptions }> => {
-  // Mock data - will be replaced with database query in production
-  const statusOptions: FilterOption[] = [
-    { label: 'Draft', value: 'draft' },
-    { label: 'Published', value: 'published' },
-    { label: 'Closed', value: 'closed' },
-  ]
+  try {
+    const authHeader = getHeader(event, 'authorization')
+    
+    // Status options are fixed based on backend enum
+    const statusOptions: FilterOption[] = [
+      { label: 'Draft', value: 'draft' },
+      { label: 'Published', value: 'published' },
+      { label: 'Closed', value: 'closed' },
+      { label: 'Archived', value: 'archived' },
+    ]
 
-  // Mock companies options - in production, this would come from database
-  const companiesOptions: FilterOption[] = [
-    { label: 'Google', value: 'google' },
-    { label: 'Microsoft', value: 'microsoft' },
-    { label: 'Amazon', value: 'amazon' },
-    { label: 'Apple', value: 'apple' },
-    { label: 'Meta', value: 'meta' },
-    { label: 'Netflix', value: 'netflix' },
-    { label: 'Tesla', value: 'tesla' },
-    { label: 'Shopify', value: 'shopify' },
-    { label: 'Stripe', value: 'stripe' },
-    { label: 'Airbnb', value: 'airbnb' },
-    { label: 'Uber', value: 'uber' },
-    { label: 'LinkedIn', value: 'linkedin' },
-  ]
+    let companiesOptions: FilterOption[] = []
+    let locationsOptions: FilterOption[] = []
 
-  // Mock locations options - in production, this would come from database
-  const locationsOptions: FilterOption[] = [
-    { label: 'Ho Chi Minh City', value: 'ho-chi-minh-city' },
-    { label: 'Hanoi', value: 'hanoi' },
-    { label: 'Da Nang', value: 'da-nang' },
-    { label: 'Can Tho', value: 'can-tho' },
-    { label: 'Hai Phong', value: 'hai-phong' },
-    { label: 'Remote', value: 'remote' },
-    { label: 'Hybrid', value: 'hybrid' },
-    { label: 'Singapore', value: 'singapore' },
-    { label: 'Bangkok', value: 'bangkok' },
-    { label: 'Jakarta', value: 'jakarta' },
-  ]
+    // Try to fetch from backend if auth header is available
+    if (authHeader) {
+      try {
+        const apiClient = useApiClient()
+        
+        // Fetch all jobs to extract unique companies and locations
+        const backendResponse = await apiClient.get<{
+          items: Array<{
+            company: string
+            location?: string
+          }>
+        }>('/jobs?limit=1000', {
+          Authorization: authHeader,
+        })
 
-  const options: JobFilterOptions = {
-    status: statusOptions,
-    companies: companiesOptions,
-    locations: locationsOptions,
+        // Extract unique companies
+        const companiesSet = new Set<string>()
+        const locationsSet = new Set<string>()
+
+        backendResponse.items.forEach((job) => {
+          if (job.company) {
+            companiesSet.add(job.company)
+          }
+          if (job.location) {
+            locationsSet.add(job.location)
+          }
+        })
+
+        companiesOptions = Array.from(companiesSet)
+          .sort()
+          .map((company) => ({
+            label: company,
+            value: company.toLowerCase().replace(/\s+/g, '-'),
+          }))
+
+        locationsOptions = Array.from(locationsSet)
+          .sort()
+          .map((location) => ({
+            label: location,
+            value: location.toLowerCase().replace(/\s+/g, '-'),
+          }))
+      } catch (error) {
+        console.warn('Failed to fetch companies and locations from backend, using empty arrays:', error)
+        // Continue with empty arrays if fetch fails
+      }
+    }
+
+    const options: JobFilterOptions = {
+      status: statusOptions,
+      companies: companiesOptions,
+      locations: locationsOptions,
+    }
+
+    return { options }
+  } catch (error) {
+    console.error('Error in /api/jobs/filter-options.get.ts:', error)
+    // Return at least status options even if there's an error
+    return {
+      options: {
+        status: [
+          { label: 'Draft', value: 'draft' },
+          { label: 'Published', value: 'published' },
+          { label: 'Closed', value: 'closed' },
+          { label: 'Archived', value: 'archived' },
+        ],
+        companies: [],
+        locations: [],
+      },
+    }
   }
-
-  return { options }
 })
 

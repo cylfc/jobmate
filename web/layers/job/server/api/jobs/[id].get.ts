@@ -3,91 +3,96 @@
  * Server API route for fetching a single job by ID
  */
 import type { Job } from '@job/types/job'
-
-// Mock data for jobs (should be replaced with database in production)
-const mockJobs: Job[] = [
-  {
-    id: 'j1',
-    title: 'Senior Frontend Developer',
-    description: 'We are looking for an experienced Frontend Developer to join our team.',
-    company: 'Tech Corp',
-    domain: 'Technology',
-    location: 'Ho Chi Minh City',
-    requirements: ['Vue.js', 'TypeScript', '5+ years experience'],
-    salary: {
-      min: 2000,
-      max: 3000,
-      currency: 'USD',
-    },
-    status: 'published',
-    candidates: {
-      active: 5,
-      total: 12,
-    },
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-01-15'),
-  },
-  {
-    id: 'j2',
-    title: 'Full Stack Developer',
-    description: 'Join our team as a Full Stack Developer working with modern technologies.',
-    company: 'StartupXYZ',
-    domain: 'Technology',
-    location: 'Hanoi',
-    requirements: ['React', 'Node.js', 'MongoDB', '3+ years experience'],
-    salary: {
-      min: 1500,
-      max: 2500,
-      currency: 'USD',
-    },
-    status: 'published',
-    candidates: {
-      active: 8,
-      total: 20,
-    },
-    createdAt: new Date('2024-02-20'),
-    updatedAt: new Date('2024-02-20'),
-  },
-  {
-    id: 'j3',
-    title: 'Backend Developer',
-    description: 'We need a skilled Backend Developer to build scalable APIs.',
-    company: 'Data Solutions',
-    domain: 'Technology',
-    location: 'Da Nang',
-    requirements: ['Python', 'Django', 'PostgreSQL', '4+ years experience'],
-    status: 'draft',
-    candidates: {
-      active: 0,
-      total: 3,
-    },
-    createdAt: new Date('2024-03-10'),
-    updatedAt: new Date('2024-03-10'),
-  },
-]
+import { useApiClient } from '@auth/utils/api-client'
 
 export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, 'id')
+  try {
+    const id = getRouterParam(event, 'id')
 
-  if (!id) {
+    if (!id) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Job ID is required',
+      })
+    }
+
+    const authHeader = getHeader(event, 'authorization')
+    
+    const apiClient = useApiClient()
+
+    // Backend endpoint is public, but we can pass auth header if available
+    const headers: Record<string, string> = {}
+    if (authHeader) {
+      headers.Authorization = authHeader
+    }
+
+    // Call backend API
+    const backendJob = await apiClient.get<{
+      id: string
+      title: string
+      description?: string
+      company: string
+      location?: string
+      salaryMin?: number
+      salaryMax?: number
+      employmentType: string
+      status: string
+      requirements: string[]
+      benefits: string[]
+      postedAt?: string
+      expiresAt?: string
+      createdAt: string
+      updatedAt: string
+      applications?: Array<{ id: string; status: string }>
+    }>(`/jobs/${id}`, headers)
+
+    // Map backend response to frontend Job type
+    const job: Job = {
+      id: backendJob.id,
+      title: backendJob.title,
+      description: backendJob.description || '',
+      company: backendJob.company,
+      location: backendJob.location || '',
+      requirements: backendJob.requirements || [],
+      salary: backendJob.salaryMin && backendJob.salaryMax
+        ? {
+            min: Number(backendJob.salaryMin),
+            max: Number(backendJob.salaryMax),
+            currency: 'USD', // Default currency
+          }
+        : undefined,
+      status: backendJob.status.toLowerCase() as Job['status'],
+      candidates: backendJob.applications
+        ? {
+            active: backendJob.applications.filter((app) => app.status === 'PENDING' || app.status === 'REVIEWING').length,
+            total: backendJob.applications.length,
+          }
+        : undefined,
+      createdAt: new Date(backendJob.createdAt),
+      updatedAt: new Date(backendJob.updatedAt),
+    }
+
+    return {
+      job,
+    }
+  } catch (error) {
+    console.error('Error in /api/jobs/[id].get.ts:', error)
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      const statusCode = (error as { statusCode: number }).statusCode
+      const message = ('message' in error && typeof error.message === 'string')
+        ? error.message
+        : 'Failed to fetch job'
+
+      throw createError({
+        statusCode,
+        message,
+      })
+    }
+
     throw createError({
-      statusCode: 400,
-      statusMessage: 'Job ID is required',
+      statusCode: 500,
+      message: 'Failed to fetch job',
     })
-  }
-
-  // TODO: Implement actual database query
-  const job = mockJobs.find((j) => j.id === id)
-
-  if (!job) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: `Job with ID ${id} not found`,
-    })
-  }
-
-  return {
-    job,
   }
 })
 
