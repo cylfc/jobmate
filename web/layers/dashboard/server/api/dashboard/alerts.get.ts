@@ -1,4 +1,5 @@
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -13,8 +14,8 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API to get dashboard alerts
-    const response = await apiClient.get<{
+    // Call backend API to get dashboard alerts - returns { data, meta, status } format
+    const backendResponse = await apiClient.get<{
       alerts: Array<{
         id: string
         type: string
@@ -26,7 +27,20 @@ export default defineEventHandler(async (event) => {
       Authorization: authHeader,
     })
 
-    return response
+    // Return in standard format
+    return {
+      data: backendResponse.data,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<{
+      alerts: Array<{
+        id: string
+        type: string
+        message: string
+        actionUrl: string
+        severity: 'info' | 'warning' | 'critical'
+      }>
+    }>
   } catch (error) {
     // Handle backend errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

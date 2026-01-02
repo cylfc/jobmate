@@ -1,4 +1,5 @@
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -13,8 +14,8 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API to get dashboard KPIs
-    const response = await apiClient.get<{
+    // Call backend API to get dashboard KPIs - returns { data, meta, status } format
+    const backendResponse = await apiClient.get<{
       openJobs: number
       candidatesInPipeline: number
       matchesThisWeek: number
@@ -24,7 +25,18 @@ export default defineEventHandler(async (event) => {
       Authorization: authHeader,
     })
 
-    return response
+    // Return in standard format
+    return {
+      data: backendResponse.data,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<{
+      openJobs: number
+      candidatesInPipeline: number
+      matchesThisWeek: number
+      averageMatchScore: number
+      timeToShortlist: number
+    }>
   } catch (error) {
     // Handle backend errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

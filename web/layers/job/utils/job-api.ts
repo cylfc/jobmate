@@ -4,17 +4,18 @@
  * Stateless functions - no reactive state
  */
 import type { Job, CreateJobInput, JobFilter } from '@job/types/job'
+import type { ApiResponse } from '../../../types/api-response'
 
 export const useJob = () => {
   const { $api } = useNuxtApp()
 
   const getJobs = async (filters?: JobFilter): Promise<Job[]> => {
     try {
-      const response = await $api<{ jobs: Job[] }>('/api/jobs', {
+      const response = await $api<ApiResponse<Job[]>>('/api/jobs', {
         method: 'GET',
         query: filters,
       })
-      return response.jobs || []
+      return response.data || []
     } catch (error) {
       console.error('Error fetching jobs:', error)
       return []
@@ -23,10 +24,10 @@ export const useJob = () => {
 
   const getJobById = async (id: string): Promise<Job | null> => {
     try {
-      const response = await $api<{ job: Job }>(`/api/jobs/${id}`, {
+      const response = await $api<ApiResponse<Job>>(`/api/jobs/${id}`, {
         method: 'GET',
       })
-      return response.job || null
+      return response.data || null
     } catch (error) {
       console.error('Error fetching job:', error)
       return null
@@ -35,11 +36,11 @@ export const useJob = () => {
 
   const createJob = async (input: CreateJobInput): Promise<Job | null> => {
     try {
-      const response = await $api<{ job: Job }>('/api/jobs', {
+      const response = await $api<ApiResponse<Job>>('/api/jobs', {
         method: 'POST',
         body: input,
       })
-      return response.job
+      return response.data
     } catch (error) {
       console.error('Error creating job:', error)
       throw error
@@ -48,11 +49,11 @@ export const useJob = () => {
 
   const updateJob = async (id: string, input: Partial<CreateJobInput> & { status?: Job['status'] }): Promise<Job | null> => {
     try {
-      const response = await $api<{ job: Job }>(`/api/jobs/${id}`, {
+      const response = await $api<ApiResponse<Job>>(`/api/jobs/${id}`, {
         method: 'PUT',
         body: input,
       })
-      return response.job
+      return response.data
     } catch (error) {
       console.error('Error updating job:', error)
       throw error
@@ -76,11 +77,11 @@ export const useJob = () => {
    */
   const parseJobFromText = async (text: string, link?: string): Promise<Job | null> => {
     try {
-      const { job } = await $api<{ job: Job }>('/api/jobs/parse', {
+      const response = await $api<ApiResponse<Job>>('/api/jobs/parse', {
         method: 'POST',
         body: { text, link },
       })
-      return job
+      return response.data
     } catch (error) {
       console.error('Error parsing job from text:', error)
       throw error
@@ -92,10 +93,10 @@ export const useJob = () => {
    */
   const getFilterOptions = async () => {
     try {
-      const response = await $api<{ options: import('@job/types/job').JobFilterOptions }>('/api/jobs/filter-options', {
+      const response = await $api<ApiResponse<import('@job/types/job').JobFilterOptions>>('/api/jobs/filter-options', {
         method: 'GET',
       })
-      return response.options
+      return response.data
     } catch (error) {
       console.error('Error fetching filter options:', error)
       throw error

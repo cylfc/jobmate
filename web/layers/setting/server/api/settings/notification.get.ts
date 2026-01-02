@@ -1,5 +1,6 @@
 import { useApiClient } from '@auth/utils/api-client'
 import type { NotificationSettings } from '@setting/types/setting'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -14,17 +15,20 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API
-    const response = await apiClient.get<NotificationSettings>(
+    // Call backend API - returns { data, meta, status } format
+    const backendResponse = await apiClient.get<NotificationSettings>(
       '/settings/notification',
       {
         Authorization: authHeader,
       }
     )
 
+    // Return in standard format
     return {
-      settings: response,
-    }
+      data: backendResponse.data,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<NotificationSettings>
   } catch (error) {
     // Handle backend errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

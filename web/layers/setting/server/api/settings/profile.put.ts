@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { useApiClient } from '@auth/utils/api-client'
 import type { UserProfile } from '@setting/types/setting'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 const profileSchema = z.object({
   firstName: z.string().min(2),
@@ -26,18 +27,20 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call auth API to update profile
-    const response = await apiClient.patch<{
-      id: string
-      email: string
-      firstName?: string
-      lastName?: string
-      phone?: string
-      avatarUrl?: string
-      role: string
-      emailVerified: boolean
-      isActive: boolean
-      updatedAt: string
+    // Call auth API to update profile - returns { data, meta, status } format
+    const backendResponse = await apiClient.patch<{
+      user: {
+        id: string
+        email: string
+        firstName?: string
+        lastName?: string
+        phone?: string
+        avatarUrl?: string
+        role: string
+        emailVerified: boolean
+        isActive: boolean
+        updatedAt: string
+      }
     }>(
       '/auth/profile',
       {
@@ -50,17 +53,21 @@ export default defineEventHandler(async (event) => {
     )
 
     // Transform to UserProfile format
+    const responseData = backendResponse.data
     const updatedProfile: UserProfile = {
-      firstName: response.firstName || '',
-      lastName: response.lastName || '',
-      email: response.email,
-      phone: response.phone,
+      firstName: responseData.user.firstName || '',
+      lastName: responseData.user.lastName || '',
+      email: responseData.user.email,
+      phone: responseData.user.phone,
       bio: validated.bio, // Keep bio from request as it's not in response
     }
 
+    // Return in standard format
     return {
-      profile: updatedProfile,
-    }
+      data: updatedProfile,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<UserProfile>
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw createError({

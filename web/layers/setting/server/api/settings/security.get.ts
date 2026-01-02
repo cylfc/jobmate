@@ -1,5 +1,6 @@
 import { useApiClient } from '@auth/utils/api-client'
 import type { SecuritySettings } from '@setting/types/setting'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -14,25 +15,29 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API
-    const response = await apiClient.get<SecuritySettings>(
+    // Call backend API - returns { data, meta, status } format
+    const backendResponse = await apiClient.get<SecuritySettings>(
       '/settings/security',
       {
         Authorization: authHeader,
       }
     )
 
-    // Map backend response to frontend format
+    // Map backend response data to frontend format
     // Backend returns sessionTimeout in minutes, frontend expects seconds
+    const responseData = backendResponse.data
     const settings: SecuritySettings = {
-      twoFactorEnabled: response.twoFactorEnabled,
-      sessionTimeout: response.sessionTimeout ? response.sessionTimeout * 60 : undefined, // Convert minutes to seconds
-      loginNotifications: response.loginNotifications,
+      twoFactorEnabled: responseData.twoFactorEnabled,
+      sessionTimeout: responseData.sessionTimeout ? responseData.sessionTimeout * 60 : undefined, // Convert minutes to seconds
+      loginNotifications: responseData.loginNotifications,
     }
 
+    // Return in standard format
     return {
-      settings,
-    }
+      data: settings,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<SecuritySettings>
   } catch (error) {
     // Handle backend errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

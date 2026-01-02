@@ -1,4 +1,5 @@
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -13,8 +14,8 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API
-    const response = await apiClient.get<{
+    // Call backend API - returns { data, meta, status } format
+    const backendResponse = await apiClient.get<{
       id: string
       email: string
       firstName?: string
@@ -31,23 +32,45 @@ export default defineEventHandler(async (event) => {
       Authorization: authHeader,
     })
 
-    // Transform backend response to frontend format
+    // Transform backend response data to frontend format
+    const responseData = backendResponse.data
+
+    // Return in standard format
     return {
-      user: {
-        id: response.id,
-        email: response.email,
-        firstName: response.firstName,
-        lastName: response.lastName,
-        phone: response.phone,
-        avatarUrl: response.avatarUrl,
-        role: response.role,
-        emailVerified: response.emailVerified,
-        isActive: response.isActive,
-        lastLoginAt: response.lastLoginAt,
-        createdAt: response.createdAt,
-        updatedAt: response.updatedAt,
+      data: {
+        user: {
+          id: responseData.id,
+          email: responseData.email,
+          firstName: responseData.firstName,
+          lastName: responseData.lastName,
+          phone: responseData.phone,
+          avatarUrl: responseData.avatarUrl,
+          role: responseData.role,
+          emailVerified: responseData.emailVerified,
+          isActive: responseData.isActive,
+          lastLoginAt: responseData.lastLoginAt,
+          createdAt: responseData.createdAt,
+          updatedAt: responseData.updatedAt,
+        },
       },
-    }
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<{
+      user: {
+        id: string
+        email: string
+        firstName?: string
+        lastName?: string
+        phone?: string
+        avatarUrl?: string
+        role: string
+        emailVerified: boolean
+        isActive: boolean
+        lastLoginAt?: string
+        createdAt: string
+        updatedAt: string
+      }
+    }>
   } catch (error) {
     // Handle backend errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

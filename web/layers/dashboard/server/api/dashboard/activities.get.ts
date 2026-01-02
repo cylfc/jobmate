@@ -1,4 +1,5 @@
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -26,8 +27,8 @@ export default defineEventHandler(async (event) => {
     }
     const endpoint = `/dashboard/activities?${queryParams.toString()}`
 
-    // Call backend API to get recent activities
-    const response = await apiClient.get<{
+    // Call backend API to get recent activities - returns { data, meta, status } format
+    const backendResponse = await apiClient.get<{
       events: Array<{
         id: string
         type: 'cv_uploaded' | 'job_saved' | 'matching_completed' | 'interview_scheduled'
@@ -40,7 +41,21 @@ export default defineEventHandler(async (event) => {
       Authorization: authHeader,
     })
 
-    return response
+    // Return in standard format
+    return {
+      data: backendResponse.data,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<{
+      events: Array<{
+        id: string
+        type: 'cv_uploaded' | 'job_saved' | 'matching_completed' | 'interview_scheduled'
+        occurredAt: string
+        meta?: Record<string, unknown>
+      }>
+      nextCursor?: string | null
+      hasMore?: boolean
+    }>
   } catch (error) {
     // Handle backend errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

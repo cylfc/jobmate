@@ -4,6 +4,7 @@
  */
 import { useApiClient } from '@auth/utils/api-client'
 import type { Candidate } from '@candidate/types/candidate'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -27,8 +28,8 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API
-    const backendCandidate = await apiClient.get<{
+    // Call backend API - returns { data, meta, status } format
+    const backendResponse = await apiClient.get<{
       id: string
       email: string
       firstName: string
@@ -51,6 +52,9 @@ export default defineEventHandler(async (event) => {
     }>(`/candidates/${id}`, {
       Authorization: authHeader,
     })
+
+    // Extract data from backend response
+    const backendCandidate = backendResponse.data
 
     // Extract salary info - prefer direct fields, fallback to experience array
     let currentSalary: Candidate['currentSalary'] = backendCandidate.currentSalary
@@ -113,9 +117,12 @@ export default defineEventHandler(async (event) => {
       updatedAt: new Date(backendCandidate.updatedAt),
     }
 
+    // Return in standard format
     return {
-      candidate,
-    }
+      data: candidate,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<Candidate>
   } catch (error) {
     // Handle backend errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

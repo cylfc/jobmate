@@ -9,6 +9,7 @@
  * - Create a notification/activity log entry
  */
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -58,10 +59,18 @@ export default defineEventHandler(async (event) => {
     // - Send email via email service
     // - Create activity log entry
 
+    // Return in standard format
     return {
-      success: true,
-      message: 'Invitation sent successfully',
-    }
+      data: {
+        success: true,
+        message: 'Invitation sent successfully',
+      },
+      meta: undefined,
+      status: 200,
+    } as ApiResponse<{
+      success: boolean
+      message: string
+    }>
   } catch (error) {
     // Handle errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

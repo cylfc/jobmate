@@ -4,6 +4,7 @@
  */
 import type { Job } from '@job/types/job'
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -26,8 +27,8 @@ export default defineEventHandler(async (event) => {
       headers.Authorization = authHeader
     }
 
-    // Call backend API
-    const backendJob = await apiClient.get<{
+    // Call backend API - returns { data, meta, status } format
+    const backendResponse = await apiClient.get<{
       id: string
       title: string
       description?: string
@@ -45,6 +46,9 @@ export default defineEventHandler(async (event) => {
       updatedAt: string
       applications?: Array<{ id: string; status: string }>
     }>(`/jobs/${id}`, headers)
+
+    // Extract data from backend response
+    const backendJob = backendResponse.data
 
     // Map backend response to frontend Job type
     const job: Job = {
@@ -72,9 +76,12 @@ export default defineEventHandler(async (event) => {
       updatedAt: new Date(backendJob.updatedAt),
     }
 
+    // Return in standard format
     return {
-      job,
-    }
+      data: job,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<Job>
   } catch (error) {
     console.error('Error in /api/jobs/[id].get.ts:', error)
     if (error && typeof error === 'object' && 'statusCode' in error) {

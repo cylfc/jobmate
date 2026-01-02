@@ -11,6 +11,7 @@ import type {
   CandidatePipelineApiResponse,
   RecentActivitiesResponse,
 } from '@dashboard/types/dashboard'
+import type { ApiResponse } from '../../../types/api-response'
 
 export interface UseRecentActivitiesOptions {
   cursor?: string | null
@@ -25,10 +26,10 @@ export const useDashboardApi = () => {
    */
   const getKpis = async (): Promise<DashboardKpisResponse> => {
     try {
-      const response = await $api<DashboardKpisResponse>('/api/dashboard/kpis', {
+      const response = await $api<ApiResponse<DashboardKpisResponse>>('/api/dashboard/kpis', {
         method: 'GET',
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error fetching dashboard KPIs:', error)
       throw error
@@ -40,10 +41,10 @@ export const useDashboardApi = () => {
    */
   const getActiveJobs = async (): Promise<ActiveJobsApiResponse> => {
     try {
-      const response = await $api<ActiveJobsApiResponse>('/api/dashboard/active-jobs', {
+      const response = await $api<ApiResponse<ActiveJobsApiResponse>>('/api/dashboard/active-jobs', {
         method: 'GET',
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error fetching active jobs:', error)
       throw error
@@ -55,10 +56,10 @@ export const useDashboardApi = () => {
    */
   const getAlerts = async (): Promise<DashboardAlertsApiResponse> => {
     try {
-      const response = await $api<DashboardAlertsApiResponse>('/api/dashboard/alerts', {
+      const response = await $api<ApiResponse<DashboardAlertsApiResponse>>('/api/dashboard/alerts', {
         method: 'GET',
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error fetching dashboard alerts:', error)
       throw error
@@ -70,10 +71,10 @@ export const useDashboardApi = () => {
    */
   const getMatchingHealth = async (): Promise<MatchingHealthApiResponse> => {
     try {
-      const response = await $api<MatchingHealthApiResponse>('/api/dashboard/matching-health', {
+      const response = await $api<ApiResponse<MatchingHealthApiResponse>>('/api/dashboard/matching-health', {
         method: 'GET',
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error fetching matching health:', error)
       throw error
@@ -85,10 +86,10 @@ export const useDashboardApi = () => {
    */
   const getCandidatePipeline = async (): Promise<CandidatePipelineApiResponse> => {
     try {
-      const response = await $api<CandidatePipelineApiResponse>('/api/dashboard/pipeline', {
+      const response = await $api<ApiResponse<CandidatePipelineApiResponse>>('/api/dashboard/pipeline', {
         method: 'GET',
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error fetching candidate pipeline:', error)
       throw error
@@ -107,14 +108,14 @@ export const useDashboardApi = () => {
         : 20
       const cursor = options.cursor ?? undefined
 
-      const response = await $api<RecentActivitiesResponse>('/api/dashboard/activities', {
+      const response = await $api<ApiResponse<RecentActivitiesResponse>>('/api/dashboard/activities', {
         method: 'GET',
         query: {
           limit,
           cursor,
         },
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error fetching recent activities:', error)
       throw error

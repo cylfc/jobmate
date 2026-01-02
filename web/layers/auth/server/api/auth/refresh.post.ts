@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 const refreshTokenSchema = z.object({
   refreshToken: z.string().min(1),
@@ -12,18 +13,26 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API
-    const response = await apiClient.post<{
+    // Call backend API - returns { data, meta, status } format
+    const backendResponse = await apiClient.post<{
       accessToken: string
       refreshToken: string
     }>('/auth/refresh', {
       refreshToken: validated.refreshToken,
     })
 
+    // Return in standard format
     return {
-      token: response.accessToken,
-      refreshToken: response.refreshToken,
-    }
+      data: {
+        token: backendResponse.data.accessToken,
+        refreshToken: backendResponse.data.refreshToken,
+      },
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<{
+      token: string
+      refreshToken: string
+    }>
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw createError({

@@ -5,6 +5,7 @@
  */
 import type { LoginInput, RegisterInput, ForgotPasswordInput, ChangePasswordInput } from '@auth/composables/auth/schemas'
 import type { User } from '@auth/stores/auth'
+import type { ApiResponse } from '../../../types/api-response'
 
 export interface AuthResponse {
   user: {
@@ -35,11 +36,11 @@ export const useAuthApi = () => {
    */
   const login = async (input: LoginInput): Promise<AuthResponse> => {
     try {
-      const response = await $api<AuthResponse>('/api/auth/login', {
+      const response = await $api<ApiResponse<AuthResponse>>('/api/auth/login', {
         method: 'POST',
         body: input,
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error logging in:', error)
       throw error
@@ -51,7 +52,7 @@ export const useAuthApi = () => {
    */
   const register = async (input: Omit<RegisterInput, 'confirmPassword'>): Promise<AuthResponse> => {
     try {
-      const response = await $api<AuthResponse>('/api/auth/register', {
+      const response = await $api<ApiResponse<AuthResponse>>('/api/auth/register', {
         method: 'POST',
         body: {
           firstName: input.firstName,
@@ -60,7 +61,7 @@ export const useAuthApi = () => {
           password: input.password,
         },
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error registering:', error)
       throw error
@@ -127,11 +128,11 @@ export const useAuthApi = () => {
    */
   const refreshToken = async (refreshToken: string): Promise<RefreshTokenResponse> => {
     try {
-      const response = await $api<RefreshTokenResponse>('/api/auth/refresh', {
+      const response = await $api<ApiResponse<RefreshTokenResponse>>('/api/auth/refresh', {
         method: 'POST',
         body: { refreshToken },
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error refreshing token:', error)
       throw error
@@ -143,10 +144,10 @@ export const useAuthApi = () => {
    */
   const getProfile = async (): Promise<UserProfileResponse> => {
     try {
-      const response = await $api<UserProfileResponse>('/api/auth/me', {
+      const response = await $api<ApiResponse<UserProfileResponse>>('/api/auth/me', {
         method: 'GET',
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error getting profile:', error)
       throw error
@@ -163,11 +164,11 @@ export const useAuthApi = () => {
     avatarUrl?: string
   }): Promise<UserProfileResponse> => {
     try {
-      const response = await $api<UserProfileResponse>('/api/auth/profile', {
+      const response = await $api<ApiResponse<UserProfileResponse>>('/api/auth/profile', {
         method: 'PATCH',
         body: profile,
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error updating profile:', error)
       throw error

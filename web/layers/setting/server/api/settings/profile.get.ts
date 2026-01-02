@@ -1,5 +1,6 @@
 import { useApiClient } from '@auth/utils/api-client'
 import type { UserProfile } from '@setting/types/setting'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -14,36 +15,42 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call auth API to get user profile
-    const response = await apiClient.get<{
-      id: string
-      email: string
-      firstName?: string
-      lastName?: string
-      phone?: string
-      avatarUrl?: string
-      role: string
-      emailVerified: boolean
-      isActive: boolean
-      lastLoginAt?: string
-      createdAt: string
-      updatedAt: string
+    // Call auth API to get user profile - returns { data, meta, status } format
+    const backendResponse = await apiClient.get<{
+      user: {
+        id: string
+        email: string
+        firstName?: string
+        lastName?: string
+        phone?: string
+        avatarUrl?: string
+        role: string
+        emailVerified: boolean
+        isActive: boolean
+        lastLoginAt?: string
+        createdAt: string
+        updatedAt: string
+      }
     }>('/auth/me', {
       Authorization: authHeader,
     })
 
     // Transform to UserProfile format
+    const responseData = backendResponse.data
     const profile: UserProfile = {
-      firstName: response.firstName || '',
-      lastName: response.lastName || '',
-      email: response.email,
-      phone: response.phone,
+      firstName: responseData.user.firstName || '',
+      lastName: responseData.user.lastName || '',
+      email: responseData.user.email,
+      phone: responseData.user.phone,
       bio: '', // Bio is not in auth API, can be added later
     }
 
+    // Return in standard format
     return {
-      profile,
-    }
+      data: profile,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<UserProfile>
   } catch (error) {
     // Handle backend errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

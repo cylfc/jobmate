@@ -3,8 +3,9 @@
  * Server API route for creating or parsing candidates from text input
  */
 import type { Candidate, CreateCandidateInput } from '@matching/types/matching'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
-export default defineEventHandler(async (event): Promise<{ candidates: Candidate[] }> => {
+export default defineEventHandler(async (event): Promise<ApiResponse<Candidate[]>> => {
   const body = await readBody<{ text: string }>(event)
   
   if (!body.text || body.text.trim().length === 0) {
@@ -35,7 +36,12 @@ export default defineEventHandler(async (event): Promise<{ candidates: Candidate
   // TODO: Save to database
   // For now, just return the parsed candidates
 
-  return { candidates }
+  // Return in standard format
+  return {
+    data: candidates,
+    meta: undefined,
+    status: 200,
+  } as ApiResponse<Candidate[]>
 })
 
 /**

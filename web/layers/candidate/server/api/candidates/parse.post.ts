@@ -9,8 +9,9 @@
  * - Integrate with backend AI service when available
  */
 import type { Candidate, CreateCandidateInput } from '@candidate/types/candidate'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
-export default defineEventHandler(async (event): Promise<{ candidate: Candidate }> => {
+export default defineEventHandler(async (event): Promise<ApiResponse<Candidate>> => {
   try {
     const body = await readBody<{ text: string }>(event)
     
@@ -33,7 +34,12 @@ export default defineEventHandler(async (event): Promise<{ candidate: Candidate 
       updatedAt: new Date(),
     }
 
-    return { candidate }
+    // Return in standard format
+    return {
+      data: candidate,
+      meta: undefined,
+      status: 200,
+    } as ApiResponse<Candidate>
   } catch (error) {
     // Handle errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

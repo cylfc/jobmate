@@ -4,6 +4,7 @@
  */
 import { useApiClient } from '@auth/utils/api-client'
 import type { Candidate, CandidateFilter } from '@candidate/types/candidate'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -31,39 +32,33 @@ export default defineEventHandler(async (event) => {
     const queryString = queryParams.toString()
     const endpoint = `/candidates${queryString ? `?${queryString}` : ''}`
 
-    // Call backend API
-    const backendResponse = await apiClient.get<{
-      items: Array<{
-        id: string
-        email: string
-        firstName: string
-        lastName: string
-        phone?: string
-        resumeUrl?: string
-        currentCompany?: string
-        skills: string[]
-        experience: Record<string, unknown>[]
-        education: Record<string, unknown>[]
-        currentSalary?: { amount: number; currency: string }
-        expectedSalary?: { min: number; max: number; currency: string }
-        educations?: unknown[]
-        skillsDetailed?: unknown[]
-        workExperiences?: unknown[]
-        projects?: unknown[]
-        userId?: string
-        createdAt: string
-        updatedAt: string
-      }>
-      total: number
-      page: number
-      limit: number
-      totalPages: number
-    }>(endpoint, {
+    // Call backend API - returns { data: [...], meta: { pagination: {...} }, status: 200 }
+    const backendResponse = await apiClient.get<Array<{
+      id: string
+      email: string
+      firstName: string
+      lastName: string
+      phone?: string
+      resumeUrl?: string
+      currentCompany?: string
+      skills: string[]
+      experience: Record<string, unknown>[]
+      education: Record<string, unknown>[]
+      currentSalary?: { amount: number; currency: string }
+      expectedSalary?: { min: number; max: number; currency: string }
+      educations?: unknown[]
+      skillsDetailed?: unknown[]
+      workExperiences?: unknown[]
+      projects?: unknown[]
+      userId?: string
+      createdAt: string
+      updatedAt: string
+    }>>(endpoint, {
       Authorization: authHeader,
     })
 
-    // Transform backend response to frontend format
-    const candidates: Candidate[] = backendResponse.items.map((backendCandidate) => {
+    // Transform backend response data to frontend format
+    const candidates: Candidate[] = backendResponse.data.map((backendCandidate) => {
       // Extract salary info - prefer direct fields, fallback to experience array
       let currentSalary: Candidate['currentSalary'] = backendCandidate.currentSalary
       let expectedSalary: Candidate['expectedSalary'] = backendCandidate.expectedSalary
@@ -142,9 +137,12 @@ export default defineEventHandler(async (event) => {
       filtered = filtered.filter((c) => c.experience <= query.maxExperience!)
     }
 
+    // Return in standard format with pagination from backend
     return {
-      candidates: filtered,
-    }
+      data: filtered,
+      meta: backendResponse.meta, // Includes pagination info
+      status: backendResponse.status,
+    } as ApiResponse<Candidate[]>
   } catch (error) {
     // Handle backend errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

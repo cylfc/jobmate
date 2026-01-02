@@ -4,6 +4,7 @@
  * Stateless functions - no reactive state
  */
 import type { Job, Candidate, Matching, CreateJobInput, CreateCandidateInput, CandidateFilter } from '@matching/types/matching'
+import type { ApiResponse } from '../../../types/api-response'
 
 export const useMatchingApi = () => {
   /**
@@ -11,14 +12,14 @@ export const useMatchingApi = () => {
    */
   const parseJobFromText = async (description: string, link?: string): Promise<Job | null> => {
     try {
-      const { job } = await $fetch<{ job: Job }>('/api/matching/jobs', {
+      const response = await $fetch<ApiResponse<Job>>('/api/matching/jobs', {
         method: 'POST',
         body: {
           description,
           link,
         },
       })
-      return job
+      return response.data
     } catch (error) {
       console.error('Error parsing job from text:', error)
       throw error
@@ -30,10 +31,10 @@ export const useMatchingApi = () => {
    */
   const getJobsFromDatabase = async (): Promise<Job[]> => {
     try {
-      const response = await $fetch<{ jobs: Job[] }>('/api/matching/jobs', {
+      const response = await $fetch<ApiResponse<Job[]>>('/api/matching/jobs', {
         method: 'GET',
       })
-      return response.jobs || []
+      return response.data || []
     } catch (error) {
       console.error('Error fetching jobs from database:', error)
       return []
@@ -66,13 +67,13 @@ export const useMatchingApi = () => {
    */
   const parseCandidatesFromText = async (text: string): Promise<Candidate[]> => {
     try {
-      const { candidates } = await $fetch<{ candidates: Candidate[] }>('/api/matching/candidates', {
+      const response = await $fetch<ApiResponse<Candidate[]>>('/api/matching/candidates', {
         method: 'POST',
         body: {
           text,
         },
       })
-      return candidates
+      return response.data || []
     } catch (error) {
       console.error('Error parsing candidates from text:', error)
       throw error
@@ -95,11 +96,11 @@ export const useMatchingApi = () => {
       const queryString = queryParams.toString()
       const url = `/api/matching/candidates${queryString ? `?${queryString}` : ''}`
 
-      const response = await $fetch<{ candidates: Candidate[] }>(url, {
+      const response = await $fetch<ApiResponse<Candidate[]>>(url, {
         method: 'GET',
       })
 
-      return response.candidates || []
+      return response.data || []
     } catch (error) {
       console.error('Error fetching candidates from database:', error)
       return []
@@ -135,16 +136,14 @@ export const useMatchingApi = () => {
     candidates: Candidate[]
   ): Promise<(Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]> => {
     try {
-      const { matchings } = await $fetch<{
-        matchings: (Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]
-      }>('/api/matching/analyze', {
+      const response = await $fetch<ApiResponse<(Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]>>('/api/matching/analyze', {
         method: 'POST',
         body: {
           job,
           candidates,
         },
       })
-      return matchings || []
+      return response.data || []
     } catch (error) {
       console.error('Error analyzing matchings:', error)
       throw error
@@ -158,12 +157,10 @@ export const useMatchingApi = () => {
     (Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]
   > => {
     try {
-      const response = await $fetch<{
-        matchings: (Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]
-      }>('/api/matching/matchings', {
+      const response = await $fetch<ApiResponse<(Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]>>('/api/matching/matchings', {
         method: 'GET',
       })
-      return response.matchings || []
+      return response.data || []
     } catch (error) {
       console.error('Error fetching matchings:', error)
       return []

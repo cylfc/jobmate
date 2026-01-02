@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { useApiClient } from '@auth/utils/api-client'
 import type { NotificationSettings } from '@setting/types/setting'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 const notificationSchema = z.object({
   emailJobMatches: z.boolean().optional(),
@@ -30,8 +31,8 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API
-    const response = await apiClient.put<NotificationSettings>(
+    // Call backend API - returns { data, meta, status } format
+    const backendResponse = await apiClient.put<NotificationSettings>(
       '/settings/notification',
       validated,
       {
@@ -39,9 +40,12 @@ export default defineEventHandler(async (event) => {
       }
     )
 
+    // Return in standard format
     return {
-      settings: response,
-    }
+      data: backendResponse.data,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<NotificationSettings>
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw createError({

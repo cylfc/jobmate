@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 const updateProfileSchema = z.object({
   firstName: z.string().min(1).max(100).optional(),
@@ -24,8 +25,8 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API
-    const response = await apiClient.patch<{
+    // Call backend API - returns { data, meta, status } format
+    const backendResponse = await apiClient.patch<{
       id: string
       email: string
       firstName?: string
@@ -42,21 +43,41 @@ export default defineEventHandler(async (event) => {
       { Authorization: authHeader },
     )
 
-    // Transform backend response to frontend format
+    // Transform backend response data to frontend format
+    const responseData = backendResponse.data
+
+    // Return in standard format
     return {
-      user: {
-        id: response.id,
-        email: response.email,
-        firstName: response.firstName,
-        lastName: response.lastName,
-        phone: response.phone,
-        avatarUrl: response.avatarUrl,
-        role: response.role,
-        emailVerified: response.emailVerified,
-        isActive: response.isActive,
-        updatedAt: response.updatedAt,
+      data: {
+        user: {
+          id: responseData.id,
+          email: responseData.email,
+          firstName: responseData.firstName,
+          lastName: responseData.lastName,
+          phone: responseData.phone,
+          avatarUrl: responseData.avatarUrl,
+          role: responseData.role,
+          emailVerified: responseData.emailVerified,
+          isActive: responseData.isActive,
+          updatedAt: responseData.updatedAt,
+        },
       },
-    }
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<{
+      user: {
+        id: string
+        email: string
+        firstName?: string
+        lastName?: string
+        phone?: string
+        avatarUrl?: string
+        role: string
+        emailVerified: boolean
+        isActive: boolean
+        updatedAt: string
+      }
+    }>
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw createError({

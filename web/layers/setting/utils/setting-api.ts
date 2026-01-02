@@ -4,6 +4,7 @@
  * Stateless functions - no reactive state
  */
 import type { UserProfile, SecuritySettings, NotificationSettings, SystemConfig, SystemConfigOptions } from '@setting/types/setting'
+import type { ApiResponse } from '../../../types/api-response'
 
 export const useSettingApi = () => {
   const { $api } = useNuxtApp()
@@ -14,29 +15,31 @@ export const useSettingApi = () => {
    */
   const getProfile = async (): Promise<UserProfile> => {
     try {
-      const response = await $api<{ user: {
-        id: string
-        email: string
-        firstName?: string
-        lastName?: string
-        phone?: string
-        avatarUrl?: string
-        role: string
-        emailVerified?: boolean
-        isActive?: boolean
-        lastLoginAt?: string
-        createdAt?: string
-        updatedAt?: string
-      } }>('/api/auth/me', {
+      const response = await $api<ApiResponse<{
+        user: {
+          id: string
+          email: string
+          firstName?: string
+          lastName?: string
+          phone?: string
+          avatarUrl?: string
+          role: string
+          emailVerified?: boolean
+          isActive?: boolean
+          lastLoginAt?: string
+          createdAt?: string
+          updatedAt?: string
+        }
+      }>>('/api/auth/me', {
         method: 'GET',
       })
       
       // Transform auth user to UserProfile
       return {
-        firstName: response.user.firstName || '',
-        lastName: response.user.lastName || '',
-        email: response.user.email,
-        phone: response.user.phone,
+        firstName: response.data.user.firstName || '',
+        lastName: response.data.user.lastName || '',
+        email: response.data.user.email,
+        phone: response.data.user.phone,
         bio: '', // Bio is not in auth API, can be added later
       }
     } catch (error) {
@@ -51,18 +54,20 @@ export const useSettingApi = () => {
    */
   const updateProfile = async (profile: UserProfile): Promise<UserProfile> => {
     try {
-      const response = await $api<{ user: {
-        id: string
-        email: string
-        firstName?: string
-        lastName?: string
-        phone?: string
-        avatarUrl?: string
-        role: string
-        emailVerified?: boolean
-        isActive?: boolean
-        updatedAt?: string
-      } }>('/api/auth/profile', {
+      const response = await $api<ApiResponse<{
+        user: {
+          id: string
+          email: string
+          firstName?: string
+          lastName?: string
+          phone?: string
+          avatarUrl?: string
+          role: string
+          emailVerified?: boolean
+          isActive?: boolean
+          updatedAt?: string
+        }
+      }>>('/api/auth/profile', {
         method: 'PATCH',
         body: {
           firstName: profile.firstName,
@@ -75,10 +80,10 @@ export const useSettingApi = () => {
       
       // Transform auth user to UserProfile
       return {
-        firstName: response.user.firstName || '',
-        lastName: response.user.lastName || '',
-        email: response.user.email,
-        phone: response.user.phone,
+        firstName: response.data.user.firstName || '',
+        lastName: response.data.user.lastName || '',
+        email: response.data.user.email,
+        phone: response.data.user.phone,
         bio: profile.bio, // Keep existing bio as it's not in response
       }
     } catch (error) {
@@ -92,10 +97,10 @@ export const useSettingApi = () => {
    */
   const getSecuritySettings = async (): Promise<SecuritySettings> => {
     try {
-      const response = await $api<{ settings: SecuritySettings }>('/api/settings/security', {
+      const response = await $api<ApiResponse<SecuritySettings>>('/api/settings/security', {
         method: 'GET',
       })
-      return response.settings
+      return response.data
     } catch (error) {
       console.error('Error fetching security settings:', error)
       throw error
@@ -107,11 +112,11 @@ export const useSettingApi = () => {
    */
   const updateSecuritySettings = async (settings: SecuritySettings): Promise<SecuritySettings> => {
     try {
-      const response = await $api<{ settings: SecuritySettings }>('/api/settings/security', {
+      const response = await $api<ApiResponse<SecuritySettings>>('/api/settings/security', {
         method: 'PUT',
         body: settings,
       })
-      return response.settings
+      return response.data
     } catch (error) {
       console.error('Error updating security settings:', error)
       throw error
@@ -123,10 +128,10 @@ export const useSettingApi = () => {
    */
   const getNotificationSettings = async (): Promise<NotificationSettings> => {
     try {
-      const response = await $api<{ settings: NotificationSettings }>('/api/settings/notification', {
+      const response = await $api<ApiResponse<NotificationSettings>>('/api/settings/notification', {
         method: 'GET',
       })
-      return response.settings
+      return response.data
     } catch (error) {
       console.error('Error fetching notification settings:', error)
       throw error
@@ -138,11 +143,11 @@ export const useSettingApi = () => {
    */
   const updateNotificationSettings = async (settings: NotificationSettings): Promise<NotificationSettings> => {
     try {
-      const response = await $api<{ settings: NotificationSettings }>('/api/settings/notification', {
+      const response = await $api<ApiResponse<NotificationSettings>>('/api/settings/notification', {
         method: 'PUT',
         body: settings,
       })
-      return response.settings
+      return response.data
     } catch (error) {
       console.error('Error updating notification settings:', error)
       throw error
@@ -154,10 +159,10 @@ export const useSettingApi = () => {
    */
   const getSystemConfig = async (): Promise<SystemConfig> => {
     try {
-      const response = await $api<{ config: SystemConfig }>('/api/settings/system', {
+      const response = await $api<ApiResponse<SystemConfig>>('/api/settings/system', {
         method: 'GET',
       })
-      return response.config
+      return response.data
     } catch (error) {
       console.error('Error fetching system config:', error)
       throw error
@@ -169,11 +174,11 @@ export const useSettingApi = () => {
    */
   const updateSystemConfig = async (config: SystemConfig): Promise<SystemConfig> => {
     try {
-      const response = await $api<{ config: SystemConfig }>('/api/settings/system', {
+      const response = await $api<ApiResponse<SystemConfig>>('/api/settings/system', {
         method: 'PUT',
         body: config,
       })
-      return response.config
+      return response.data
     } catch (error) {
       console.error('Error updating system config:', error)
       throw error
@@ -186,10 +191,10 @@ export const useSettingApi = () => {
    */
   const getSystemConfigOptions = async (): Promise<SystemConfigOptions> => {
     try {
-      const response = await $api<SystemConfigOptions>('/api/settings/system-options', {
+      const response = await $api<ApiResponse<SystemConfigOptions>>('/api/settings/system-options', {
         method: 'GET',
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error fetching system config options:', error)
       throw error

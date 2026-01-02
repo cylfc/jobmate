@@ -4,6 +4,7 @@
  */
 import type { Job, CreateJobInput } from '@job/types/job'
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -43,8 +44,8 @@ export default defineEventHandler(async (event) => {
       updatePayload.status = body.status.toUpperCase() // draft -> DRAFT, published -> PUBLISHED, etc.
     }
 
-    // Call backend API
-    const backendJob = await apiClient.patch<{
+    // Call backend API - returns { data, meta, status } format
+    const backendResponse = await apiClient.patch<{
       id: string
       title: string
       description?: string
@@ -64,6 +65,9 @@ export default defineEventHandler(async (event) => {
     }>(`/jobs/${id}`, updatePayload, {
       Authorization: authHeader,
     })
+
+    // Extract data from backend response
+    const backendJob = backendResponse.data
 
     // Map backend response to frontend Job type
     const job: Job = {
@@ -91,9 +95,12 @@ export default defineEventHandler(async (event) => {
       updatedAt: new Date(backendJob.updatedAt),
     }
 
+    // Return in standard format
     return {
-      job,
-    }
+      data: job,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<Job>
   } catch (error) {
     console.error('Error in /api/jobs/[id].put.ts:', error)
     if (error && typeof error === 'object' && 'statusCode' in error) {

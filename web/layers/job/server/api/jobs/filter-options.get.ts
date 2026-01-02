@@ -4,8 +4,9 @@
  */
 import type { JobFilterOptions, FilterOption } from '@job/types/job'
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
-export default defineEventHandler(async (event): Promise<{ options: JobFilterOptions }> => {
+export default defineEventHandler(async (event): Promise<ApiResponse<JobFilterOptions>> => {
   try {
     const authHeader = getHeader(event, 'authorization')
     
@@ -25,28 +26,43 @@ export default defineEventHandler(async (event): Promise<{ options: JobFilterOpt
       try {
         const apiClient = useApiClient()
         
-        // Fetch all jobs to extract unique companies and locations
-        const backendResponse = await apiClient.get<{
-          items: Array<{
-            company: string
-            location?: string
-          }>
-        }>('/jobs?limit=1000', {
-          Authorization: authHeader,
-        })
-
-        // Extract unique companies
+        // Fetch jobs in batches to extract unique companies and locations
+        // Backend has a max limit of 100, so we'll fetch multiple pages if needed
         const companiesSet = new Set<string>()
         const locationsSet = new Set<string>()
+        const limit = 100 // Max allowed by backend
+        let page = 1
+        let hasMore = true
 
-        backendResponse.items.forEach((job) => {
-          if (job.company) {
-            companiesSet.add(job.company)
+        while (hasMore) {
+          // Call backend API - returns { data: [...], meta: { pagination: {...} }, status: 200 }
+          const backendResponse = await apiClient.get<Array<{
+            company: string
+            location?: string
+          }>>(`/jobs?limit=${limit}&page=${page}`, {
+            Authorization: authHeader,
+          })
+
+          // Extract unique companies and locations from this batch
+          backendResponse.data.forEach((job) => {
+            if (job.company) {
+              companiesSet.add(job.company)
+            }
+            if (job.location) {
+              locationsSet.add(job.location)
+            }
+          })
+
+          // Check if there are more pages
+          const pagination = backendResponse.meta?.pagination
+          hasMore = pagination ? page < pagination.totalPages : false
+          page++
+
+          // Limit to first 5 pages (500 jobs max) to avoid too many requests
+          if (page > 5) {
+            break
           }
-          if (job.location) {
-            locationsSet.add(job.location)
-          }
-        })
+        }
 
         companiesOptions = Array.from(companiesSet)
           .sort()
@@ -73,12 +89,17 @@ export default defineEventHandler(async (event): Promise<{ options: JobFilterOpt
       locations: locationsOptions,
     }
 
-    return { options }
+    // Return in standard format
+    return {
+      data: options,
+      meta: undefined,
+      status: 200,
+    } as ApiResponse<JobFilterOptions>
   } catch (error) {
     console.error('Error in /api/jobs/filter-options.get.ts:', error)
     // Return at least status options even if there's an error
     return {
-      options: {
+      data: {
         status: [
           { label: 'Draft', value: 'draft' },
           { label: 'Published', value: 'published' },
@@ -88,7 +109,9 @@ export default defineEventHandler(async (event): Promise<{ options: JobFilterOpt
         companies: [],
         locations: [],
       },
-    }
+      meta: undefined,
+      status: 200,
+    } as ApiResponse<JobFilterOptions>
   }
 })
 

@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { useApiClient } from '@auth/utils/api-client'
 import type { SystemConfig } from '@setting/types/setting'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 const systemConfigSchema = z.object({
   timezone: z.string().optional(),
@@ -26,8 +27,8 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API
-    const response = await apiClient.put<SystemConfig>(
+    // Call backend API - returns { data, meta, status } format
+    const backendResponse = await apiClient.put<SystemConfig>(
       '/settings/system',
       validated,
       {
@@ -35,9 +36,12 @@ export default defineEventHandler(async (event) => {
       }
     )
 
+    // Return in standard format
     return {
-      config: response,
-    }
+      data: backendResponse.data,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<SystemConfig>
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw createError({
