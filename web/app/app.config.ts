@@ -4,5 +4,15 @@ export default defineAppConfig({
       primary: "brand",
       neutral: "slate",
     },
+    button: {
+      variants: {
+        color: {
+          'primary': "border-primary-600"
+        },
+        variant: {
+          'solid': "border-b-2"
+        }
+      }
+    }
   },
 });

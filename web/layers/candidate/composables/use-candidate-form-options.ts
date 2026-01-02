@@ -1,4 +1,5 @@
 import { ref, computed, readonly, onMounted } from 'vue'
+import type { ApiResponse } from '../../../../types/api-response'
 
 /**
  * Composable for fetching candidate form dropdown options
@@ -42,15 +43,22 @@ export const useCandidateFormOptions = () => {
 
     sharedState.fetchPromise = (async () => {
       try {
-        const response = await $api<{
+        // Call API with ApiResponse type - returns { data, meta, status }
+        const response = await $api<ApiResponse<{
           degreeTypes: Array<{ label: string; value: string }>
           skillTypes: Array<{ label: string; value: string }>
           skillLevels: Array<{ label: string; value: string }>
           employmentTypes: Array<{ label: string; value: string }>
-        }>('/api/candidates/form-options', {
+        }>>('/api/candidates/form-options', {
           method: 'GET',
         })
-        sharedState.formOptions.value = response
+        // Access data from response.data
+        sharedState.formOptions.value = response.data || {
+          degreeTypes: [],
+          skillTypes: [],
+          skillLevels: [],
+          employmentTypes: [],
+        }
         sharedState.isFetched.value = true
       } catch (err) {
         sharedState.error.value = err instanceof Error ? err : new Error('Failed to fetch form options')

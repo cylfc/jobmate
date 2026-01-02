@@ -25,7 +25,7 @@
     <!-- Chat Button -->
     <UButton
       to="/chat?feature=matching"
-      color="primary"
+      color="neutral"
       variant="outline"
       square
       icon="i-lucide-message-circle"
