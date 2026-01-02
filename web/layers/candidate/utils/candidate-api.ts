@@ -12,17 +12,18 @@ import type {
   WorkExperienceEntry,
   ProjectEntry,
 } from '@candidate/types/candidate'
+import type { ApiResponse } from '../../../../types/api-response'
 
 export const useCandidate = () => {
   const { $api } = useNuxtApp()
 
   const getCandidates = async (filters?: CandidateFilter) => {
     try {
-      const response = await $api<{ candidates: Candidate[] }>('/api/candidates', {
+      const response = await $api<ApiResponse<Candidate[]>>('/api/candidates', {
         method: 'GET',
         query: filters,
       })
-      return response.candidates || []
+      return response.data || []
     } catch (error) {
       console.error('Error fetching candidates:', error)
       return []
@@ -31,10 +32,10 @@ export const useCandidate = () => {
 
   const getCandidateById = async (id: string): Promise<Candidate | null> => {
     try {
-      const response = await $api<{ candidate: Candidate }>(`/api/candidates/${id}`, {
+      const response = await $api<ApiResponse<Candidate>>(`/api/candidates/${id}`, {
         method: 'GET',
       })
-      return response.candidate || null
+      return response.data || null
     } catch (error) {
       console.error('Error fetching candidate:', error)
       return null
@@ -43,11 +44,11 @@ export const useCandidate = () => {
 
   const createCandidate = async (input: CreateCandidateInput) => {
     try {
-      const response = await $api<{ candidate: Candidate }>('/api/candidates', {
+      const response = await $api<ApiResponse<Candidate>>('/api/candidates', {
         method: 'POST',
         body: input,
       })
-      return response.candidate
+      return response.data
     } catch (error) {
       console.error('Error creating candidate:', error)
       throw error
@@ -56,11 +57,11 @@ export const useCandidate = () => {
 
   const updateCandidate = async (id: string, input: Partial<CreateCandidateInput> & { status?: Candidate['status'] }) => {
     try {
-      const response = await $api<{ candidate: Candidate }>(`/api/candidates/${id}`, {
+      const response = await $api<ApiResponse<Candidate>>(`/api/candidates/${id}`, {
         method: 'PUT',
         body: input,
       })
-      return response.candidate
+      return response.data
     } catch (error) {
       console.error('Error updating candidate:', error)
       throw error
@@ -97,11 +98,11 @@ export const useCandidate = () => {
    */
   const parseCandidateFromText = async (text: string): Promise<Candidate | null> => {
     try {
-      const { candidate } = await $api<{ candidate: Candidate }>('/api/candidates/parse', {
+      const response = await $api<ApiResponse<Candidate>>('/api/candidates/parse', {
         method: 'POST',
         body: { text },
       })
-      return candidate
+      return response.data
     } catch (error) {
       console.error('Error parsing candidate from text:', error)
       throw error
@@ -113,10 +114,10 @@ export const useCandidate = () => {
    */
   const getFilterOptions = async () => {
     try {
-      const response = await $api<{ options: import('@candidate/types/candidate').CandidateFilterOptions }>('/api/candidates/filter-options', {
+      const response = await $api<ApiResponse<import('@candidate/types/candidate').CandidateFilterOptions>>('/api/candidates/filter-options', {
         method: 'GET',
       })
-      return response.options
+      return response.data
     } catch (error) {
       console.error('Error fetching filter options:', error)
       throw error
@@ -126,10 +127,10 @@ export const useCandidate = () => {
   // ========== Education APIs ==========
   const getEducation = async (candidateId: string): Promise<EducationEntry[]> => {
     try {
-      const response = await $api<EducationEntry[]>(`/api/candidates/${candidateId}/education`, {
+      const response = await $api<ApiResponse<EducationEntry[]>>(`/api/candidates/${candidateId}/education`, {
         method: 'GET',
       })
-      return response || []
+      return response.data || []
     } catch (error) {
       console.error('Error fetching education:', error)
       throw error
@@ -138,11 +139,11 @@ export const useCandidate = () => {
 
   const createEducation = async (candidateId: string, input: Omit<EducationEntry, 'id'>): Promise<EducationEntry> => {
     try {
-      const response = await $api<EducationEntry>(`/api/candidates/${candidateId}/education`, {
+      const response = await $api<ApiResponse<EducationEntry>>(`/api/candidates/${candidateId}/education`, {
         method: 'POST',
         body: input,
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error creating education:', error)
       throw error
@@ -151,11 +152,11 @@ export const useCandidate = () => {
 
   const updateEducation = async (candidateId: string, id: string, input: Partial<EducationEntry>): Promise<EducationEntry> => {
     try {
-      const response = await $api<EducationEntry>(`/api/candidates/${candidateId}/education/${id}`, {
+      const response = await $api<ApiResponse<EducationEntry>>(`/api/candidates/${candidateId}/education/${id}`, {
         method: 'PUT',
         body: input,
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error updating education:', error)
       throw error
@@ -176,10 +177,10 @@ export const useCandidate = () => {
   // ========== Skills APIs ==========
   const getSkills = async (candidateId: string): Promise<SkillEntry[]> => {
     try {
-      const response = await $api<SkillEntry[]>(`/api/candidates/${candidateId}/skills`, {
+      const response = await $api<ApiResponse<SkillEntry[]>>(`/api/candidates/${candidateId}/skills`, {
         method: 'GET',
       })
-      return response || []
+      return response.data || []
     } catch (error) {
       console.error('Error fetching skills:', error)
       throw error
@@ -188,11 +189,11 @@ export const useCandidate = () => {
 
   const createSkill = async (candidateId: string, input: Omit<SkillEntry, 'id'>): Promise<SkillEntry> => {
     try {
-      const response = await $api<SkillEntry>(`/api/candidates/${candidateId}/skills`, {
+      const response = await $api<ApiResponse<SkillEntry>>(`/api/candidates/${candidateId}/skills`, {
         method: 'POST',
         body: input,
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error creating skill:', error)
       throw error
@@ -201,11 +202,11 @@ export const useCandidate = () => {
 
   const updateSkill = async (candidateId: string, id: string, input: Partial<SkillEntry>): Promise<SkillEntry> => {
     try {
-      const response = await $api<SkillEntry>(`/api/candidates/${candidateId}/skills/${id}`, {
+      const response = await $api<ApiResponse<SkillEntry>>(`/api/candidates/${candidateId}/skills/${id}`, {
         method: 'PUT',
         body: input,
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error updating skill:', error)
       throw error
@@ -226,10 +227,10 @@ export const useCandidate = () => {
   // ========== Work Experience APIs ==========
   const getWorkExperience = async (candidateId: string): Promise<WorkExperienceEntry[]> => {
     try {
-      const response = await $api<WorkExperienceEntry[]>(`/api/candidates/${candidateId}/work-experience`, {
+      const response = await $api<ApiResponse<WorkExperienceEntry[]>>(`/api/candidates/${candidateId}/work-experience`, {
         method: 'GET',
       })
-      return response || []
+      return response.data || []
     } catch (error) {
       console.error('Error fetching work experience:', error)
       throw error
@@ -238,11 +239,11 @@ export const useCandidate = () => {
 
   const createWorkExperience = async (candidateId: string, input: Omit<WorkExperienceEntry, 'id'>): Promise<WorkExperienceEntry> => {
     try {
-      const response = await $api<WorkExperienceEntry>(`/api/candidates/${candidateId}/work-experience`, {
+      const response = await $api<ApiResponse<WorkExperienceEntry>>(`/api/candidates/${candidateId}/work-experience`, {
         method: 'POST',
         body: input,
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error creating work experience:', error)
       throw error
@@ -251,11 +252,11 @@ export const useCandidate = () => {
 
   const updateWorkExperience = async (candidateId: string, id: string, input: Partial<WorkExperienceEntry>): Promise<WorkExperienceEntry> => {
     try {
-      const response = await $api<WorkExperienceEntry>(`/api/candidates/${candidateId}/work-experience/${id}`, {
+      const response = await $api<ApiResponse<WorkExperienceEntry>>(`/api/candidates/${candidateId}/work-experience/${id}`, {
         method: 'PUT',
         body: input,
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error updating work experience:', error)
       throw error
@@ -276,10 +277,10 @@ export const useCandidate = () => {
   // ========== Projects APIs ==========
   const getProjects = async (candidateId: string): Promise<ProjectEntry[]> => {
     try {
-      const response = await $api<ProjectEntry[]>(`/api/candidates/${candidateId}/projects`, {
+      const response = await $api<ApiResponse<ProjectEntry[]>>(`/api/candidates/${candidateId}/projects`, {
         method: 'GET',
       })
-      return response || []
+      return response.data || []
     } catch (error) {
       console.error('Error fetching projects:', error)
       throw error
@@ -288,11 +289,11 @@ export const useCandidate = () => {
 
   const createProject = async (candidateId: string, input: Omit<ProjectEntry, 'id'>): Promise<ProjectEntry> => {
     try {
-      const response = await $api<ProjectEntry>(`/api/candidates/${candidateId}/projects`, {
+      const response = await $api<ApiResponse<ProjectEntry>>(`/api/candidates/${candidateId}/projects`, {
         method: 'POST',
         body: input,
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error creating project:', error)
       throw error
@@ -301,11 +302,11 @@ export const useCandidate = () => {
 
   const updateProject = async (candidateId: string, id: string, input: Partial<ProjectEntry>): Promise<ProjectEntry> => {
     try {
-      const response = await $api<ProjectEntry>(`/api/candidates/${candidateId}/projects/${id}`, {
+      const response = await $api<ApiResponse<ProjectEntry>>(`/api/candidates/${candidateId}/projects/${id}`, {
         method: 'PUT',
         body: input,
       })
-      return response
+      return response.data
     } catch (error) {
       console.error('Error updating project:', error)
       throw error

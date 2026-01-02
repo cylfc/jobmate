@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 const logoutSchema = z.object({
   refreshToken: z.string().min(1),
@@ -16,8 +17,8 @@ export default defineEventHandler(async (event) => {
     const authHeader = getHeader(event, 'authorization')
     const accessToken = authHeader?.replace('Bearer ', '')
 
-    // Call backend API
-    await apiClient.post(
+    // Call backend API - returns { data, meta, status } format
+    const backendResponse = await apiClient.post(
       '/auth/logout',
       {
         refreshToken: validated.refreshToken,
@@ -25,9 +26,16 @@ export default defineEventHandler(async (event) => {
       accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
     )
 
+    // Return in standard format
     return {
-      message: 'Logged out successfully',
-    }
+      data: {
+        message: 'Logged out successfully',
+      },
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<{
+      message: string
+    }>
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw createError({

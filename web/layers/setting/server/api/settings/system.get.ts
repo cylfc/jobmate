@@ -1,5 +1,6 @@
 import { useApiClient } from '@auth/utils/api-client'
 import type { SystemConfig } from '@setting/types/setting'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -14,17 +15,20 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API
-    const response = await apiClient.get<SystemConfig>(
+    // Call backend API - returns { data, meta, status } format
+    const backendResponse = await apiClient.get<SystemConfig>(
       '/settings/system',
       {
         Authorization: authHeader,
       }
     )
 
+    // Return in standard format
     return {
-      config: response,
-    }
+      data: backendResponse.data,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<SystemConfig>
   } catch (error) {
     // Handle backend errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

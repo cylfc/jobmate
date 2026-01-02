@@ -3,8 +3,9 @@
  * Server API route for fetching candidates from database with filters
  */
 import type { Candidate, CandidateFilter } from '@matching/types/matching'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
-export default defineEventHandler(async (event): Promise<{ candidates: Candidate[] }> => {
+export default defineEventHandler(async (event): Promise<ApiResponse<Candidate[]>> => {
   const query = getQuery(event)
   
   const filters: CandidateFilter = {
@@ -18,6 +19,11 @@ export default defineEventHandler(async (event): Promise<{ candidates: Candidate
   // For now, return empty array
   const candidates: Candidate[] = []
 
-  return { candidates }
+  // Return in standard format
+  return {
+    data: candidates,
+    meta: undefined,
+    status: 200,
+  } as ApiResponse<Candidate[]>
 })
 

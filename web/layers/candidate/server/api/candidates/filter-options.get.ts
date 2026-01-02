@@ -5,8 +5,9 @@
  */
 import { useApiClient } from '@auth/utils/api-client'
 import type { CandidateFilterOptions, FilterOption } from '@candidate/types/candidate'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
-export default defineEventHandler(async (event): Promise<{ options: CandidateFilterOptions }> => {
+export default defineEventHandler(async (event): Promise<ApiResponse<CandidateFilterOptions>> => {
   try {
     // Get access token from Authorization header
     const authHeader = getHeader(event, 'authorization')
@@ -19,15 +20,12 @@ export default defineEventHandler(async (event): Promise<{ options: CandidateFil
 
     const apiClient = useApiClient()
 
-    // Fetch all candidates to calculate filter options
-    const backendResponse = await apiClient.get<{
-      items: Array<{
-        skills: string[]
-        experience: Record<string, unknown>[]
-        currentCompany?: string
-      }>
-      total: number
-    }>('/candidates?limit=1000', {
+    // Fetch all candidates to calculate filter options - returns { data: [...], meta: {...}, status: 200 }
+    const backendResponse = await apiClient.get<Array<{
+      skills: string[]
+      experience: Record<string, unknown>[]
+      currentCompany?: string
+    }>>('/candidates?limit=1000', {
       Authorization: authHeader,
     })
 
@@ -40,7 +38,7 @@ export default defineEventHandler(async (event): Promise<{ options: CandidateFil
 
     // Calculate experience range from actual data
     const experiences: number[] = []
-    backendResponse.items.forEach((candidate) => {
+    backendResponse.data.forEach((candidate) => {
       if (Array.isArray(candidate.experience) && candidate.experience.length > 0) {
         const exp = candidate.experience.find((e) => e.years !== undefined) as { years?: number }
         if (exp?.years !== undefined) {
@@ -57,7 +55,7 @@ export default defineEventHandler(async (event): Promise<{ options: CandidateFil
 
     // Extract unique skills from all candidates
     const skillsSet = new Set<string>()
-    backendResponse.items.forEach((candidate) => {
+    backendResponse.data.forEach((candidate) => {
       if (Array.isArray(candidate.skills)) {
         candidate.skills.forEach((skill) => {
           if (skill && typeof skill === 'string') {
@@ -76,7 +74,7 @@ export default defineEventHandler(async (event): Promise<{ options: CandidateFil
 
     // Extract unique companies from all candidates
     const companiesSet = new Set<string>()
-    backendResponse.items.forEach((candidate) => {
+    backendResponse.data.forEach((candidate) => {
       if (candidate.currentCompany && typeof candidate.currentCompany === 'string') {
         companiesSet.add(candidate.currentCompany)
       }
@@ -96,7 +94,12 @@ export default defineEventHandler(async (event): Promise<{ options: CandidateFil
       companies: companiesOptions,
     }
 
-    return { options }
+    // Return in standard format
+    return {
+      data: options,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<CandidateFilterOptions>
   } catch {
     // If error fetching candidates, return default/mock options
     // This ensures the UI still works even if backend is unavailable
@@ -115,14 +118,17 @@ export default defineEventHandler(async (event): Promise<{ options: CandidateFil
     const skillsOptions: FilterOption[] = []
     const companiesOptions: FilterOption[] = []
 
+    // Return in standard format with default options
     return {
-      options: {
+      data: {
         status: statusOptions,
         experienceRange,
         skills: skillsOptions,
         companies: companiesOptions,
       },
-    }
+      meta: undefined,
+      status: 200,
+    } as ApiResponse<CandidateFilterOptions>
   }
 })
 

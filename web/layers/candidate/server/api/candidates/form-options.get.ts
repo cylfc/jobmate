@@ -3,6 +3,7 @@
  * Returns available dropdown options for candidate forms
  */
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -17,7 +18,7 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API
+    // Call backend API - returns { data, meta, status } format
     const backendResponse = await apiClient.get<{
       degreeTypes: Array<{ label: string; value: string }>
       skillTypes: Array<{ label: string; value: string }>
@@ -27,7 +28,17 @@ export default defineEventHandler(async (event) => {
       Authorization: authHeader,
     })
 
-    return backendResponse
+    // Return in standard format
+    return {
+      data: backendResponse.data,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<{
+      degreeTypes: Array<{ label: string; value: string }>
+      skillTypes: Array<{ label: string; value: string }>
+      skillLevels: Array<{ label: string; value: string }>
+      employmentTypes: Array<{ label: string; value: string }>
+    }>
   } catch (error) {
     // Log error for debugging
     console.error('Error fetching form options:', error)

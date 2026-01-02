@@ -3,8 +3,9 @@
  * Server API route for parsing job information from text input using AI
  */
 import type { Job, CreateJobInput } from '@job/types/job'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
-export default defineEventHandler(async (event): Promise<{ job: Job }> => {
+export default defineEventHandler(async (event): Promise<ApiResponse<Job>> => {
   const body = await readBody<{ text: string; link?: string }>(event)
   
   if (!body.text || body.text.trim().length === 0) {
@@ -28,7 +29,12 @@ export default defineEventHandler(async (event): Promise<{ job: Job }> => {
   // TODO: Implement AI extraction logic
   // For now, use basic parsing
 
-  return { job }
+  // Return in standard format
+  return {
+    data: job,
+    meta: undefined,
+    status: 200,
+  } as ApiResponse<Job>
 })
 
 /**

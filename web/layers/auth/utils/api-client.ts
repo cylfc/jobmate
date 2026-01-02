@@ -2,7 +2,10 @@
  * API Client Utility
  * Utility for making requests to backend API
  * Used in server API routes only
+ * Backend returns format: { data, meta, status }
  */
+
+import type { ApiResponse } from '../../../types/api-response'
 
 export interface ApiError {
   statusCode: number
@@ -16,11 +19,12 @@ export const useApiClient = () => {
 
   /**
    * Make a request to backend API
+   * Returns full ApiResponse format: { data, meta, status }
    */
   const request = async <T = unknown>(
     endpoint: string,
     options: RequestInit = {},
-  ): Promise<T> => {
+  ): Promise<ApiResponse<T>> => {
     const url = `${baseURL}${endpoint}`
 
     try {
@@ -32,17 +36,47 @@ export const useApiClient = () => {
         },
       })
 
-      const data = await response.json().catch(() => ({}))
+      const responseData = await response.json().catch(() => ({}))
+
+      // Check if response follows new format { data, meta, status }
+      const isNewFormat = responseData && 
+                          typeof responseData === 'object' && 
+                          'data' in responseData && 
+                          'status' in responseData
 
       if (!response.ok) {
+        // Handle error response in new format
+        if (isNewFormat) {
+          const errorMeta = (responseData as ApiResponse<null>).meta as { error?: { message?: string } } | undefined
+          const errorMessage = errorMeta?.error?.message || response.statusText || 'Request failed'
+          
+          throw createError({
+            statusCode: (responseData as ApiResponse<null>).status || response.status,
+            message: errorMessage,
+            data: responseData,
+          })
+        }
+        
+        // Fallback for old format
         throw createError({
           statusCode: response.status,
-          message: data.message || response.statusText || 'Request failed',
-          data: data,
+          message: (responseData as { message?: string }).message || response.statusText || 'Request failed',
+          data: responseData,
         })
       }
 
-      return data as T
+      // Return full ApiResponse format
+      if (isNewFormat) {
+        return responseData as ApiResponse<T>
+      }
+
+      // Fallback for old format (shouldn't happen with new backend)
+      // Wrap in new format for consistency
+      return {
+        data: responseData as T,
+        meta: undefined,
+        status: response.status,
+      } as ApiResponse<T>
     } catch (error) {
       // Re-throw if it's already a Nuxt error
       if (error && typeof error === 'object' && 'statusCode' in error) {

@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -13,8 +14,8 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API
-    const response = await apiClient.post<{
+    // Call backend API - returns { data, meta, status } format
+    const backendResponse = await apiClient.post<{
       user: {
         id: string
         email: string
@@ -33,18 +34,35 @@ export default defineEventHandler(async (event) => {
       password: validated.password,
     })
 
-    // Transform backend response to frontend format
+    // Transform backend response data to frontend format
+    const responseData = backendResponse.data
+
+    // Return in standard format
     return {
-      user: {
-        id: response.user.id,
-        email: response.user.email,
-        firstName: response.user.firstName,
-        lastName: response.user.lastName,
-        role: response.user.role,
+      data: {
+        user: {
+          id: responseData.user.id,
+          email: responseData.user.email,
+          firstName: responseData.user.firstName,
+          lastName: responseData.user.lastName,
+          role: responseData.user.role,
+        },
+        token: responseData.accessToken,
+        refreshToken: responseData.refreshToken,
       },
-      token: response.accessToken,
-      refreshToken: response.refreshToken,
-    }
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<{
+      user: {
+        id: string
+        email: string
+        firstName?: string
+        lastName?: string
+        role: string
+      }
+      token: string
+      refreshToken: string
+    }>
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw createError({

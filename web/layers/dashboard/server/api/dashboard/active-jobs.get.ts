@@ -1,4 +1,5 @@
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -17,9 +18,9 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API to get active jobs
+    // Call backend API to get active jobs - returns { data, meta, status } format
     const endpoint = limit ? `/dashboard/active-jobs?limit=${limit}` : '/dashboard/active-jobs'
-    const response = await apiClient.get<{
+    const backendResponse = await apiClient.get<{
       jobs: Array<{
         id: string
         title: string
@@ -33,7 +34,22 @@ export default defineEventHandler(async (event) => {
       Authorization: authHeader,
     })
 
-    return response
+    // Return in standard format
+    return {
+      data: backendResponse.data,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<{
+      jobs: Array<{
+        id: string
+        title: string
+        status: 'published' | 'draft' | 'closed'
+        candidatesCount: number
+        topMatchScore: number | null
+        lastActivityAt: string
+        lastMatchingRunAt: string | null
+      }>
+    }>
   } catch (error) {
     // Handle backend errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

@@ -17,6 +17,10 @@ export default defineNuxtPlugin(() => {
     authStore.init()
   }
 
+  // Track if we're currently refreshing token to prevent multiple simultaneous refreshes
+  let isRefreshing = false
+  let refreshPromise: Promise<{ token: string; refreshToken: string }> | null = null
+
   const api = $fetch.create({
     // Intercept request to add Authorization header
     async onRequest({ request, options }) {
@@ -33,14 +37,17 @@ export default defineNuxtPlugin(() => {
 
       // Add Authorization header if token exists and not an auth endpoint
       if (accessToken && !isAuthEndpoint) {
-        // Merge headers safely
+        // Merge headers safely, but remove any existing Authorization header first
         const existingHeaders = options.headers || {}
         const headersObj = existingHeaders instanceof Headers
           ? Object.fromEntries(existingHeaders.entries())
           : (existingHeaders as Record<string, string>)
         
+        // Remove any existing Authorization header to prevent duplicates
+        const { Authorization: _, ...headersWithoutAuth } = headersObj
+        
         options.headers = {
-          ...headersObj,
+          ...headersWithoutAuth,
           Authorization: `Bearer ${accessToken}`,
         } as unknown as Headers
       }
@@ -62,19 +69,55 @@ export default defineNuxtPlugin(() => {
         // Try to refresh token if we have a refresh token
         if (authStore.refreshToken) {
           try {
-            // Use $fetch directly for refresh token to avoid circular dependency
-            const tokens = await $fetch<{ token: string; refreshToken: string }>(
+            // If already refreshing, wait for the existing refresh to complete
+            if (isRefreshing && refreshPromise) {
+              await refreshPromise
+              // After waiting, retry the original request with the new token
+              const requestUrl = typeof request === 'string' ? request : request.url
+              const existingHeaders = options.headers || {}
+              const headersObj = existingHeaders instanceof Headers
+                ? Object.fromEntries(existingHeaders.entries())
+                : (existingHeaders as Record<string, string>)
+              
+              const { Authorization: _, ...headersWithoutAuth } = headersObj
+              
+              const retryResponse = await api(requestUrl, {
+                ...options,
+                headers: {
+                  ...headersWithoutAuth,
+                  Authorization: `Bearer ${authStore.accessToken}`,
+                } as unknown as Headers,
+              } as Parameters<typeof api>[1])
+
+              const responseObj = response as { _data?: unknown; status?: number; statusText?: string; ok?: boolean }
+              responseObj._data = retryResponse
+              responseObj.status = 200
+              responseObj.statusText = 'OK'
+              responseObj.ok = true
+              
+              return
+            }
+
+            // Start refresh process
+            isRefreshing = true
+            refreshPromise = $fetch<{ token: string; refreshToken: string }>(
               '/api/auth/refresh',
               {
                 method: 'POST',
                 body: { refreshToken: authStore.refreshToken },
               }
             )
+
+            const tokens = await refreshPromise
             
             authStore.updateTokens({
               accessToken: tokens.token,
               refreshToken: tokens.refreshToken,
             })
+
+            // Reset refresh state
+            isRefreshing = false
+            refreshPromise = null
 
             // Retry the original request with new token
             const requestUrl = typeof request === 'string' ? request : request.url
@@ -83,11 +126,15 @@ export default defineNuxtPlugin(() => {
               ? Object.fromEntries(existingHeaders.entries())
               : (existingHeaders as Record<string, string>)
             
-            // Retry the request
+            // Remove old Authorization header to prevent duplicate tokens
+            // Create a new headers object without the old Authorization
+            const { Authorization: _, ...headersWithoutAuth } = headersObj
+            
+            // Retry the request with only the new token
             const retryResponse = await api(requestUrl, {
               ...options,
               headers: {
-                ...headersObj,
+                ...headersWithoutAuth,
                 Authorization: `Bearer ${tokens.token}`,
               } as unknown as Headers,
             } as Parameters<typeof api>[1])
@@ -104,6 +151,10 @@ export default defineNuxtPlugin(() => {
             // Return early to prevent logout/redirect
             return
           } catch (refreshError) {
+            // Reset refresh state on error
+            isRefreshing = false
+            refreshPromise = null
+            
             // Refresh failed or retry failed, logout user
             console.error('Token refresh failed:', refreshError)
             authStore.logout()

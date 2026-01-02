@@ -4,6 +4,7 @@
  * Note: Candidate can only be deleted when there are no open applications
  */
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 // Application statuses that are considered "open" (not closed)
 const OPEN_APPLICATION_STATUSES = ['PENDING', 'REVIEWING', 'SHORTLISTED', 'INTERVIEWED']
@@ -32,7 +33,8 @@ export default defineEventHandler(async (event) => {
 
     // First, check if candidate has any open applications
     try {
-      const applications = await apiClient.get<Array<{
+      // Call backend API - returns { data: [...], meta: {...}, status: 200 }
+      const applicationsResponse = await apiClient.get<Array<{
         id: string
         status: string
         job: { id: string; title: string }
@@ -43,7 +45,7 @@ export default defineEventHandler(async (event) => {
       })
 
       // Check if there are any open applications
-      // Handle both array and empty/undefined cases
+      const applications = applicationsResponse.data
       if (Array.isArray(applications) && applications.length > 0) {
         const openApplications = applications.filter((app) =>
           OPEN_APPLICATION_STATUSES.includes(app.status),
@@ -80,14 +82,22 @@ export default defineEventHandler(async (event) => {
     }
 
     // If no open applications, proceed with deletion
-    await apiClient.delete(`/candidates/${id}`, {
+    const deleteResponse = await apiClient.delete(`/candidates/${id}`, {
       Authorization: authHeader,
     })
 
+    // Return in standard format
     return {
-      success: true,
-      message: 'Candidate deleted successfully',
-    }
+      data: {
+        success: true,
+        message: 'Candidate deleted successfully',
+      },
+      meta: undefined,
+      status: deleteResponse.status,
+    } as ApiResponse<{
+      success: boolean
+      message: string
+    }>
   } catch (error) {
     // Handle backend errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

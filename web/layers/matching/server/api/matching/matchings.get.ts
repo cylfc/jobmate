@@ -3,8 +3,9 @@
  * Server API route for fetching matchings
  */
 import type { Matching } from '@matching/types/matching'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
-export default defineEventHandler(async (event): Promise<{ matchings: (Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[] }> => {
+export default defineEventHandler(async (event): Promise<ApiResponse<(Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]>> => {
   // TODO: Implement get matchings logic from database
   // For now, return sample data for testing
   const sampleMatchings: (Matching & { candidateName: string; candidateEmail?: string; candidatePhone?: string })[] = [
@@ -125,8 +126,11 @@ export default defineEventHandler(async (event): Promise<{ matchings: (Matching 
     },
   ]
 
+  // Return in standard format
   return {
-    matchings: sampleMatchings,
-  }
+    data: sampleMatchings,
+    meta: undefined,
+    status: 200,
+  } as ApiResponse<(Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]>
 })
 

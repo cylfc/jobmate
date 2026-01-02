@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),
@@ -26,8 +27,8 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API
-    await apiClient.patch(
+    // Call backend API - returns { data, meta, status } format
+    const backendResponse = await apiClient.patch(
       '/auth/change-password',
       {
         currentPassword: validated.currentPassword,
@@ -37,9 +38,16 @@ export default defineEventHandler(async (event) => {
       { Authorization: authHeader },
     )
 
+    // Return in standard format
     return {
-      message: 'Password changed successfully',
-    }
+      data: {
+        message: 'Password changed successfully',
+      },
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<{
+      message: string
+    }>
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw createError({

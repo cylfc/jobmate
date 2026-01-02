@@ -3,6 +3,7 @@
  * Server API route for analyzing job-candidate matches
  */
 import type { Job, Candidate, Matching } from '@matching/types/matching'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 type MatchingWithName = Matching & { 
   candidateName: string
@@ -10,7 +11,7 @@ type MatchingWithName = Matching & {
   candidatePhone?: string
 }
 
-export default defineEventHandler(async (event): Promise<{ matchings: MatchingWithName[] }> => {
+export default defineEventHandler(async (event): Promise<ApiResponse<MatchingWithName[]>> => {
   const body = await readBody<{ job: Job; candidates: Candidate[] }>(event)
   
   if (!body.job) {
@@ -64,6 +65,11 @@ export default defineEventHandler(async (event): Promise<{ matchings: MatchingWi
 
   // TODO: Save matchings to database
 
-  return { matchings }
+  // Return in standard format
+  return {
+    data: matchings,
+    meta: undefined,
+    status: 200,
+  } as ApiResponse<MatchingWithName[]>
 })
 

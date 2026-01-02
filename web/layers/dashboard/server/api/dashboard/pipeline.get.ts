@@ -1,4 +1,5 @@
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -13,8 +14,8 @@ export default defineEventHandler(async (event) => {
 
     const apiClient = useApiClient()
 
-    // Call backend API to get pipeline stages
-    const response = await apiClient.get<{
+    // Call backend API to get pipeline stages - returns { data, meta, status } format
+    const backendResponse = await apiClient.get<{
       stages: Array<{
         id: 'uploaded' | 'matched' | 'contacted' | 'interviewing' | 'offer'
         count: number
@@ -23,7 +24,17 @@ export default defineEventHandler(async (event) => {
       Authorization: authHeader,
     })
 
-    return response
+    // Return in standard format
+    return {
+      data: backendResponse.data,
+      meta: undefined,
+      status: backendResponse.status,
+    } as ApiResponse<{
+      stages: Array<{
+        id: 'uploaded' | 'matched' | 'contacted' | 'interviewing' | 'offer'
+        count: number
+      }>
+    }>
   } catch (error) {
     // Handle backend errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

@@ -4,6 +4,7 @@
  */
 import type { Job, JobFilter } from '@job/types/job'
 import { useApiClient } from '@auth/utils/api-client'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -42,8 +43,8 @@ export default defineEventHandler(async (event) => {
       headers.Authorization = authHeader
     }
 
-    const backendResponse = await apiClient.get<{
-      items: Array<{
+    // Call backend API - returns { data: [...], meta: { pagination: {...} }, status: 200 }
+    const backendResponse = await apiClient.get<Array<{
         id: string
         title: string
         description?: string
@@ -60,15 +61,10 @@ export default defineEventHandler(async (event) => {
         createdAt: string
         updatedAt: string
         applications?: Array<{ id: string; status: string }>
-      }>
-      total: number
-      page: number
-      limit: number
-      totalPages: number
-    }>(endpoint, headers)
+    }>>(endpoint, headers)
 
-    // Map backend response to frontend Job type
-    const jobs: Job[] = backendResponse.items.map((item) => ({
+    // Map backend response data to frontend Job type
+    const jobs: Job[] = backendResponse.data.map((item) => ({
       id: item.id,
       title: item.title,
       description: item.description || '',
@@ -93,13 +89,12 @@ export default defineEventHandler(async (event) => {
       updatedAt: new Date(item.updatedAt),
     }))
 
+    // Return in standard format with pagination from backend
     return {
-      jobs,
-      total: backendResponse.total,
-      page: backendResponse.page,
-      limit: backendResponse.limit,
-      totalPages: backendResponse.totalPages,
-    }
+      data: jobs,
+      meta: backendResponse.meta, // Includes pagination info
+      status: backendResponse.status,
+    } as ApiResponse<Job[]>
   } catch (error) {
     console.error('Error in /api/jobs.get.ts:', error)
     if (error && typeof error === 'object' && 'statusCode' in error) {

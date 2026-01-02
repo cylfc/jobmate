@@ -3,8 +3,9 @@
  * Server API route for creating or parsing job from text input
  */
 import type { CreateJobInput, Job } from '@matching/types/matching'
+import type { ApiResponse } from '../../../../../../types/api-response'
 
-export default defineEventHandler(async (event): Promise<{ job: Job }> => {
+export default defineEventHandler(async (event): Promise<ApiResponse<Job>> => {
   const body = await readBody<{ description: string; link?: string }>(event)
   
   if (!body.description || body.description.trim().length === 0) {
@@ -29,7 +30,12 @@ export default defineEventHandler(async (event): Promise<{ job: Job }> => {
   // TODO: Save to database
   // For now, just return the parsed job
 
-  return { job }
+  // Return in standard format
+  return {
+    data: job,
+    meta: undefined,
+    status: 200,
+  } as ApiResponse<Job>
 })
 
 /**
