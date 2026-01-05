@@ -19,6 +19,7 @@ export default defineNuxtConfig({
     '@setting': fileURLToPath(new URL('./layers/setting', import.meta.url)),
     '@dashboard': fileURLToPath(new URL('./layers/dashboard', import.meta.url)),
     '@chat': fileURLToPath(new URL('./layers/chat', import.meta.url)),
+    '@shared': fileURLToPath(new URL('./shared', import.meta.url)),
   },
   devtools: { enabled: true },
   modules: [
