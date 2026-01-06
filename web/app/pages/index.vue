@@ -1,8 +1,7 @@
 <!-- pages/example.vue -->
 <script setup lang="ts">
   import { z } from 'zod'
-  import { DependencyType } from '@shared/types/auto-form'
-  import AutoForm from '@shared/components/AutoForm.vue'
+  import { DynamicForm } from '@shared/dynamic-form'
   
   // 1. Basic Example
   const basicSchema = z.object({
@@ -36,7 +35,7 @@
   const basicFieldConfig = {
     password: {
       label: 'Your secure password',
-      inputProps: {
+      componentProps: {
         type: 'password',
         placeholder: '••••••••',
       },
@@ -108,7 +107,7 @@
     console.log('Invitation form submitted:', values)
   }
   
-  // 5. Dependencies Example
+  // 5. Dependencies Example (Note: Dependencies not yet implemented in DynamicForm v1)
   const surveySchema = z.object({
     age: z.number().min(1).max(120).describe('Your Age'),
     hasChildren: z.boolean().describe('Do you have children?'),
@@ -116,21 +115,6 @@
     subscribeNewsletter: z.boolean().describe('Subscribe to newsletter'),
     email: z.string().email().optional(),
   })
-  
-  const surveyDependencies = [
-    {
-      sourceField: 'hasChildren' as const,
-      targetField: 'numberOfChildren' as const,
-      type: DependencyType.HIDES,
-      when: (hasChildren: boolean) => !hasChildren,
-    },
-    {
-      sourceField: 'subscribeNewsletter' as const,
-      targetField: 'email' as const,
-      type: DependencyType.REQUIRES,
-      when: (subscribe: boolean) => subscribe,
-    },
-  ]
   
   const handleSurveySubmit = (values: z.infer<typeof surveySchema>) => {
     console.log('Survey submitted:', values)
@@ -163,8 +147,8 @@
   <template>
     <div class="max-w-4xl mx-auto p-8 space-y-12">
       <div>
-        <h1 class="text-3xl font-bold mb-2">NuxtUI AutoForm Examples</h1>
-        <p class="text-gray-600">Automatically generate forms from Zod schemas</p>
+        <h1 class="text-3xl font-bold mb-2">NuxtUI DynamicForm Examples</h1>
+        <p class="text-gray-600">Automatically generate forms from Zod schemas with extensible field registry</p>
       </div>
   
       <!-- Basic Example -->
@@ -173,15 +157,15 @@
           <h2 class="text-xl font-semibold">1. Basic Form</h2>
         </template>
         
-        <AutoForm
+        <DynamicForm
           :schema="basicSchema"
-          :field-config="basicFieldConfig"
+          :config="basicFieldConfig"
           @submit="handleBasicSubmit"
         >
           <UButton type="submit" class="mt-4">
             Submit
           </UButton>
-        </AutoForm>
+        </DynamicForm>
       </UCard>
   
       <!-- Enum/Select Example -->
@@ -190,15 +174,15 @@
           <h2 class="text-xl font-semibold">2. Select & Radio Groups</h2>
         </template>
         
-        <AutoForm
+        <DynamicForm
           :schema="roleSchema"
-          :field-config="roleFieldConfig"
+          :config="roleFieldConfig"
           @submit="handleRoleSubmit"
         >
           <UButton type="submit" class="mt-4">
             Save Role
           </UButton>
-        </AutoForm>
+        </DynamicForm>
       </UCard>
   
       <!-- Object Example -->
@@ -207,14 +191,14 @@
           <h2 class="text-xl font-semibold">3. Nested Objects</h2>
         </template>
         
-        <AutoForm
+        <DynamicForm
           :schema="addressSchema"
           @submit="handleAddressSubmit"
         >
           <UButton type="submit" class="mt-4">
             Save Address
           </UButton>
-        </AutoForm>
+        </DynamicForm>
       </UCard>
   
       <!-- Array Example -->
@@ -223,14 +207,14 @@
           <h2 class="text-xl font-semibold">4. Arrays (Dynamic Fields)</h2>
         </template>
         
-        <AutoForm
+        <DynamicForm
           :schema="invitationSchema"
           @submit="handleInvitationSubmit"
         >
           <UButton type="submit" class="mt-4">
             Send Invitations
           </UButton>
-        </AutoForm>
+        </DynamicForm>
       </UCard>
   
       <!-- Dependencies Example -->
@@ -238,19 +222,18 @@
         <template #header>
           <h2 class="text-xl font-semibold">5. Field Dependencies</h2>
           <p class="text-sm text-gray-600 mt-1">
-            Fields show/hide based on other field values
+            Note: Dependencies feature coming soon
           </p>
         </template>
         
-        <AutoForm
+        <DynamicForm
           :schema="surveySchema"
-          :dependencies="surveyDependencies"
           @submit="handleSurveySubmit"
         >
           <UButton type="submit" class="mt-4">
             Submit Survey
           </UButton>
-        </AutoForm>
+        </DynamicForm>
       </UCard>
   
       <!-- Toggle Example -->
@@ -259,15 +242,15 @@
           <h2 class="text-xl font-semibold">6. Toggle Switches</h2>
         </template>
         
-        <AutoForm
+        <DynamicForm
           :schema="settingsSchema"
-          :field-config="settingsFieldConfig"
+          :config="settingsFieldConfig"
           @submit="handleSettingsSubmit"
         >
           <UButton type="submit" class="mt-4">
             Save Settings
           </UButton>
-        </AutoForm>
+        </DynamicForm>
       </UCard>
     </div>
   </template>
