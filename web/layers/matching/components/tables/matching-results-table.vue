@@ -28,17 +28,17 @@
     <div v-if="showFilters" class="p-4 bg-muted rounded-lg">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <USelectMenu
-          v-model="sortBy"
+ size="lg" size="lg"          v-model="sortBy"
           :options="sortOptions"
           :placeholder="t('matching.step-4.sort-by-placeholder')"
         />
         <UInput
-          v-model="searchQuery"
+ size="lg"          v-model="searchQuery"
           :placeholder="t('matching.step-4.search-candidates')"
           icon="i-lucide-search"
         />
         <UInput
-          v-model.number="minScore"
+ size="lg"          v-model.number="minScore"
           type="number"
           :placeholder="t('matching.step-4.min-score-placeholder')"
         />

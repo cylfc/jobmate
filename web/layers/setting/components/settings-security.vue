@@ -24,6 +24,7 @@
           v-model="form.currentPassword"
           type="password"
           :placeholder="t('auth.change-password-form.current-password-placeholder')"
+          size="lg"
           class="w-full"
         />
       </UFormField>
@@ -33,6 +34,7 @@
           v-model="form.newPassword"
           type="password"
           :placeholder="t('auth.change-password-form.new-password-placeholder')"
+          size="lg"
           class="w-full"
         />
         <template #hint>
@@ -47,6 +49,7 @@
           v-model="form.confirmPassword"
           type="password"
           :placeholder="t('auth.change-password-form.confirm-password-placeholder')"
+          size="lg"
           class="w-full"
         />
       </UFormField>

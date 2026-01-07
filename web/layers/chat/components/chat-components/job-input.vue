@@ -2,7 +2,7 @@
   <div class="space-y-4">
     <UFormField :label="$t('chat.components.job-input.label')">
       <UTextarea
-        v-model="jobText"
+ size="lg"        v-model="jobText"
         :placeholder="$t('chat.components.job-input.placeholder')"
         :rows="8"
       />

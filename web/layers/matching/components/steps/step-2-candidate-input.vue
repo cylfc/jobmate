@@ -9,7 +9,7 @@
       <div v-if="selectedMode === CANDIDATE_INPUT_MODE.INPUT" class="space-y-4">
         <UFormField :label="t('matching.step-2.candidate-information')" name="candidateText" class="w-full">
           <UTextarea
-            v-model="candidateText"
+ size="lg"            v-model="candidateText"
             :placeholder="t('matching.step-2.candidate-placeholder')"
             :rows="10"
             class="w-full"
@@ -25,7 +25,7 @@
       <div v-else-if="selectedMode === CANDIDATE_INPUT_MODE.UPLOAD" class="space-y-4">
         <UFormField :label="t('matching.step-2.upload-cvs')" name="cvs" class="w-full">
           <UInput
-            type="file"
+ size="lg"            type="file"
             accept=".pdf,.doc,.docx"
             multiple
             class="w-full"
@@ -67,7 +67,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <UFormField :label="t('matching.step-2.status')" name="status" class="w-full">
               <USelectMenu
-                v-model="filters.status"
+ size="lg" size="lg"                v-model="filters.status"
                 :options="statusOptions"
                 :placeholder="t('matching.step-2.select-status')"
                 clearable
@@ -76,7 +76,7 @@
             </UFormField>
             <UFormField :label="t('matching.step-2.min-experience')" name="minExperience" class="w-full">
               <UInput
-                v-model.number="filters.minExperience"
+ size="lg"                v-model.number="filters.minExperience"
                 type="number"
                 :placeholder="t('matching.step-2.min-experience-placeholder')"
                 class="w-full"

@@ -71,6 +71,7 @@
                   :placeholder="
                     t('candidate.create.work-experience.company-placeholder')
                   "
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -86,6 +87,7 @@
                   :placeholder="
                     t('candidate.create.work-experience.position-placeholder')
                   "
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -102,6 +104,7 @@
                   :placeholder="
                     t('candidate.create.work-experience.role-placeholder')
                   "
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -120,6 +123,7 @@
                       'candidate.create.work-experience.employment-type-placeholder'
                     )
                   "
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -214,6 +218,7 @@
                 :placeholder="
                   t('candidate.create.work-experience.location-placeholder')
                 "
+                size="lg"
                 class="w-full"
               />
             </UFormField>
@@ -229,6 +234,7 @@
                 :placeholder="
                   t('candidate.create.work-experience.description-placeholder')
                 "
+                size="lg"
                 class="w-full"
               />
             </UFormField>
@@ -243,6 +249,7 @@
                 :placeholder="
                   t('candidate.create.work-experience.technologies-placeholder')
                 "
+                size="lg"
                 class="w-full"
                 @update:model-value="handleTechnologiesChange(index, $event)"
               />
@@ -266,6 +273,7 @@
                         'candidate.create.work-experience.achievement-placeholder'
                       )
                     "
+                    size="lg"
                     class="w-full"
                   />
                   <UButton

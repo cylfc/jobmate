@@ -53,6 +53,7 @@
                 v-model="candidateText"
                 :placeholder="t('candidate.create.input.placeholder')"
                 :rows="10"
+                size="lg"
                 class="w-full"
               />
               <template #hint>
@@ -130,6 +131,7 @@
                     :placeholder="
                       t('auth.register-form.first-name-placeholder')
                     "
+                    size="lg"
                     class="w-full"
                   />
                 </UFormField>
@@ -142,6 +144,7 @@
                   <UInput
                     v-model="form.lastName"
                     :placeholder="t('auth.register-form.last-name-placeholder')"
+                    size="lg"
                     class="w-full"
                   />
                 </UFormField>
@@ -157,6 +160,7 @@
                   v-model="form.email"
                   type="email"
                   :placeholder="t('auth.login-form.email-placeholder')"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -169,6 +173,7 @@
                 <UInput
                   v-model="form.phone"
                   :placeholder="t('candidate.create.phone-placeholder')"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -183,6 +188,7 @@
                   type="number"
                   :placeholder="t('candidate.create.experience-placeholder')"
                   :min="0"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -197,6 +203,7 @@
                   :placeholder="
                     t('candidate.create.current-company-placeholder')
                   "
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -214,6 +221,7 @@
                     :placeholder="
                       t('candidate.create.current-salary-placeholder')
                     "
+                    size="lg"
                     class="w-full"
                   />
                 </UFormField>
@@ -227,6 +235,7 @@
                     :items="currencyOptions"
                     value-key="value"
                     :placeholder="t('candidate.create.currency-placeholder')"
+                    size="lg"
                     class="w-full"
                   />
                 </UFormField>
@@ -245,6 +254,7 @@
                     :placeholder="
                       t('candidate.create.expected-salary-min-placeholder')
                     "
+                    size="lg"
                     class="w-full"
                   />
                 </UFormField>
@@ -259,6 +269,7 @@
                     :placeholder="
                       t('candidate.create.expected-salary-max-placeholder')
                     "
+                    size="lg"
                     class="w-full"
                   />
                 </UFormField>
@@ -272,6 +283,7 @@
                     :items="currencyOptions"
                     value-key="value"
                     :placeholder="t('candidate.create.currency-placeholder')"
+                    size="lg"
                     class="w-full"
                   />
                 </UFormField>

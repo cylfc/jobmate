@@ -8,24 +8,24 @@
 
         <div class="space-y-4">
           <UFormField :label="t('matching.save-job-modal.job-title')" name="title" required>
-            <UInput v-model="form.title" :placeholder="t('matching.save-job-modal.job-title-placeholder')" />
+            <UInput v-model="form.title" :placeholder="t('matching.save-job-modal.job-title-placeholder')" / size="lg">
           </UFormField>
 
           <UFormField :label="t('matching.save-job-modal.company')" name="company">
-            <UInput v-model="form.company" :placeholder="t('matching.save-job-modal.company-placeholder')" />
+            <UInput v-model="form.company" :placeholder="t('matching.save-job-modal.company-placeholder')" / size="lg">
           </UFormField>
 
           <UFormField :label="t('matching.save-job-modal.domain')" name="domain">
-            <UInput v-model="form.domain" :placeholder="t('matching.save-job-modal.domain-placeholder')" />
+            <UInput v-model="form.domain" :placeholder="t('matching.save-job-modal.domain-placeholder')" / size="lg">
           </UFormField>
 
           <UFormField :label="t('matching.save-job-modal.location')" name="location">
-            <UInput v-model="form.location" :placeholder="t('matching.save-job-modal.location-placeholder')" />
+            <UInput v-model="form.location" :placeholder="t('matching.save-job-modal.location-placeholder')" / size="lg">
           </UFormField>
 
           <UFormField :label="t('matching.save-job-modal.description')" name="description" required>
             <UTextarea
-              v-model="form.description"
+ size="lg"              v-model="form.description"
               :placeholder="t('matching.save-job-modal.description-placeholder')"
               :rows="5"
             />
@@ -33,7 +33,7 @@
 
           <UFormField :label="t('matching.save-job-modal.requirements')" name="requirements">
             <UTextarea
-              v-model="requirementsText"
+ size="lg"              v-model="requirementsText"
               :placeholder="t('matching.save-job-modal.requirements-placeholder')"
               :rows="3"
             />
@@ -42,14 +42,14 @@
           <div class="grid grid-cols-2 gap-4">
             <UFormField :label="t('matching.save-job-modal.min-salary')" name="minSalary">
               <UInput
-                v-model.number="minSalary"
+ size="lg"                v-model.number="minSalary"
                 type="number"
                 :placeholder="t('matching.save-job-modal.min-salary-placeholder')"
               />
             </UFormField>
             <UFormField :label="t('matching.save-job-modal.max-salary')" name="maxSalary">
               <UInput
-                v-model.number="maxSalary"
+ size="lg"                v-model.number="maxSalary"
                 type="number"
                 :placeholder="t('matching.save-job-modal.max-salary-placeholder')"
               />

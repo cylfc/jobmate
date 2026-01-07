@@ -60,6 +60,7 @@
                 <UInput
                   v-model="project.name"
                   :placeholder="t('candidate.create.projects.name-placeholder', { defaultValue: 'Project name' })"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -68,6 +69,7 @@
                 <UInput
                   v-model="project.company"
                   :placeholder="t('candidate.create.projects.company-placeholder', { defaultValue: 'Company name' })"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -78,6 +80,7 @@
                 <UInput
                   v-model="project.position"
                   :placeholder="t('candidate.create.projects.position-placeholder', { defaultValue: 'Lead Developer' })"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -86,6 +89,7 @@
                 <UInput
                   v-model="project.role"
                   :placeholder="t('candidate.create.projects.role-placeholder', { defaultValue: 'Architect' })"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -154,6 +158,7 @@
                 v-model="project.projectUrl"
                 type="url"
                 :placeholder="t('candidate.create.projects.url-placeholder', { defaultValue: 'https://github.com/user/project' })"
+                size="lg"
                 class="w-full"
               />
             </UFormField>
@@ -163,6 +168,7 @@
                 v-model="project.description"
                 :rows="3"
                 :placeholder="t('candidate.create.projects.description-placeholder', { defaultValue: 'Project description...' })"
+                size="lg"
                 class="w-full"
               />
             </UFormField>
@@ -171,6 +177,7 @@
               <UInput
                 v-model="technologiesText[index]"
                 :placeholder="t('candidate.create.projects.technologies-placeholder', { defaultValue: 'Comma-separated: React, Node.js, TypeScript' })"
+                size="lg"
                 class="w-full"
                 @update:model-value="handleTechnologiesChange(index, $event)"
               />
@@ -182,6 +189,7 @@
                   <UInput
                     v-model="project.achievements[aIndex]"
                     :placeholder="t('candidate.create.projects.achievement-placeholder', { defaultValue: 'Achievement description' })"
+                    size="lg"
                     class="w-full"
                   />
                   <UButton

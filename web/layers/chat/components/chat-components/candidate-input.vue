@@ -5,6 +5,7 @@
         v-model="candidateText"
         :placeholder="$t('chat.components.candidate-input.placeholder')"
         :rows="8"
+        size="lg"
       />
     </UFormField>
 

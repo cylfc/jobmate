@@ -24,6 +24,7 @@
           <UInput
             v-model="form.firstName"
             :placeholder="t('auth.register-form.first-name-placeholder')"
+            size="lg"
             class="w-full"
           />
         </UFormField>
@@ -31,6 +32,7 @@
           <UInput
             v-model="form.lastName"
             :placeholder="t('auth.register-form.last-name-placeholder')"
+            size="lg"
             class="w-full"
           />
         </UFormField>
@@ -42,6 +44,7 @@
           type="email"
           :placeholder="t('auth.login-form.email-placeholder')"
           :disabled="true"
+          size="lg"
           class="w-full"
         />
         <template #hint>
@@ -55,6 +58,7 @@
         <UInput
           v-model="form.phone"
           :placeholder="t('setting.profile.phone-placeholder')"
+          size="lg"
           class="w-full"
         />
       </UFormField>
@@ -64,6 +68,7 @@
           v-model="form.bio"
           :placeholder="t('setting.profile.bio-placeholder')"
           :rows="4"
+          size="lg"
           class="w-full"
         />
       </UFormField>

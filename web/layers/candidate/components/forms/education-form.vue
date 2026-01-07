@@ -75,6 +75,7 @@
                       defaultValue: 'University name',
                     })
                   "
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -93,6 +94,7 @@
                       defaultValue: 'Computer Science',
                     })
                   "
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -117,6 +119,7 @@
                       defaultValue: 'Select degree type',
                     })
                   "
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -140,12 +143,14 @@
                         defaultValue: '3.8',
                       })
                     "
+                    size="lg"
                     class="flex-1"
                   />
                   <USelectMenu
                     v-model.number="edu.gpaScale"
                     :items="gpaScaleOptions"
                     value-key="value"
+                    size="lg"
                     class="w-24"
                   />
                 </div>
@@ -243,6 +248,7 @@
                     defaultValue: 'Additional details...',
                   })
                 "
+                size="lg"
                 class="w-full"
               />
             </UFormField>
