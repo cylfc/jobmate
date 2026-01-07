@@ -44,6 +44,7 @@
       :type="inputType"
       :placeholder="config?.placeholder"
       :disabled="disabled || config?.disabled"
+      size="lg"
       v-bind="inputProps"
       class="w-full"
     />

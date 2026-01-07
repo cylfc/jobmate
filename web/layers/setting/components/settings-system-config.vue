@@ -43,6 +43,7 @@
             :items="timezoneOptions"
             value-key="value"
             :placeholder="t('setting.system-config.timezone.placeholder')"
+            size="lg"
             class="w-full"
           />
           <template #hint>
@@ -63,6 +64,7 @@
             :items="dateFormatOptions"
             value-key="value"
             :placeholder="t('setting.system-config.date-format.placeholder')"
+            size="lg"
             class="w-full"
           />
         </UFormField>
@@ -78,6 +80,7 @@
             :items="timeFormatOptions"
             value-key="value"
             :placeholder="t('setting.system-config.time-format.placeholder')"
+            size="lg"
             class="w-full"
           />
         </UFormField>

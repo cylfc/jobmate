@@ -13,6 +13,15 @@ export default defineAppConfig({
           'solid': "border-b-2 ring"
         }
       }
+    },
+    card: {
+      variants: {
+        variant: {
+          outline: {
+            root: 'bg-muted'
+          }
+        }
+      }
     }
   },
 });

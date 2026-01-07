@@ -30,6 +30,7 @@
                 v-model="jobText"
                 :placeholder="t('job.create.input.placeholder')"
                 :rows="10"
+                size="lg"
                 class="w-full"
               />
               <template #hint>
@@ -89,6 +90,7 @@
                 <UInput
                   v-model="form.title"
                   :placeholder="t('job.create.form.title-placeholder')"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -97,6 +99,7 @@
                 <UInput
                   v-model="form.company"
                   :placeholder="t('job.create.form.company-placeholder')"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -106,6 +109,7 @@
                   <UInput
                     v-model="form.domain"
                     :placeholder="t('job.create.form.domain-placeholder')"
+                    size="lg"
                     class="w-full"
                   />
                 </UFormField>
@@ -113,6 +117,7 @@
                   <UInput
                     v-model="form.location"
                     :placeholder="t('job.create.form.location-placeholder')"
+                    size="lg"
                     class="w-full"
                   />
                 </UFormField>
@@ -123,6 +128,7 @@
                   v-model="form.description"
                   :placeholder="t('job.create.form.description-placeholder')"
                   :rows="5"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -132,6 +138,7 @@
                   v-model="requirementsText"
                   :placeholder="t('job.create.form.requirements-placeholder')"
                   :rows="3"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -142,6 +149,7 @@
                     v-model.number="minSalary"
                     type="number"
                     :placeholder="t('job.create.form.min-salary-placeholder')"
+                    size="lg"
                     class="w-full"
                   />
                 </UFormField>
@@ -150,6 +158,7 @@
                     v-model.number="maxSalary"
                     type="number"
                     :placeholder="t('job.create.form.max-salary-placeholder')"
+                    size="lg"
                     class="w-full"
                   />
                 </UFormField>
@@ -159,6 +168,7 @@
                 <UInput
                   v-model="form.link"
                   :placeholder="t('job.create.form.link-placeholder')"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>

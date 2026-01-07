@@ -52,6 +52,7 @@
       :options="options"
       :placeholder="config?.placeholder || 'Select an option'"
       :disabled="disabled || config?.disabled"
+      size="lg"
       v-bind="inputProps"
       class="w-full"
     />

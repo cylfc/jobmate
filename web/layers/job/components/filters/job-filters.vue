@@ -7,6 +7,7 @@
           :model-value="localFilters.search"
           :placeholder="t('job.filter.search-placeholder')"
           icon="i-lucide-search"
+          size="lg"
           clearable
           @update:model-value="updateLocalFilter('search', $event)"
         />
@@ -18,6 +19,7 @@
           :model-value="localFilters.status"
           :options="statusOptionsWithFallback"
           :placeholder="t('job.filter.status-placeholder')"
+          size="lg"
           clearable
           @update:model-value="handleStatusChange"
         />
@@ -28,6 +30,7 @@
           class="w-full"
           :model-value="localFilters.company"
           :placeholder="t('job.filter.company-placeholder')"
+          size="lg"
           clearable
           @update:model-value="updateLocalFilter('company', $event)"
         />
@@ -38,6 +41,7 @@
           class="w-full"
           :model-value="localFilters.location"
           :placeholder="t('job.filter.location-placeholder')"
+          size="lg"
           clearable
           @update:model-value="updateLocalFilter('location', $event)"
         />

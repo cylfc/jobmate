@@ -37,6 +37,7 @@
       :name="fieldName"
       type="date"
       :disabled="disabled || config?.disabled"
+      size="lg"
       v-bind="inputProps"
       class="w-full"
     />

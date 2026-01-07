@@ -60,6 +60,7 @@
                 <UInput
                   v-model="skill.name"
                   :placeholder="t('candidate.create.skills.name-placeholder', { defaultValue: 'JavaScript' })"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -70,6 +71,7 @@
                   :items="skillTypeOptions"
                   value-key="value"
                   :placeholder="t('candidate.create.skills.type-placeholder', { defaultValue: 'Select type' })"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -82,6 +84,7 @@
                   :items="levelOptions"
                   value-key="value"
                   :placeholder="t('candidate.create.skills.level-placeholder', { defaultValue: 'Select level' })"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -93,6 +96,7 @@
                   min="0"
                   max="100"
                   :placeholder="t('candidate.create.skills.proficiency-placeholder', { defaultValue: '85' })"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -106,6 +110,7 @@
                   step="0.5"
                   min="0"
                   :placeholder="t('candidate.create.skills.years-placeholder', { defaultValue: '5' })"
+                  size="lg"
                   class="w-full"
                 />
               </UFormField>
@@ -140,6 +145,7 @@
                 v-model="skill.description"
                 :rows="2"
                 :placeholder="t('candidate.create.skills.description-placeholder', { defaultValue: 'Additional details...' })"
+                size="lg"
                 class="w-full"
               />
             </UFormField>

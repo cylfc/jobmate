@@ -12,6 +12,7 @@
             v-model="jobDescription"
             :placeholder="t('matching.step-1.job-description-placeholder')"
             :rows="10"
+            size="lg"
             class="w-full"
           />
         </UFormField>
@@ -22,7 +23,8 @@
           <UInput
             type="file"
             accept=".pdf,.doc,.docx,.txt"
-             class="w-full"
+            size="lg"
+            class="w-full"
             @change="handleFileUpload"
           />
           <template #hint>
@@ -39,6 +41,7 @@
             v-model="jobLink"
             :placeholder="t('matching.step-1.job-link-placeholder')"
             icon="i-lucide-link"
+            size="lg"
             class="w-full"
           />
         </UFormField>
@@ -51,6 +54,7 @@
             :options="jobOptions"
             :placeholder="t('matching.step-1.select-job-placeholder')"
             searchable
+            size="lg"
             class="w-full"
           />
         </UFormField>

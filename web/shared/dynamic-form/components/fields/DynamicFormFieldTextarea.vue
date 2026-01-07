@@ -38,6 +38,7 @@
       :placeholder="config?.placeholder"
       :disabled="disabled || config?.disabled"
       :rows="3"
+      size="lg"
       v-bind="inputProps"
       class="w-full"
     />

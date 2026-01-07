@@ -7,6 +7,7 @@
           :model-value="localFilters.search"
           :placeholder="t('candidate.filter.search-placeholder')"
           icon="i-lucide-search"
+          size="lg"
           clearable
           @update:model-value="updateLocalFilter('search', $event)"
         />
@@ -18,6 +19,7 @@
           :model-value="localFilters.status"
           :items="statusOptionsWithFallback"
           :placeholder="t('candidate.filter.status-placeholder')"
+          size="lg"
           clearable
           @update:model-value="handleStatusChange"
         />
@@ -35,6 +37,7 @@
           :max="experienceRange.max"
           :step="experienceRange.step || 1"
           :placeholder="t('candidate.filter.min-experience-placeholder')"
+          size="lg"
           clearable
           @update:model-value="
             updateLocalFilter(
@@ -57,6 +60,7 @@
           :max="experienceRange.max"
           :step="experienceRange.step || 1"
           :placeholder="t('candidate.filter.max-experience-placeholder')"
+          size="lg"
           clearable
           @update:model-value="
             updateLocalFilter(
