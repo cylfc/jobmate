@@ -57,6 +57,7 @@
               <UInput
                 type="file"
                 accept=".pdf,.doc,.docx,.txt"
+                size="lg"
                 class="w-full"
                 @change="handleFileUpload"
               />
@@ -79,7 +80,7 @@
           </div>
 
           <!-- FORM Mode: Manual input -->
-          <div v-else-if="selectedMode === JOB_CREATE_MODE.FORM" class="space-y-4">
+          <div v-else-if="selectedMode === JOB_CREATE_MODE.FORM" class="space-y-4 max-h-[60vh] overflow-y-auto pr-4 -mr-4">
             <UForm
               :schema="schema"
               :state="form"

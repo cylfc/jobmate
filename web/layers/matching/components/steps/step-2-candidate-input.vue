@@ -67,7 +67,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <UFormField :label="t('matching.step-2.status')" name="status" class="w-full">
               <USelectMenu
- size="lg" size="lg"                v-model="filters.status"
+ size="lg"                v-model="filters.status"
                 :options="statusOptions"
                 :placeholder="t('matching.step-2.select-status')"
                 clearable

@@ -2,7 +2,7 @@
   <div class="space-y-4">
     <UFormField label="Chọn ứng viên từ database">
       <USelectMenu
- size="lg" size="lg"        v-model="selectedCandidateId"
+ size="lg"        v-model="selectedCandidateId"
         :options="candidates"
         option-attribute="name"
         value-attribute="id"
