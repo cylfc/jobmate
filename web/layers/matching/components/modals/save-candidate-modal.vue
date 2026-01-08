@@ -9,34 +9,36 @@
         <div class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
             <UFormField :label="t('matching.save-candidate-modal.first-name')" name="firstName" required>
-              <UInput v-model="form.firstName" :placeholder="t('matching.save-candidate-modal.first-name-placeholder')" / size="lg">
+              <UInput v-model="form.firstName" :placeholder="t('matching.save-candidate-modal.first-name-placeholder')" size="lg" />
             </UFormField>
             <UFormField :label="t('matching.save-candidate-modal.last-name')" name="lastName" required>
-              <UInput v-model="form.lastName" :placeholder="t('matching.save-candidate-modal.last-name-placeholder')" / size="lg">
+              <UInput v-model="form.lastName" :placeholder="t('matching.save-candidate-modal.last-name-placeholder')" size="lg" />
             </UFormField>
           </div>
 
           <UFormField :label="t('matching.save-candidate-modal.email')" name="email" required>
-            <UInput v-model="form.email" type="email" :placeholder="t('matching.save-candidate-modal.email-placeholder')" / size="lg">
+            <UInput v-model="form.email" type="email" :placeholder="t('matching.save-candidate-modal.email-placeholder')" size="lg" />
           </UFormField>
 
           <UFormField :label="t('matching.save-candidate-modal.phone')" name="phone">
-            <UInput v-model="form.phone" :placeholder="t('matching.save-candidate-modal.phone-placeholder')" / size="lg">
+            <UInput v-model="form.phone" :placeholder="t('matching.save-candidate-modal.phone-placeholder')" size="lg" />
           </UFormField>
 
           <UFormField :label="t('matching.save-candidate-modal.skills')" name="skills">
             <UTextarea
- size="lg"              v-model="skillsText"
+              v-model="skillsText"
               :placeholder="t('matching.save-candidate-modal.skills-placeholder')"
               :rows="3"
+              size="lg"
             />
           </UFormField>
 
           <UFormField :label="t('matching.save-candidate-modal.experience')" name="experience">
             <UInput
- size="lg"              v-model.number="form.experience"
+              v-model.number="form.experience"
               type="number"
               :placeholder="t('matching.save-candidate-modal.experience-placeholder')"
+              size="lg"
             />
           </UFormField>
         </div>

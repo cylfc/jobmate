@@ -28,7 +28,7 @@
     <div v-if="showFilters" class="p-4 bg-muted rounded-lg">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <USelectMenu
- size="lg" size="lg"          v-model="sortBy"
+ size="lg"          v-model="sortBy"
           :options="sortOptions"
           :placeholder="t('matching.step-4.sort-by-placeholder')"
         />

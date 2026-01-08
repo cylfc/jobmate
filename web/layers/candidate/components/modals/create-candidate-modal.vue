@@ -87,6 +87,7 @@
               <UInput
                 type="file"
                 accept=".pdf,.doc,.docx,.txt"
+                size="lg"
                 class="w-full"
                 @change="handleFileUpload"
               />
