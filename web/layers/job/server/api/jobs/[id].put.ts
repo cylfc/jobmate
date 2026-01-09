@@ -3,8 +3,10 @@
  * Server API route for updating a job by ID
  */
 import type { Job, CreateJobInput } from '@job/types/job'
-import { useApiClient } from '@auth/utils/api-client'
+import { useApiClient } from '@shared/api'
 import type { ApiResponse } from '../../../../../../types/api-response'
+import { logError } from '@shared/logging'
+import { jobTransformer, type BackendJob } from '@shared/transformers'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -45,55 +47,12 @@ export default defineEventHandler(async (event) => {
     }
 
     // Call backend API - returns { data, meta, status } format
-    const backendResponse = await apiClient.patch<{
-      id: string
-      title: string
-      description?: string
-      company: string
-      location?: string
-      salaryMin?: number
-      salaryMax?: number
-      employmentType: string
-      status: string
-      requirements: string[]
-      benefits: string[]
-      postedAt?: string
-      expiresAt?: string
-      createdAt: string
-      updatedAt: string
-      applications?: Array<{ id: string; status: string }>
-    }>(`/jobs/${id}`, updatePayload, {
+    const backendResponse = await apiClient.patch<BackendJob>(`/jobs/${id}`, updatePayload, {
       Authorization: authHeader,
     })
 
-    // Extract data from backend response
-    const backendJob = backendResponse.data
-
-    // Map backend response to frontend Job type
-    const job: Job = {
-      id: backendJob.id,
-      title: backendJob.title,
-      description: backendJob.description || '',
-      company: backendJob.company,
-      location: backendJob.location || '',
-      requirements: backendJob.requirements || [],
-      salary: backendJob.salaryMin && backendJob.salaryMax
-        ? {
-            min: Number(backendJob.salaryMin),
-            max: Number(backendJob.salaryMax),
-            currency: 'USD', // Default currency
-          }
-        : undefined,
-      status: backendJob.status.toLowerCase() as Job['status'],
-      candidates: backendJob.applications
-        ? {
-            active: backendJob.applications.filter((app) => app.status === 'PENDING' || app.status === 'REVIEWING').length,
-            total: backendJob.applications.length,
-          }
-        : undefined,
-      createdAt: new Date(backendJob.createdAt),
-      updatedAt: new Date(backendJob.updatedAt),
-    }
+    // Transform backend response to frontend Job type
+    const job: Job = jobTransformer.transform(backendResponse.data)
 
     // Return in standard format
     return {
@@ -102,7 +61,7 @@ export default defineEventHandler(async (event) => {
       status: backendResponse.status,
     } as ApiResponse<Job>
   } catch (error) {
-    console.error('Error in /api/jobs/[id].put.ts:', error)
+    logError('Error in /api/jobs/[id].put.ts', error, 'jobs.[id].put')
     if (error && typeof error === 'object' && 'statusCode' in error) {
       const statusCode = (error as { statusCode: number }).statusCode
       const message = ('message' in error && typeof error.message === 'string')

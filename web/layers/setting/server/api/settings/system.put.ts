@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { useApiClient } from '@auth/utils/api-client'
+import { useApiClient } from '@shared/api'
 import type { SystemConfig } from '@setting/types/setting'
 import type { ApiResponse } from '../../../../../../types/api-response'
 

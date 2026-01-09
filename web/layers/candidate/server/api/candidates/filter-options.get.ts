@@ -3,7 +3,7 @@
  * Returns available options for candidate filters
  * Calculated from actual candidate data
  */
-import { useApiClient } from '@auth/utils/api-client'
+import { useApiClient } from '@shared/api'
 import type { CandidateFilterOptions, FilterOption } from '@candidate/types/candidate'
 import type { ApiResponse } from '../../../../../../types/api-response'
 

@@ -2,7 +2,7 @@
  * Delete Job API
  * Server API route for deleting a job by ID
  */
-import { useApiClient } from '@auth/utils/api-client'
+import { useApiClient } from '@shared/api'
 import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {

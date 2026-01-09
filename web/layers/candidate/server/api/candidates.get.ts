@@ -2,9 +2,11 @@
  * Get Candidates API
  * Server API route for fetching candidates
  */
-import { useApiClient } from '@auth/utils/api-client'
+import { useApiClient } from '@shared/api'
 import type { Candidate, CandidateFilter } from '@candidate/types/candidate'
 import type { ApiResponse } from '../../../../../../types/api-response'
+import { logError } from '@shared/logging'
+import { candidateTransformer, type BackendCandidate } from '@shared/transformers'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -33,94 +35,12 @@ export default defineEventHandler(async (event) => {
     const endpoint = `/candidates${queryString ? `?${queryString}` : ''}`
 
     // Call backend API - returns { data: [...], meta: { pagination: {...} }, status: 200 }
-    const backendResponse = await apiClient.get<Array<{
-      id: string
-      email: string
-      firstName: string
-      lastName: string
-      phone?: string
-      resumeUrl?: string
-      currentCompany?: string
-      skills: string[]
-      experience: Record<string, unknown>[]
-      education: Record<string, unknown>[]
-      currentSalary?: { amount: number; currency: string }
-      expectedSalary?: { min: number; max: number; currency: string }
-      educations?: unknown[]
-      skillsDetailed?: unknown[]
-      workExperiences?: unknown[]
-      projects?: unknown[]
-      userId?: string
-      createdAt: string
-      updatedAt: string
-    }>>(endpoint, {
+    const backendResponse = await apiClient.get<BackendCandidate[]>(endpoint, {
       Authorization: authHeader,
     })
 
     // Transform backend response data to frontend format
-    const candidates: Candidate[] = backendResponse.data.map((backendCandidate) => {
-      // Extract salary info - prefer direct fields, fallback to experience array
-      let currentSalary: Candidate['currentSalary'] = backendCandidate.currentSalary
-      let expectedSalary: Candidate['expectedSalary'] = backendCandidate.expectedSalary
-      
-      // Validate and normalize salary objects
-      if (currentSalary && typeof currentSalary === 'object') {
-        // Ensure it has the correct structure
-        if (!('amount' in currentSalary) || !('currency' in currentSalary)) {
-          currentSalary = undefined
-        }
-      }
-      
-      if (expectedSalary && typeof expectedSalary === 'object') {
-        // Ensure it has the correct structure
-        if (!('min' in expectedSalary) || !('max' in expectedSalary) || !('currency' in expectedSalary)) {
-          expectedSalary = undefined
-        }
-      }
-      
-      // Fallback to experience array if direct fields not available
-      if (!currentSalary || !expectedSalary) {
-        if (Array.isArray(backendCandidate.experience)) {
-          for (const exp of backendCandidate.experience) {
-            if (exp.currentSalary && typeof exp.currentSalary === 'object' && !currentSalary) {
-              const cs = exp.currentSalary as Record<string, unknown>
-              if ('amount' in cs && 'currency' in cs) {
-                currentSalary = cs as Candidate['currentSalary']
-              }
-            }
-            if (exp.expectedSalary && typeof exp.expectedSalary === 'object' && !expectedSalary) {
-              const es = exp.expectedSalary as Record<string, unknown>
-              if ('min' in es && 'max' in es && 'currency' in es) {
-                expectedSalary = es as Candidate['expectedSalary']
-              }
-            }
-          }
-        }
-      }
-
-      return {
-        id: backendCandidate.id,
-        firstName: backendCandidate.firstName,
-        lastName: backendCandidate.lastName,
-        email: backendCandidate.email,
-        phone: backendCandidate.phone,
-        skills: backendCandidate.skills || [],
-        experience: Array.isArray(backendCandidate.experience) && backendCandidate.experience.length > 0
-          ? (backendCandidate.experience.find((e) => e.years !== undefined) as { years?: number })?.years || 0
-          : 0,
-        currentCompany: backendCandidate.currentCompany,
-        currentSalary,
-        expectedSalary,
-        status: 'active' as const,
-        // Map detailed fields from backend response
-        educations: Array.isArray(backendCandidate.educations) ? backendCandidate.educations as Candidate['educations'] : undefined,
-        skillsDetailed: Array.isArray(backendCandidate.skillsDetailed) ? backendCandidate.skillsDetailed as Candidate['skillsDetailed'] : undefined,
-        workExperiences: Array.isArray(backendCandidate.workExperiences) ? backendCandidate.workExperiences as Candidate['workExperiences'] : undefined,
-        projects: Array.isArray(backendCandidate.projects) ? backendCandidate.projects as Candidate['projects'] : undefined,
-        createdAt: new Date(backendCandidate.createdAt),
-        updatedAt: new Date(backendCandidate.updatedAt),
-      }
-    })
+    const candidates: Candidate[] = candidateTransformer.transformMany(backendResponse.data)
 
     // Apply frontend filters (status, minExperience, maxExperience) if needed
     let filtered = candidates

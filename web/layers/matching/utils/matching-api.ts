@@ -5,6 +5,7 @@
  */
 import type { Job, Candidate, Matching, CreateJobInput, CreateCandidateInput, CandidateFilter } from '@matching/types/matching'
 import type { ApiResponse } from '../../../types/api-response'
+import { logError } from '@shared/logging'
 
 export const useMatchingApi = () => {
   /**
@@ -21,7 +22,7 @@ export const useMatchingApi = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error parsing job from text:', error)
+      logError('Error parsing job from text', error, 'matching-api')
       throw error
     }
   }
@@ -36,7 +37,7 @@ export const useMatchingApi = () => {
       })
       return response.data || []
     } catch (error) {
-      console.error('Error fetching jobs from database:', error)
+      logError('Error fetching jobs from database', error, 'matching-api')
       return []
     }
   }
@@ -57,7 +58,7 @@ export const useMatchingApi = () => {
       }
       return job
     } catch (error) {
-      console.error('Error saving job:', error)
+      logError('Error saving job', error, 'matching-api')
       return null
     }
   }
@@ -75,7 +76,7 @@ export const useMatchingApi = () => {
       })
       return response.data || []
     } catch (error) {
-      console.error('Error parsing candidates from text:', error)
+      logError('Error parsing candidates from text', error, 'matching-api')
       throw error
     }
   }
@@ -102,7 +103,7 @@ export const useMatchingApi = () => {
 
       return response.data || []
     } catch (error) {
-      console.error('Error fetching candidates from database:', error)
+      logError('Error fetching candidates from database', error, 'matching-api')
       return []
     }
   }
@@ -123,7 +124,7 @@ export const useMatchingApi = () => {
       }
       return candidate
     } catch (error) {
-      console.error('Error saving candidate:', error)
+      logError('Error saving candidate', error, 'matching-api')
       return null
     }
   }
@@ -145,7 +146,7 @@ export const useMatchingApi = () => {
       })
       return response.data || []
     } catch (error) {
-      console.error('Error analyzing matchings:', error)
+      logError('Error analyzing matchings', error, 'matching-api')
       throw error
     }
   }
@@ -162,7 +163,7 @@ export const useMatchingApi = () => {
       })
       return response.data || []
     } catch (error) {
-      console.error('Error fetching matchings:', error)
+      logError('Error fetching matchings', error, 'matching-api')
       return []
     }
   }
@@ -175,7 +176,7 @@ export const useMatchingApi = () => {
       // TODO: Implement create matching API endpoint
       return null
     } catch (error) {
-      console.error('Error creating matching:', error)
+      logError('Error creating matching', error, 'matching-api')
       return null
     }
   }

@@ -3,7 +3,7 @@
  * Server API route for deleting a candidate
  * Note: Candidate can only be deleted when there are no open applications
  */
-import { useApiClient } from '@auth/utils/api-client'
+import { useApiClient } from '@shared/api'
 import type { ApiResponse } from '../../../../../../types/api-response'
 
 // Application statuses that are considered "open" (not closed)
