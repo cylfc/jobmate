@@ -1,34 +1,50 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CandidateProject } from '../entities/candidate-project.entity';
-import { Candidate } from '../entities/candidate.entity';
-import { CreateProjectDto } from '../models/dto/create-project.dto';
-import { UpdateProjectDto } from '../models/dto/update-project.dto';
+import { Repository, FindOptionsOrder } from 'typeorm';
+import { CandidateProject } from '@candidate/entities/candidate-project.entity';
+import { Candidate } from '@candidate/entities/candidate.entity';
+import { CreateProjectDto } from '@candidate/models/dto/create-project.dto';
+import { UpdateProjectDto } from '@candidate/models/dto/update-project.dto';
+import { BaseCandidateEntityService } from '@shared/services/base-candidate-entity.service';
 
 @Injectable()
-export class CandidateProjectService {
+export class CandidateProjectService extends BaseCandidateEntityService<
+  CandidateProject,
+  CreateProjectDto,
+  UpdateProjectDto
+> {
   constructor(
     @InjectRepository(CandidateProject)
-    private readonly projectRepository: Repository<CandidateProject>,
+    private readonly _projectRepository: Repository<CandidateProject>,
     @InjectRepository(Candidate)
-    private readonly candidateRepository: Repository<Candidate>,
-  ) {}
+    private readonly _candidateRepository: Repository<Candidate>,
+  ) {
+    super();
+  }
 
-  async createProject(candidateId: string, createDto: CreateProjectDto, userId?: string): Promise<CandidateProject> {
-    const candidate = await this.candidateRepository.findOne({
-      where: { id: candidateId },
+  protected get entityRepository(): Repository<CandidateProject> {
+    return this._projectRepository;
+  }
+
+  protected get candidateRepository(): Repository<Candidate> {
+    return this._candidateRepository;
+  }
+
+  protected get entityName(): string {
+    return 'Project';
+  }
+
+  async create(
+    candidateId: string,
+    createDto: CreateProjectDto,
+    userId?: string,
+  ): Promise<CandidateProject> {
+    const candidate = await this.verifyCandidateOwnership(candidateId, {
+      userId,
+      errorMessage: 'You can only add projects to your own candidate profile',
     });
 
-    if (!candidate) {
-      throw new NotFoundException(`Candidate with ID ${candidateId} not found`);
-    }
-
-    if (userId && candidate.userId !== userId) {
-      throw new ForbiddenException('You can only add projects to your own candidate profile');
-    }
-
-    const project = this.projectRepository.create({
+    const project = this.entityRepository.create({
       candidate,
       name: createDto.name,
       company: createDto.company,
@@ -44,46 +60,14 @@ export class CandidateProjectService {
       orderIndex: createDto.orderIndex ?? 0,
     });
 
-    return this.projectRepository.save(project);
+    return this.entityRepository.save(project);
   }
 
-  async findAllByCandidate(candidateId: string, userId?: string): Promise<CandidateProject[]> {
-    const candidate = await this.candidateRepository.findOne({
-      where: { id: candidateId },
-    });
-
-    if (!candidate) {
-      throw new NotFoundException(`Candidate with ID ${candidateId} not found`);
-    }
-
-    if (userId && candidate.userId !== userId) {
-      throw new ForbiddenException('Access denied');
-    }
-
-    return this.projectRepository.find({
-      where: { candidate: { id: candidateId } },
-      order: { orderIndex: 'ASC', startDate: 'DESC' },
-    });
-  }
-
-  async findOne(id: string, userId?: string): Promise<CandidateProject> {
-    const project = await this.projectRepository.findOne({
-      where: { id },
-      relations: ['candidate'],
-    });
-
-    if (!project) {
-      throw new NotFoundException(`Project with ID ${id} not found`);
-    }
-
-    if (userId && project.candidate.userId !== userId) {
-      throw new ForbiddenException('Access denied');
-    }
-
-    return project;
-  }
-
-  async updateProject(id: string, updateDto: UpdateProjectDto, userId?: string): Promise<CandidateProject> {
+  async update(
+    id: string,
+    updateDto: UpdateProjectDto,
+    userId?: string,
+  ): Promise<CandidateProject> {
     const project = await this.findOne(id, userId);
 
     if (updateDto.startDate) {
@@ -103,12 +87,40 @@ export class CandidateProjectService {
     if (updateDto.projectUrl !== undefined) project.projectUrl = updateDto.projectUrl;
     if (updateDto.orderIndex !== undefined) project.orderIndex = updateDto.orderIndex;
 
-    return this.projectRepository.save(project);
+    return this.entityRepository.save(project);
+  }
+
+  // Override findAllByCandidate để use custom order
+  async findAllByCandidate(
+    candidateId: string,
+    userId?: string,
+  ): Promise<CandidateProject[]> {
+    return this.findAllByCandidateWithOwnershipCheck(
+      candidateId,
+      { userId },
+      { orderIndex: 'ASC', startDate: 'DESC' } as FindOptionsOrder<CandidateProject>,
+    );
+  }
+
+  // Keep old method names for backward compatibility
+  async createProject(
+    candidateId: string,
+    createDto: CreateProjectDto,
+    userId?: string,
+  ): Promise<CandidateProject> {
+    return this.create(candidateId, createDto, userId);
+  }
+
+  async updateProject(
+    id: string,
+    updateDto: UpdateProjectDto,
+    userId?: string,
+  ): Promise<CandidateProject> {
+    return this.update(id, updateDto, userId);
   }
 
   async deleteProject(id: string, userId?: string): Promise<void> {
-    const project = await this.findOne(id, userId);
-    await this.projectRepository.remove(project);
+    return this.delete(id, userId);
   }
 }
 

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { useApiClient } from '@shared/api'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 const registerSchema = z.object({
   firstName: z.string().min(1).optional(),

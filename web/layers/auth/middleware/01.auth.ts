@@ -3,7 +3,7 @@
  * Protects routes that require authentication
  * Redirects to login if user is not authenticated
  */
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '@auth/stores/auth'
 
 export default defineNuxtRouteMiddleware((to, _from) => {
   // Skip middleware on server side

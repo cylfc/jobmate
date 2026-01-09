@@ -9,16 +9,16 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { AuthService } from '../services/auth.service';
-import { RegisterDto } from '../models/dto/register.dto';
-import { LoginDto } from '../models/dto/login.dto';
-import { RefreshTokenDto } from '../models/dto/refresh-token.dto';
-import { ChangePasswordDto } from '../models/dto/change-password.dto';
-import { UpdateProfileDto } from '../models/dto/update-profile.dto';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { Public } from '../decorators/public.decorator';
-import { CurrentUser } from '../decorators/current-user.decorator';
-import { User } from '../entities/user.entity';
+import { AuthService } from '@auth/services/auth.service';
+import { RegisterDto } from '@auth/models/dto/register.dto';
+import { LoginDto } from '@auth/models/dto/login.dto';
+import { RefreshTokenDto } from '@auth/models/dto/refresh-token.dto';
+import { ChangePasswordDto } from '@auth/models/dto/change-password.dto';
+import { UpdateProfileDto } from '@auth/models/dto/update-profile.dto';
+import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
+import { Public } from '@auth/decorators/public.decorator';
+import { CurrentUser } from '@auth/decorators/current-user.decorator';
+import { User } from '@auth/entities/user.entity';
 
 @ApiTags('auth')
 @Controller('auth')

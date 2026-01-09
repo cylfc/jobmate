@@ -3,7 +3,7 @@
  * Server API route for analyzing job-candidate matches
  */
 import type { Job, Candidate, Matching } from '@matching/types/matching'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 type MatchingWithName = Matching & { 
   candidateName: string

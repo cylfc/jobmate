@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import { ref, provide, inject, computed } from 'vue'
-import { getFormValue, setFormValue } from '../utils/form-helpers'
+import { getFormValue, setFormValue } from '@shared/dynamic-form/utils/form-helpers'
 
 /**
  * Composable for DynamicForm component

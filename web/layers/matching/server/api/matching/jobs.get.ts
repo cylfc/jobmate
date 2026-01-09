@@ -3,7 +3,7 @@
  * Server API route for fetching jobs from database
  */
 import type { Job } from '@matching/types/matching'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 export default defineEventHandler(async (event): Promise<ApiResponse<Job[]>> => {
   const query = getQuery(event)

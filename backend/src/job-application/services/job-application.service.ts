@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { JobApplication, ApplicationStatus } from '../entities/job-application.entity';
-import { CreateApplicationDto } from '../models/dto/create-application.dto';
-import { UpdateApplicationDto } from '../models/dto/update-application.dto';
-import { QueryApplicationDto } from '../models/dto/query-application.dto';
-import { Job } from '../../job/entities/job.entity';
-import { Candidate } from '../../candidate/entities/candidate.entity';
+import { JobApplication, ApplicationStatus } from '@job-application/entities/job-application.entity';
+import { CreateApplicationDto } from '@job-application/models/dto/create-application.dto';
+import { UpdateApplicationDto } from '@job-application/models/dto/update-application.dto';
+import { QueryApplicationDto } from '@job-application/models/dto/query-application.dto';
+import { Job } from '@job/entities/job.entity';
+import { Candidate } from '@candidate/entities/candidate.entity';
 
 @Injectable()
 export class JobApplicationService {

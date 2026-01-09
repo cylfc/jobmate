@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { useApiClient } from '@shared/api'
 import type { UserProfile } from '@setting/types/setting'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 const profileSchema = z.object({
   firstName: z.string().min(2),

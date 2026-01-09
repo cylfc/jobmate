@@ -4,7 +4,7 @@
  * Stateless functions - no reactive state
  */
 import type { Job, CreateJobInput, JobFilter } from '@job/types/job'
-import type { ApiResponse } from '../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 import { logError } from '@shared/logging'
 
 export const useJob = () => {

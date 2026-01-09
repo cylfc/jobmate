@@ -3,7 +3,7 @@
  * Server API route for parsing job information from text input using AI
  */
 import type { Job, CreateJobInput } from '@job/types/job'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 export default defineEventHandler(async (event): Promise<ApiResponse<Job>> => {
   const body = await readBody<{ text: string; link?: string }>(event)

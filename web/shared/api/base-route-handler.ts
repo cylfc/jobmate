@@ -3,8 +3,8 @@
  * Provides common functionality for server API routes
  */
 
-import type { ApiResponse } from '../../types/api-response'
-import { logError } from '../logging'
+import type { ApiResponse } from '@/types/api-response'
+import { logError } from '@shared/logging'
 
 export interface RouteHandlerOptions {
   requireAuth?: boolean

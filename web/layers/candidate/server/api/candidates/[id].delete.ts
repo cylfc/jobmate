@@ -4,7 +4,7 @@
  * Note: Candidate can only be deleted when there are no open applications
  */
 import { useApiClient } from '@shared/api'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 // Application statuses that are considered "open" (not closed)
 const OPEN_APPLICATION_STATUSES = ['PENDING', 'REVIEWING', 'SHORTLISTED', 'INTERVIEWED']

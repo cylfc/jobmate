@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
-import { Job, JobStatus } from '../../job/entities/job.entity';
-import { JobApplication } from '../../job-application/entities/job-application.entity';
+import { Job, JobStatus } from '@job/entities/job.entity';
+import { JobApplication } from '@job-application/entities/job-application.entity';
 import { KpiService } from './kpi.service';
 import { PipelineService } from './pipeline.service';
 import { ActivityService } from './activity.service';
-import { ActiveJob, ActiveJobsResponse } from '../models/types/active-job.type';
-import { DashboardAlertsResponse, DashboardAlert, AlertSeverity } from '../models/types/dashboard-alert.type';
-import { DashboardMatchingHealthResponse } from '../models/types/dashboard-matching-health.type';
+import { ActiveJob, ActiveJobsResponse } from '@dashboard/models/types/active-job.type';
+import { DashboardAlertsResponse, DashboardAlert, AlertSeverity } from '@dashboard/models/types/dashboard-alert.type';
+import { DashboardMatchingHealthResponse } from '@dashboard/models/types/dashboard-matching-health.type';
 
 /**
  * Dashboard Service

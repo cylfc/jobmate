@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Candidate } from '../../candidate/entities/candidate.entity';
-import { JobApplication, ApplicationStatus } from '../../job-application/entities/job-application.entity';
-import { Job } from '../../job/entities/job.entity';
-import { DashboardPipelineResponse, PipelineStage } from '../models/types/dashboard-pipeline.type';
+import { Candidate } from '@candidate/entities/candidate.entity';
+import { JobApplication, ApplicationStatus } from '@job-application/entities/job-application.entity';
+import { Job } from '@job/entities/job.entity';
+import { DashboardPipelineResponse, PipelineStage } from '@dashboard/models/types/dashboard-pipeline.type';
 
 /**
  * Pipeline Service

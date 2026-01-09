@@ -1,5 +1,5 @@
 import type { z } from 'zod'
-import type { FieldInfo } from '../types'
+import type { FieldInfo } from '@shared/dynamic-form/types'
 import { getDefaultValueInZodStack, getBaseType, getEnumValues, isRequired, beautifyObjectName } from './zod-utils'
 
 /**

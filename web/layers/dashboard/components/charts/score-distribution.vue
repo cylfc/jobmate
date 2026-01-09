@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { MatchScoreDistributionBin } from '../../types/dashboard'
+import type { MatchScoreDistributionBin } from '@/types/dashboard'
 import type { BarChartItem } from './bar-chart.vue'
 
 const props = withDefaults(

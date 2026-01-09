@@ -10,7 +10,7 @@ import {
   Min,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { EmploymentType, JobStatus } from '../../entities/job.entity';
+import { EmploymentType, JobStatus } from '@job/entities/job.entity';
 
 export class CreateJobDto {
   @ApiProperty({ example: 'Senior Software Engineer' })

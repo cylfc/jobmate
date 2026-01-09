@@ -8,17 +8,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { User } from '../entities/user.entity';
-import { AuthProvider, AuthProviderType } from '../entities/auth-provider.entity';
-import { RegisterDto } from '../models/dto/register.dto';
-import { LoginDto } from '../models/dto/login.dto';
-import { ChangePasswordDto } from '../models/dto/change-password.dto';
-import { UpdateProfileDto } from '../models/dto/update-profile.dto';
+import { User } from '@auth/entities/user.entity';
+import { AuthProvider, AuthProviderType } from '@auth/entities/auth-provider.entity';
+import { RegisterDto } from '@auth/models/dto/register.dto';
+import { LoginDto } from '@auth/models/dto/login.dto';
+import { ChangePasswordDto } from '@auth/models/dto/change-password.dto';
+import { UpdateProfileDto } from '@auth/models/dto/update-profile.dto';
 import { PasswordService } from './password.service';
 import { UserService } from './user.service';
 import { RefreshTokenService } from './refresh-token.service';
-import { AuthResponse } from '../models/types/auth-response.type';
-import { JwtPayload } from '../models/types/jwt-payload.type';
+import { AuthResponse } from '@auth/models/types/auth-response.type';
+import { JwtPayload } from '@auth/models/types/jwt-payload.type';
 
 @Injectable()
 export class AuthService {

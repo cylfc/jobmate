@@ -3,7 +3,7 @@
  * Server API route for creating or parsing candidates from text input
  */
 import type { Candidate, CreateCandidateInput } from '@matching/types/matching'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 export default defineEventHandler(async (event): Promise<ApiResponse<Candidate[]>> => {
   const body = await readBody<{ text: string }>(event)

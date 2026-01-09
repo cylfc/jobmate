@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserSettings } from '../entities/user-settings.entity';
-import { UpdateNotificationSettingsDto } from '../models/dto/notification-settings.dto';
-import { UpdateSystemConfigDto } from '../models/dto/system-config.dto';
-import { UpdateSecuritySettingsDto } from '../models/dto/security-settings.dto';
-import { TimeFormat, DateFormat, Theme, Language } from '../models/enums/system-config.enum';
+import { UserSettings } from '@settings/entities/user-settings.entity';
+import { UpdateNotificationSettingsDto } from '@settings/models/dto/notification-settings.dto';
+import { UpdateSystemConfigDto } from '@settings/models/dto/system-config.dto';
+import { UpdateSecuritySettingsDto } from '@settings/models/dto/security-settings.dto';
+import { TimeFormat, DateFormat, Theme, Language } from '@settings/models/enums/system-config.enum';
 
 /**
  * Settings Service

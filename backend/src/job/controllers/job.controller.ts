@@ -11,13 +11,13 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { JobService } from '../services/job.service';
-import { CreateJobDto } from '../models/dto/create-job.dto';
-import { UpdateJobDto } from '../models/dto/update-job.dto';
-import { QueryJobDto } from '../models/dto/query-job.dto';
-import { CurrentUser } from '../../auth/decorators/current-user.decorator';
-import { Public } from '../../auth/decorators/public.decorator';
-import { User } from '../../auth/entities/user.entity';
+import { JobService } from '@job/services/job.service';
+import { CreateJobDto } from '@job/models/dto/create-job.dto';
+import { UpdateJobDto } from '@job/models/dto/update-job.dto';
+import { QueryJobDto } from '@job/models/dto/query-job.dto';
+import { CurrentUser } from '@auth/decorators/current-user.decorator';
+import { Public } from '@auth/decorators/public.decorator';
+import { User } from '@auth/entities/user.entity';
 
 @ApiTags('jobs')
 @Controller('jobs')

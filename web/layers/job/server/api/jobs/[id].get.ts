@@ -4,7 +4,7 @@
  */
 import type { Job } from '@job/types/job'
 import { useApiClient } from '@shared/api'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 import { logError } from '@shared/logging'
 import { jobTransformer, type BackendJob } from '@shared/transformers'
 

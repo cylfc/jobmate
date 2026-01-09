@@ -21,7 +21,7 @@ import {
   CHART_CALCULATION,
   CHART_GRADIENT,
   DEFAULT_CHART_COLORS,
-} from '../../constants/chart'
+} from '@dashboard/constants/chart'
 
 type ECOption = ComposeOption<BarSeriesOption | LineSeriesOption | PieSeriesOption | TooltipComponentOption | LegendComponentOption | GridComponentOption>
 

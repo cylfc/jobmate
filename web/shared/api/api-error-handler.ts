@@ -3,7 +3,7 @@
  * Centralized error handling for API requests
  */
 
-import type { ApiResponse } from '../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 export interface ApiError {
   statusCode: number

@@ -8,7 +8,7 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Response } from 'express';
-import { ApiResponse, ApiMeta, PaginationMeta } from '../types/api-response.types';
+import { ApiResponse, ApiMeta, PaginationMeta } from '@shared/types/api-response.types';
 
 @Injectable()
 export class ApiResponseInterceptor<T>

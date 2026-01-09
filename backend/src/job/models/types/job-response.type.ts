@@ -1,4 +1,4 @@
-import { Job } from '../../entities/job.entity';
+import { Job } from '@job/entities/job.entity';
 
 export type JobResponse = Job;
 

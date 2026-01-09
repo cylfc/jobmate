@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { EntityNotFoundException } from '@shared/exceptions/custom-exceptions';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Job, JobStatus } from '../entities/job.entity';
-import { CreateJobDto } from '../models/dto/create-job.dto';
-import { UpdateJobDto } from '../models/dto/update-job.dto';
-import { QueryJobDto } from '../models/dto/query-job.dto';
+import { Job, JobStatus } from '@job/entities/job.entity';
+import { CreateJobDto } from '@job/models/dto/create-job.dto';
+import { UpdateJobDto } from '@job/models/dto/update-job.dto';
+import { QueryJobDto } from '@job/models/dto/query-job.dto';
+import { verifyOwnership, executePaginatedQuery, applySearchFilter, applySorting, applyEnumFilter } from '@shared/utils';
 
 @Injectable()
 export class JobService {
@@ -29,44 +31,32 @@ export class JobService {
 
   async findAll(queryDto: QueryJobDto) {
     const { page = 1, limit = 10, search, status, employmentType, sortBy = 'createdAt', sortOrder = 'DESC' } = queryDto;
-    const offset = (page - 1) * limit;
 
     const qb = this.jobRepository.createQueryBuilder('job');
 
+    // Apply search filter
     if (search) {
-      qb.where(
-        '(job.title ILIKE :search OR job.description ILIKE :search OR job.company ILIKE :search)',
-        { search: `%${search}%` },
-      );
+      applySearchFilter(qb, {
+        search,
+        searchFields: ['title', 'description', 'company'],
+      });
     }
 
-    if (status) {
-      qb.andWhere('job.status = :status', { status });
-    }
+    // Apply enum filters
+    applyEnumFilter(qb, 'status', status);
+    applyEnumFilter(qb, 'employmentType', employmentType);
 
-    if (employmentType) {
-      qb.andWhere('job.employmentType = :employmentType', { employmentType });
-    }
+    // Apply sorting
+    applySorting(qb, { sortBy, sortOrder });
 
-    qb.orderBy(`job.${sortBy}`, sortOrder);
-    qb.limit(limit);
-    qb.offset(offset);
-
-    const [items, total] = await qb.getManyAndCount();
-
-    return {
-      items,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    };
+    // Execute paginated query
+    return executePaginatedQuery(qb, { page, limit });
   }
 
   async findOne(id: string): Promise<Job> {
     const job = await this.jobRepository.findOne({ where: { id } });
     if (!job) {
-      throw new NotFoundException(`Job with ID ${id} not found`);
+      throw new EntityNotFoundException('Job', id);
     }
     return job;
   }
@@ -92,10 +82,15 @@ export class JobService {
   }
 
   async updateJob(id: string, updateDto: UpdateJobDto, userId?: string): Promise<Job> {
-    const job = await this.findOne(id);
-    if (userId && job.createdById && job.createdById !== userId) {
-      throw new ForbiddenException('You can only update your own jobs');
+    // Verify ownership nếu userId provided
+    if (userId) {
+      await verifyOwnership(this.jobRepository, id, userId, {
+        ownerField: 'createdById',
+        entityName: 'Job',
+      });
     }
+
+    const job = await this.findOne(id);
     Object.assign(job, updateDto);
     if (updateDto.postedAt) {
       job.postedAt = new Date(updateDto.postedAt);
@@ -107,10 +102,15 @@ export class JobService {
   }
 
   async removeJob(id: string, userId?: string): Promise<void> {
-    const job = await this.findOne(id);
-    if (userId && job.createdById && job.createdById !== userId) {
-      throw new ForbiddenException('You can only delete your own jobs');
+    // Verify ownership nếu userId provided
+    if (userId) {
+      await verifyOwnership(this.jobRepository, id, userId, {
+        ownerField: 'createdById',
+        entityName: 'Job',
+      });
     }
+
+    const job = await this.findOne(id);
     await this.jobRepository.remove(job);
   }
 }

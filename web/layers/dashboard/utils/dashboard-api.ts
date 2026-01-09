@@ -11,7 +11,7 @@ import type {
   CandidatePipelineApiResponse,
   RecentActivitiesResponse,
 } from '@dashboard/types/dashboard'
-import type { ApiResponse } from '../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 export interface UseRecentActivitiesOptions {
   cursor?: string | null

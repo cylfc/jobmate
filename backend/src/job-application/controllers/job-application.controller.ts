@@ -11,13 +11,13 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { JobApplicationService } from '../services/job-application.service';
-import { CreateApplicationDto } from '../models/dto/create-application.dto';
-import { UpdateApplicationDto } from '../models/dto/update-application.dto';
-import { QueryApplicationDto } from '../models/dto/query-application.dto';
-import { CurrentUser } from '../../auth/decorators/current-user.decorator';
-import { Public } from '../../auth/decorators/public.decorator';
-import { User } from '../../auth/entities/user.entity';
+import { JobApplicationService } from '@job-application/services/job-application.service';
+import { CreateApplicationDto } from '@job-application/models/dto/create-application.dto';
+import { UpdateApplicationDto } from '@job-application/models/dto/update-application.dto';
+import { QueryApplicationDto } from '@job-application/models/dto/query-application.dto';
+import { CurrentUser } from '@auth/decorators/current-user.decorator';
+import { Public } from '@auth/decorators/public.decorator';
+import { User } from '@auth/entities/user.entity';
 
 @ApiTags('applications')
 @Controller('applications')

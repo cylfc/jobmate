@@ -65,7 +65,7 @@ import { useI18n } from "vue-i18n";
 import type {
   CandidatePipelineStage,
   CandidatePipelineStageId,
-} from "../../types/dashboard";
+} from '@/types/dashboard';
 
 const { t } = useI18n();
 const router = useRouter();

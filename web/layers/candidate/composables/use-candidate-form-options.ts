@@ -1,5 +1,5 @@
 import { ref, computed, readonly, onMounted } from 'vue'
-import type { ApiResponse } from '../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 /**
  * Composable for fetching candidate form dropdown options

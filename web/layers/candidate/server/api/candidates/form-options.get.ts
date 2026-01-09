@@ -3,7 +3,7 @@
  * Returns available dropdown options for candidate forms
  */
 import { useApiClient } from '@shared/api'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 import { logError } from '@shared/logging'
 
 export default defineEventHandler(async (event) => {

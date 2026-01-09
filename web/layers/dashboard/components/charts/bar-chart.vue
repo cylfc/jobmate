@@ -20,7 +20,7 @@ import {
   CHART_TYPOGRAPHY,
   CHART_BORDER_RADIUS,
   CHART_CALCULATION,
-} from '../../constants/chart'
+} from '@dashboard/constants/chart'
 
 type ECOption = ComposeOption<BarSeriesOption | LineSeriesOption | PieSeriesOption | TooltipComponentOption | LegendComponentOption | GridComponentOption>
 

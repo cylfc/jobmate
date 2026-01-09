@@ -4,7 +4,7 @@
  * Stateless functions - no reactive state
  */
 import type { UserProfile, SecuritySettings, NotificationSettings, SystemConfig, SystemConfigOptions } from '@setting/types/setting'
-import type { ApiResponse } from '../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 import { logError } from '@shared/logging'
 
 export const useSettingApi = () => {

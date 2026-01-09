@@ -23,7 +23,7 @@ import {
   CHART_CALCULATION,
   CSS_VAR_COLOR_MAP,
   CHART_COLORS,
-} from '../../constants/chart'
+} from '@dashboard/constants/chart'
 
 type ECOption = ComposeOption<BarSeriesOption | LineSeriesOption | PieSeriesOption | TooltipComponentOption | LegendComponentOption | GridComponentOption>
 

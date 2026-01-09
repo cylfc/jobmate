@@ -6,7 +6,8 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiResponse } from '../types/api-response.types';
+import { ApiResponse } from '@shared/types/api-response.types';
+import { BaseCustomException } from '@shared/exceptions/custom-exceptions';
 
 @Catch()
 export class ApiExceptionFilter implements ExceptionFilter {
@@ -17,9 +18,27 @@ export class ApiExceptionFilter implements ExceptionFilter {
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
+    let errorCode: string | undefined;
     let errorDetails: string | undefined;
+    let errorMeta: Record<string, any> = {};
 
-    if (exception instanceof HttpException) {
+    if (exception instanceof BaseCustomException) {
+      // Handle custom exceptions với error codes
+      status = exception.getStatus();
+      const exceptionResponse = exception.getResponse() as {
+        code?: string;
+        message?: string;
+        [key: string]: any;
+      };
+      errorCode = exceptionResponse.code;
+      message = exceptionResponse.message || message;
+      // Include additional metadata từ custom exception
+      Object.keys(exceptionResponse).forEach((key) => {
+        if (key !== 'code' && key !== 'message') {
+          errorMeta[key] = exceptionResponse[key];
+        }
+      });
+    } else if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
 
@@ -32,10 +51,12 @@ export class ApiExceptionFilter implements ExceptionFilter {
         const responseObj = exceptionResponse as {
           message?: string | string[];
           error?: string;
+          code?: string;
         };
         message = Array.isArray(responseObj.message)
           ? responseObj.message.join(', ')
           : responseObj.message || responseObj.error || message;
+        errorCode = responseObj.code;
       }
     } else if (exception instanceof Error) {
       message = exception.message;
@@ -46,8 +67,10 @@ export class ApiExceptionFilter implements ExceptionFilter {
       data: null,
       meta: {
         error: {
+          ...(errorCode && { code: errorCode }),
           message,
           ...(errorDetails && { details: errorDetails }),
+          ...errorMeta,
           path: request.url,
           timestamp: new Date().toISOString(),
         },
