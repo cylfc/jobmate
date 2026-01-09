@@ -13,6 +13,7 @@ import type {
   ProjectEntry,
 } from '@candidate/types/candidate'
 import type { ApiResponse } from '../../../../types/api-response'
+import { logError } from '@shared/logging'
 
 export const useCandidate = () => {
   const { $api } = useNuxtApp()
@@ -25,7 +26,7 @@ export const useCandidate = () => {
       })
       return response.data || []
     } catch (error) {
-      console.error('Error fetching candidates:', error)
+      logError('Error fetching candidates', error, 'candidate-api')
       return []
     }
   }
@@ -37,7 +38,7 @@ export const useCandidate = () => {
       })
       return response.data || null
     } catch (error) {
-      console.error('Error fetching candidate:', error)
+      logError('Error fetching candidate', error, 'candidate-api')
       return null
     }
   }
@@ -50,7 +51,7 @@ export const useCandidate = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error creating candidate:', error)
+      logError('Error creating candidate', error, 'candidate-api')
       throw error
     }
   }
@@ -63,7 +64,7 @@ export const useCandidate = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error updating candidate:', error)
+      logError('Error updating candidate', error, 'candidate-api')
       throw error
     }
   }
@@ -75,7 +76,7 @@ export const useCandidate = () => {
       })
       return true
     } catch (error) {
-      console.error('Error deleting candidate:', error)
+      logError('Error deleting candidate', error, 'candidate-api')
       throw error
     }
   }
@@ -87,7 +88,7 @@ export const useCandidate = () => {
       })
       return true
     } catch (error) {
-      console.error('Error inviting candidate:', error)
+      logError('Error inviting candidate', error, 'candidate-api')
       throw error
     }
   }
@@ -104,7 +105,7 @@ export const useCandidate = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error parsing candidate from text:', error)
+      logError('Error parsing candidate from text', error, 'candidate-api')
       throw error
     }
   }
@@ -119,7 +120,7 @@ export const useCandidate = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error fetching filter options:', error)
+      logError('Error fetching filter options', error, 'candidate-api')
       throw error
     }
   }
@@ -132,7 +133,7 @@ export const useCandidate = () => {
       })
       return response.data || []
     } catch (error) {
-      console.error('Error fetching education:', error)
+      logError('Error fetching education', error, 'candidate-api')
       throw error
     }
   }
@@ -145,7 +146,7 @@ export const useCandidate = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error creating education:', error)
+      logError('Error creating education', error, 'candidate-api')
       throw error
     }
   }
@@ -158,7 +159,7 @@ export const useCandidate = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error updating education:', error)
+      logError('Error updating education', error, 'candidate-api')
       throw error
     }
   }
@@ -169,7 +170,7 @@ export const useCandidate = () => {
         method: 'DELETE',
       })
     } catch (error) {
-      console.error('Error deleting education:', error)
+      logError('Error deleting education', error, 'candidate-api')
       throw error
     }
   }
@@ -182,7 +183,7 @@ export const useCandidate = () => {
       })
       return response.data || []
     } catch (error) {
-      console.error('Error fetching skills:', error)
+      logError('Error fetching skills', error, 'candidate-api')
       throw error
     }
   }
@@ -195,7 +196,7 @@ export const useCandidate = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error creating skill:', error)
+      logError('Error creating skill', error, 'candidate-api')
       throw error
     }
   }
@@ -208,7 +209,7 @@ export const useCandidate = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error updating skill:', error)
+      logError('Error updating skill', error, 'candidate-api')
       throw error
     }
   }
@@ -219,7 +220,7 @@ export const useCandidate = () => {
         method: 'DELETE',
       })
     } catch (error) {
-      console.error('Error deleting skill:', error)
+      logError('Error deleting skill', error, 'candidate-api')
       throw error
     }
   }
@@ -232,7 +233,7 @@ export const useCandidate = () => {
       })
       return response.data || []
     } catch (error) {
-      console.error('Error fetching work experience:', error)
+      logError('Error fetching work experience', error, 'candidate-api')
       throw error
     }
   }
@@ -245,7 +246,7 @@ export const useCandidate = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error creating work experience:', error)
+      logError('Error creating work experience', error, 'candidate-api')
       throw error
     }
   }
@@ -258,7 +259,7 @@ export const useCandidate = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error updating work experience:', error)
+      logError('Error updating work experience', error, 'candidate-api')
       throw error
     }
   }
@@ -269,7 +270,7 @@ export const useCandidate = () => {
         method: 'DELETE',
       })
     } catch (error) {
-      console.error('Error deleting work experience:', error)
+      logError('Error deleting work experience', error, 'candidate-api')
       throw error
     }
   }
@@ -282,7 +283,7 @@ export const useCandidate = () => {
       })
       return response.data || []
     } catch (error) {
-      console.error('Error fetching projects:', error)
+      logError('Error fetching projects', error, 'candidate-api')
       throw error
     }
   }
@@ -295,7 +296,7 @@ export const useCandidate = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error creating project:', error)
+      logError('Error creating project', error, 'candidate-api')
       throw error
     }
   }
@@ -308,7 +309,7 @@ export const useCandidate = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error updating project:', error)
+      logError('Error updating project', error, 'candidate-api')
       throw error
     }
   }
@@ -319,7 +320,7 @@ export const useCandidate = () => {
         method: 'DELETE',
       })
     } catch (error) {
-      console.error('Error deleting project:', error)
+      logError('Error deleting project', error, 'candidate-api')
       throw error
     }
   }

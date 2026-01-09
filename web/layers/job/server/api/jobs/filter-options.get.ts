@@ -3,8 +3,9 @@
  * Returns available options for job filters
  */
 import type { JobFilterOptions, FilterOption } from '@job/types/job'
-import { useApiClient } from '@auth/utils/api-client'
+import { useApiClient } from '@shared/api'
 import type { ApiResponse } from '../../../../../../types/api-response'
+import { logError, logWarn } from '@shared/logging'
 
 export default defineEventHandler(async (event): Promise<ApiResponse<JobFilterOptions>> => {
   try {
@@ -78,7 +79,7 @@ export default defineEventHandler(async (event): Promise<ApiResponse<JobFilterOp
             value: location.toLowerCase().replace(/\s+/g, '-'),
           }))
       } catch (error) {
-        console.warn('Failed to fetch companies and locations from backend, using empty arrays:', error)
+        logWarn('Failed to fetch companies and locations from backend, using empty arrays', error, 'jobs.filter-options')
         // Continue with empty arrays if fetch fails
       }
     }
@@ -96,7 +97,7 @@ export default defineEventHandler(async (event): Promise<ApiResponse<JobFilterOp
       status: 200,
     } as ApiResponse<JobFilterOptions>
   } catch (error) {
-    console.error('Error in /api/jobs/filter-options.get.ts:', error)
+    logError('Error in /api/jobs/filter-options.get.ts', error, 'jobs.filter-options')
     // Return at least status options even if there's an error
     return {
       data: {

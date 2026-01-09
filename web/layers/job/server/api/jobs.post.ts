@@ -3,8 +3,10 @@
  * Server API route for creating a new job
  */
 import type { Job, CreateJobInput } from '@job/types/job'
-import { useApiClient } from '@auth/utils/api-client'
+import { useApiClient } from '@shared/api'
 import type { ApiResponse } from '../../../../../../types/api-response'
+import { logError } from '@shared/logging'
+import { jobTransformer, type BackendJob } from '@shared/transformers'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -22,46 +24,12 @@ export default defineEventHandler(async (event) => {
     const apiClient = useApiClient()
 
     // Call backend API - returns { data, meta, status } format
-    const backendResponse = await apiClient.post<{
-      id: string
-      title: string
-      description?: string
-      company: string
-      location?: string
-      salaryMin?: number
-      salaryMax?: number
-      employmentType: string
-      status: string
-      requirements: string[]
-      benefits: string[]
-      postedAt?: string
-      expiresAt?: string
-      createdAt: string
-      updatedAt: string
-    }>('/jobs', body, {
+    const backendResponse = await apiClient.post<BackendJob>('/jobs', body, {
       Authorization: authHeader,
     })
 
-    // Map backend response data to frontend Job type
-    const responseData = backendResponse.data
-    const job: Job = {
-      id: responseData.id,
-      title: responseData.title,
-      description: responseData.description || '',
-      company: responseData.company,
-      location: responseData.location || '',
-      requirements: responseData.requirements || [],
-      salary: responseData.salaryMin && responseData.salaryMax
-        ? {
-            min: Number(responseData.salaryMin),
-            max: Number(responseData.salaryMax),
-            currency: 'USD',
-          }
-        : undefined,
-      status: responseData.status.toLowerCase() as Job['status'],
-      createdAt: new Date(responseData.createdAt),
-      updatedAt: new Date(responseData.updatedAt),
-    }
+    // Transform backend response data to frontend Job type
+    const job: Job = jobTransformer.transform(backendResponse.data)
 
     // Return in standard format
     return {
@@ -70,6 +38,7 @@ export default defineEventHandler(async (event) => {
       status: backendResponse.status,
     } as ApiResponse<Job>
   } catch (error) {
+    logError('Error in /api/jobs.post.ts', error, 'jobs.post')
     if (error && typeof error === 'object' && 'statusCode' in error) {
       const statusCode = (error as { statusCode: number }).statusCode
       const message = ('message' in error && typeof error.message === 'string')

@@ -8,7 +8,7 @@
  * - Send an email invitation
  * - Create a notification/activity log entry
  */
-import { useApiClient } from '@auth/utils/api-client'
+import { useApiClient } from '@shared/api'
 import type { ApiResponse } from '../../../../../../types/api-response'
 
 export default defineEventHandler(async (event) => {

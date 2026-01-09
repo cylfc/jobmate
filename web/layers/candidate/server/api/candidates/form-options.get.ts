@@ -2,8 +2,9 @@
  * Get Candidate Form Options API
  * Returns available dropdown options for candidate forms
  */
-import { useApiClient } from '@auth/utils/api-client'
+import { useApiClient } from '@shared/api'
 import type { ApiResponse } from '../../../../../../types/api-response'
+import { logError } from '@shared/logging'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -41,7 +42,7 @@ export default defineEventHandler(async (event) => {
     }>
   } catch (error) {
     // Log error for debugging
-    console.error('Error fetching form options:', error)
+      logError('Error fetching form options', error, 'candidates.form-options')
     
     // Handle backend errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

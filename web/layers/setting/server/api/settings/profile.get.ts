@@ -1,4 +1,4 @@
-import { useApiClient } from '@auth/utils/api-client'
+import { useApiClient } from '@shared/api'
 import type { UserProfile } from '@setting/types/setting'
 import type { ApiResponse } from '../../../../../../types/api-response'
 

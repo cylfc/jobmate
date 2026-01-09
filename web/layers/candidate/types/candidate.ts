@@ -127,11 +127,9 @@ export interface CandidateFilter {
 
 /**
  * Filter option types
+ * Re-exported from shared types
  */
-export interface FilterOption {
-  label: string
-  value: string | number
-}
+export type { FilterOption } from '@shared/types/filters'
 
 export interface CandidateFilterOptions {
   status: FilterOption[]

@@ -5,6 +5,7 @@
  */
 import type { Job, CreateJobInput, JobFilter } from '@job/types/job'
 import type { ApiResponse } from '../../../types/api-response'
+import { logError } from '@shared/logging'
 
 export const useJob = () => {
   const { $api } = useNuxtApp()
@@ -17,7 +18,7 @@ export const useJob = () => {
       })
       return response.data || []
     } catch (error) {
-      console.error('Error fetching jobs:', error)
+      logError('Error fetching jobs', error, 'job-api')
       return []
     }
   }
@@ -29,7 +30,7 @@ export const useJob = () => {
       })
       return response.data || null
     } catch (error) {
-      console.error('Error fetching job:', error)
+      logError('Error fetching job', error, 'job-api')
       return null
     }
   }
@@ -42,7 +43,7 @@ export const useJob = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error creating job:', error)
+      logError('Error creating job', error, 'job-api')
       throw error
     }
   }
@@ -55,7 +56,7 @@ export const useJob = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error updating job:', error)
+      logError('Error updating job', error, 'job-api')
       throw error
     }
   }
@@ -66,7 +67,7 @@ export const useJob = () => {
         method: 'DELETE',
       })
     } catch (error) {
-      console.error('Error deleting job:', error)
+      logError('Error deleting job', error, 'job-api')
       throw error
     }
   }
@@ -83,7 +84,7 @@ export const useJob = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error parsing job from text:', error)
+      logError('Error parsing job from text', error, 'job-api')
       throw error
     }
   }
@@ -98,7 +99,7 @@ export const useJob = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error fetching filter options:', error)
+      logError('Error fetching filter options', error, 'job-api')
       throw error
     }
   }

@@ -71,7 +71,7 @@ export default defineNuxtConfig({
      * Backend API Base URL (server-only)
      * - Set via env: NUXT_API_BASE_URL=http://localhost:3000
      */
-    apiBaseUrl: process.env.NUXT_API_BASE_URL || "http://localhost:3001",
+    apiBaseUrl: process.env.NUXT_API_BASE_URL || "http://localhost:3000",
     /**
      * Public runtime config (exposed to client)
      */
@@ -80,7 +80,7 @@ export default defineNuxtConfig({
        * Backend API Base URL (public)
        * - Set via env: NUXT_PUBLIC_API_BASE_URL=http://localhost:3000
        */
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "http://localhost:3001",
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "http://localhost:3000",
     },
   },
 });

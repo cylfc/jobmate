@@ -5,6 +5,7 @@
  */
 import type { UserProfile, SecuritySettings, NotificationSettings, SystemConfig, SystemConfigOptions } from '@setting/types/setting'
 import type { ApiResponse } from '../../../types/api-response'
+import { logError } from '@shared/logging'
 
 export const useSettingApi = () => {
   const { $api } = useNuxtApp()
@@ -43,7 +44,7 @@ export const useSettingApi = () => {
         bio: '', // Bio is not in auth API, can be added later
       }
     } catch (error) {
-      console.error('Error fetching profile:', error)
+      logError('Error fetching profile', error, 'setting-api')
       throw error
     }
   }
@@ -87,7 +88,7 @@ export const useSettingApi = () => {
         bio: profile.bio, // Keep existing bio as it's not in response
       }
     } catch (error) {
-      console.error('Error updating profile:', error)
+      logError('Error updating profile', error, 'setting-api')
       throw error
     }
   }
@@ -102,7 +103,7 @@ export const useSettingApi = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error fetching security settings:', error)
+      logError('Error fetching security settings', error, 'setting-api')
       throw error
     }
   }
@@ -118,7 +119,7 @@ export const useSettingApi = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error updating security settings:', error)
+      logError('Error updating security settings', error, 'setting-api')
       throw error
     }
   }
@@ -133,7 +134,7 @@ export const useSettingApi = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error fetching notification settings:', error)
+      logError('Error fetching notification settings', error, 'setting-api')
       throw error
     }
   }
@@ -149,7 +150,7 @@ export const useSettingApi = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error updating notification settings:', error)
+      logError('Error updating notification settings', error, 'setting-api')
       throw error
     }
   }
@@ -164,7 +165,7 @@ export const useSettingApi = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error fetching system config:', error)
+      logError('Error fetching system config', error, 'setting-api')
       throw error
     }
   }
@@ -180,7 +181,7 @@ export const useSettingApi = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error updating system config:', error)
+      logError('Error updating system config', error, 'setting-api')
       throw error
     }
   }
@@ -196,7 +197,7 @@ export const useSettingApi = () => {
       })
       return response.data
     } catch (error) {
-      console.error('Error fetching system config options:', error)
+      logError('Error fetching system config options', error, 'setting-api')
       throw error
     }
   }
