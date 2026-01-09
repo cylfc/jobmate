@@ -10,14 +10,14 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { DashboardService } from '../services/dashboard.service';
-import { KpiService } from '../services/kpi.service';
-import { PipelineService } from '../services/pipeline.service';
-import { ActivityService } from '../services/activity.service';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { CurrentUser } from '../../auth/decorators/current-user.decorator';
-import { User } from '../../auth/entities/user.entity';
-import { QueryDashboardDto } from '../models/dto/query-dashboard.dto';
+import { DashboardService } from '@dashboard/services/dashboard.service';
+import { KpiService } from '@dashboard/services/kpi.service';
+import { PipelineService } from '@dashboard/services/pipeline.service';
+import { ActivityService } from '@dashboard/services/activity.service';
+import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
+import { CurrentUser } from '@auth/decorators/current-user.decorator';
+import { User } from '@auth/entities/user.entity';
+import { QueryDashboardDto } from '@dashboard/models/dto/query-dashboard.dto';
 
 /**
  * Dashboard Controller

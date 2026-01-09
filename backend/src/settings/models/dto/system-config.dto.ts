@@ -4,7 +4,7 @@ import {
   IsOptional,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { TimeFormat, DateFormat, Theme, Language } from '../enums/system-config.enum';
+import { TimeFormat, DateFormat, Theme, Language } from '@settings/models/enums/system-config.enum';
 
 /**
  * System Configuration DTO

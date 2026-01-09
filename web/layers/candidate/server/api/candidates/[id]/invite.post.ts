@@ -9,7 +9,7 @@
  * - Create a notification/activity log entry
  */
 import { useApiClient } from '@shared/api'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 export default defineEventHandler(async (event) => {
   try {

@@ -3,7 +3,7 @@
  * Redirects authenticated users away from guest-only pages (like login/register)
  * Prevents logged-in users from accessing auth pages
  */
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '@auth/stores/auth'
 
 export default defineNuxtRouteMiddleware((to, _from) => {
   // Skip middleware on server side

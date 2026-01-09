@@ -4,7 +4,7 @@
  */
 import type { JobFilterOptions, FilterOption } from '@job/types/job'
 import { useApiClient } from '@shared/api'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 import { logError, logWarn } from '@shared/logging'
 
 export default defineEventHandler(async (event): Promise<ApiResponse<JobFilterOptions>> => {

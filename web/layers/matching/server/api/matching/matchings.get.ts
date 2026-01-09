@@ -3,7 +3,7 @@
  * Server API route for fetching matchings
  */
 import type { Matching } from '@matching/types/matching'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 export default defineEventHandler(async (event): Promise<ApiResponse<(Matching & { candidateName?: string; candidateEmail?: string; candidatePhone?: string })[]>> => {
   // TODO: Implement get matchings logic from database

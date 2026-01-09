@@ -3,7 +3,7 @@
  * Server API route for creating or parsing job from text input
  */
 import type { CreateJobInput, Job } from '@matching/types/matching'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 export default defineEventHandler(async (event): Promise<ApiResponse<Job>> => {
   const body = await readBody<{ description: string; link?: string }>(event)

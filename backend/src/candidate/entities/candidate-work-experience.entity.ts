@@ -5,7 +5,7 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
-import { BaseEntity } from '../../shared/entities/base.entity';
+import { BaseEntity } from '@shared/entities/base.entity';
 import { Candidate } from './candidate.entity';
 
 @Entity('candidate_work_experience')

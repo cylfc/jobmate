@@ -1,18 +1,20 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike } from 'typeorm';
-import { Candidate } from '../entities/candidate.entity';
-import { CreateCandidateDto } from '../models/dto/create-candidate.dto';
-import { UpdateCandidateDto } from '../models/dto/update-candidate.dto';
-import { QueryCandidateDto } from '../models/dto/query-candidate.dto';
+import { Candidate } from '@candidate/entities/candidate.entity';
+import { CreateCandidateDto } from '@candidate/models/dto/create-candidate.dto';
+import { UpdateCandidateDto } from '@candidate/models/dto/update-candidate.dto';
+import { QueryCandidateDto } from '@candidate/models/dto/query-candidate.dto';
+import { executePaginatedQuery, applySearchFilter, applySorting } from '@shared/utils';
+import { EntityNotFoundException } from '@shared/exceptions/custom-exceptions';
 import { CandidateEducationService } from './candidate-education.service';
 import { CandidateSkillService } from './candidate-skill.service';
 import { CandidateWorkExperienceService } from './candidate-work-experience.service';
 import { CandidateProjectService } from './candidate-project.service';
-import { CreateEducationDto } from '../models/dto/create-education.dto';
-import { CreateSkillDto } from '../models/dto/create-skill.dto';
-import { CreateWorkExperienceDto } from '../models/dto/create-work-experience.dto';
-import { CreateProjectDto } from '../models/dto/create-project.dto';
+import { CreateEducationDto } from '@candidate/models/dto/create-education.dto';
+import { CreateSkillDto } from '@candidate/models/dto/create-skill.dto';
+import { CreateWorkExperienceDto } from '@candidate/models/dto/create-work-experience.dto';
+import { CreateProjectDto } from '@candidate/models/dto/create-project.dto';
 
 @Injectable()
 export class CandidateService {
@@ -203,26 +205,20 @@ export class CandidateService {
 
   async findAll(queryDto: QueryCandidateDto, userId?: string) {
     const { page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'DESC' } = queryDto;
-    const offset = (page - 1) * limit;
 
     const qb = this.candidateRepository.createQueryBuilder('candidate');
 
+    // Apply userId filter first (if provided)
     if (userId) {
       qb.where('candidate.userId = :userId', { userId });
     }
 
+    // Apply search filter (will use andWhere if userId exists, otherwise where)
     if (search) {
-      if (userId) {
-        qb.andWhere(
-          '(candidate.firstName ILIKE :search OR candidate.lastName ILIKE :search OR candidate.email ILIKE :search)',
-          { search: `%${search}%` },
-        );
-      } else {
-        qb.where(
-          '(candidate.firstName ILIKE :search OR candidate.lastName ILIKE :search OR candidate.email ILIKE :search)',
-          { search: `%${search}%` },
-        );
-      }
+      applySearchFilter(qb, {
+        search,
+        searchFields: ['firstName', 'lastName', 'email'],
+      });
     }
 
     // Load relations for detailed fields
@@ -231,19 +227,11 @@ export class CandidateService {
     qb.leftJoinAndSelect('candidate.workExperiences', 'workExperiences');
     qb.leftJoinAndSelect('candidate.projects', 'projects');
 
-    qb.orderBy(`candidate.${sortBy}`, sortOrder);
-    qb.limit(limit);
-    qb.offset(offset);
+    // Apply sorting
+    applySorting(qb, { sortBy, sortOrder });
 
-    const [items, total] = await qb.getManyAndCount();
-
-    return {
-      items,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    };
+    // Execute paginated query
+    return executePaginatedQuery(qb, { page, limit });
   }
 
   async findOne(id: string, userId?: string): Promise<Candidate> {
@@ -256,7 +244,7 @@ export class CandidateService {
       relations: ['educations', 'skillsDetailed', 'workExperiences', 'projects'],
     });
     if (!candidate) {
-      throw new NotFoundException(`Candidate with ID ${id} not found`);
+      throw new EntityNotFoundException('Candidate', id);
     }
     return candidate;
   }

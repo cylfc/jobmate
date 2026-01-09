@@ -1,13 +1,13 @@
 <script setup lang="ts" generic="T extends z.ZodObject<any, any>">
   import type { z } from 'zod'
-  import type { DynamicFormProps, DynamicFormEmits, FieldConfig } from '../types'
+  import type { DynamicFormProps, DynamicFormEmits, FieldConfig } from '@shared/dynamic-form/types'
   import type { FormSubmitEvent } from '#ui/types'
   import { computed, ref, watch, nextTick } from 'vue'
-  import { parseSchema, unwrapSchema } from '../utils/schema-parser'
-  import { useDynamicForm } from '../composables/useDynamicForm'
-  import { getInitialValues } from '../utils/form-helpers'
+  import { parseSchema, unwrapSchema } from '@shared/dynamic-form/utils/schema-parser'
+  import { useDynamicForm } from '@shared/dynamic-form/composables/useDynamicForm'
+  import { getInitialValues } from '@shared/dynamic-form/utils/form-helpers'
   import DynamicFormField from './DynamicFormField.vue'
-  import { fieldRegistry } from '../registry/field-registry'
+  import { fieldRegistry } from '@shared/dynamic-form/registry/field-registry'
   
   const props = defineProps<DynamicFormProps<T>>()
   const emit = defineEmits<DynamicFormEmits<T>>()

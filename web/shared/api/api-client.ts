@@ -5,7 +5,7 @@
  * Backend returns format: { data, meta, status }
  */
 
-import type { ApiResponse } from '../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 import { handleApiError, parseApiError, type ApiError } from './api-error-handler'
 
 export interface ApiClientOptions {

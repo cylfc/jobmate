@@ -361,10 +361,10 @@ import {
   type CandidateCreateMode,
 } from "@candidate/constants/modes";
 import { useCandidate } from "@candidate/utils/candidate-api";
-import EducationForm from "../forms/education-form.vue";
-import SkillsForm from "../forms/skills-form.vue";
-import WorkExperienceForm from "../forms/work-experience-form.vue";
-import ProjectsForm from "../forms/projects-form.vue";
+import EducationForm from "@candidate/components/forms/education-form.vue";
+import SkillsForm from "@candidate/components/forms/skills-form.vue";
+import WorkExperienceForm from "@candidate/components/forms/work-experience-form.vue";
+import ProjectsForm from "@candidate/components/forms/projects-form.vue";
 
 interface Props {
   candidate?: Candidate | null;

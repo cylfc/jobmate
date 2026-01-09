@@ -75,7 +75,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import type { MatchScoreDistributionBin } from '../../types/dashboard'
+import type { MatchScoreDistributionBin } from '@/types/dashboard'
 
 const { t } = useI18n()
 

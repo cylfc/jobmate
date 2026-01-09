@@ -6,9 +6,9 @@ import {
   Index,
   JoinColumn,
 } from 'typeorm';
-import { BaseEntity } from '../../shared/entities/base.entity';
-import { Job } from '../../job/entities/job.entity';
-import { Candidate } from '../../candidate/entities/candidate.entity';
+import { BaseEntity } from '@shared/entities/base.entity';
+import { Job } from '@job/entities/job.entity';
+import { Candidate } from '@candidate/entities/candidate.entity';
 
 export enum ApplicationStatus {
   PENDING = 'PENDING',

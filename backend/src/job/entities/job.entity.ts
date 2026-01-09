@@ -6,9 +6,9 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { BaseEntity } from '../../shared/entities/base.entity';
-import { JobApplication } from '../../job-application/entities/job-application.entity';
-import { User } from '../../auth/entities/user.entity';
+import { BaseEntity } from '@shared/entities/base.entity';
+import { JobApplication } from '@job-application/entities/job-application.entity';
+import { User } from '@auth/entities/user.entity';
 
 export enum EmploymentType {
   FULL_TIME = 'FULL_TIME',

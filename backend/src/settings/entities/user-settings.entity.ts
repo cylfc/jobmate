@@ -5,9 +5,9 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-import { BaseEntity } from '../../shared/entities/base.entity';
-import { User } from '../../auth/entities/user.entity';
-import { TimeFormat, DateFormat, Theme, Language } from '../models/enums/system-config.enum';
+import { BaseEntity } from '@shared/entities/base.entity';
+import { User } from '@auth/entities/user.entity';
+import { TimeFormat, DateFormat, Theme, Language } from '@settings/models/enums/system-config.enum';
 
 /**
  * UserSettings Entity

@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
-import { RefreshToken } from '../entities/refresh-token.entity';
-import { User } from '../entities/user.entity';
+import { RefreshToken } from '@auth/entities/refresh-token.entity';
+import { User } from '@auth/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 

@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
-import { Candidate } from '../../candidate/entities/candidate.entity';
-import { JobApplication, ApplicationStatus } from '../../job-application/entities/job-application.entity';
-import { Job } from '../../job/entities/job.entity';
+import { Candidate } from '@candidate/entities/candidate.entity';
+import { JobApplication, ApplicationStatus } from '@job-application/entities/job-application.entity';
+import { Job } from '@job/entities/job.entity';
 import {
   DashboardActivitiesResponse,
   ActivityEvent,
   ActivityType,
-} from '../models/types/dashboard-activity.type';
+} from '@dashboard/models/types/dashboard-activity.type';
 
 /**
  * Activity Service

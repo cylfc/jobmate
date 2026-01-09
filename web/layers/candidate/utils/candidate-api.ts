@@ -12,7 +12,7 @@ import type {
   WorkExperienceEntry,
   ProjectEntry,
 } from '@candidate/types/candidate'
-import type { ApiResponse } from '../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 import { logError } from '@shared/logging'
 
 export const useCandidate = () => {

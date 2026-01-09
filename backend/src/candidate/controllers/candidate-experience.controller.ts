@@ -10,20 +10,20 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { CurrentUser } from '../../auth/decorators/current-user.decorator';
-import { User } from '../../auth/entities/user.entity';
-import { CandidateEducationService } from '../services/candidate-education.service';
-import { CandidateSkillService } from '../services/candidate-skill.service';
-import { CandidateWorkExperienceService } from '../services/candidate-work-experience.service';
-import { CandidateProjectService } from '../services/candidate-project.service';
-import { CreateEducationDto } from '../models/dto/create-education.dto';
-import { UpdateEducationDto } from '../models/dto/update-education.dto';
-import { CreateSkillDto } from '../models/dto/create-skill.dto';
-import { UpdateSkillDto } from '../models/dto/update-skill.dto';
-import { CreateWorkExperienceDto } from '../models/dto/create-work-experience.dto';
-import { UpdateWorkExperienceDto } from '../models/dto/update-work-experience.dto';
-import { CreateProjectDto } from '../models/dto/create-project.dto';
-import { UpdateProjectDto } from '../models/dto/update-project.dto';
+import { CurrentUser } from '@auth/decorators/current-user.decorator';
+import { User } from '@auth/entities/user.entity';
+import { CandidateEducationService } from '@candidate/services/candidate-education.service';
+import { CandidateSkillService } from '@candidate/services/candidate-skill.service';
+import { CandidateWorkExperienceService } from '@candidate/services/candidate-work-experience.service';
+import { CandidateProjectService } from '@candidate/services/candidate-project.service';
+import { CreateEducationDto } from '@candidate/models/dto/create-education.dto';
+import { UpdateEducationDto } from '@candidate/models/dto/update-education.dto';
+import { CreateSkillDto } from '@candidate/models/dto/create-skill.dto';
+import { UpdateSkillDto } from '@candidate/models/dto/update-skill.dto';
+import { CreateWorkExperienceDto } from '@candidate/models/dto/create-work-experience.dto';
+import { UpdateWorkExperienceDto } from '@candidate/models/dto/update-work-experience.dto';
+import { CreateProjectDto } from '@candidate/models/dto/create-project.dto';
+import { UpdateProjectDto } from '@candidate/models/dto/update-project.dto';
 
 @ApiTags('candidates')
 @Controller('candidates/:candidateId')

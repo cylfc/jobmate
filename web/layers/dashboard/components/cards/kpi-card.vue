@@ -116,8 +116,8 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { KpiChartType } from "../../types/dashboard";
-import type { BarChartItem } from "../charts/bar-chart.vue";
+import type { KpiChartType } from '@/types/dashboard';
+import type { BarChartItem } from "@dashboard/components/charts/bar-chart.vue";
 import {
   KPI_BADGE_COLOR,
   KPI_ICON,
@@ -129,7 +129,7 @@ import {
   type KpiBadgeColor,
   type KpiIcon,
   type KpiTextColor,
-} from "../../constants/kpi";
+} from '@dashboard/constants/kpi';
 
 const props = withDefaults(
   defineProps<{

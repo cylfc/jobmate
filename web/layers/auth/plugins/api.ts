@@ -6,7 +6,7 @@
  * 
  * Reference: https://nuxt.com/docs/api/utils/dollarfetch
  */
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '@auth/stores/auth'
 
 export default defineNuxtPlugin(() => {
   const authStore = useAuthStore()

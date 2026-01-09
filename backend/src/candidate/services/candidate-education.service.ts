@@ -1,35 +1,50 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CandidateEducation } from '../entities/candidate-education.entity';
-import { Candidate } from '../entities/candidate.entity';
-import { CreateEducationDto } from '../models/dto/create-education.dto';
-import { UpdateEducationDto } from '../models/dto/update-education.dto';
+import { Repository, FindOptionsOrder } from 'typeorm';
+import { CandidateEducation } from '@candidate/entities/candidate-education.entity';
+import { Candidate } from '@candidate/entities/candidate.entity';
+import { CreateEducationDto } from '@candidate/models/dto/create-education.dto';
+import { UpdateEducationDto } from '@candidate/models/dto/update-education.dto';
+import { BaseCandidateEntityService } from '@shared/services/base-candidate-entity.service';
 
 @Injectable()
-export class CandidateEducationService {
+export class CandidateEducationService extends BaseCandidateEntityService<
+  CandidateEducation,
+  CreateEducationDto,
+  UpdateEducationDto
+> {
   constructor(
     @InjectRepository(CandidateEducation)
-    private readonly educationRepository: Repository<CandidateEducation>,
+    private readonly _educationRepository: Repository<CandidateEducation>,
     @InjectRepository(Candidate)
-    private readonly candidateRepository: Repository<Candidate>,
-  ) {}
+    private readonly _candidateRepository: Repository<Candidate>,
+  ) {
+    super();
+  }
 
-  async createEducation(candidateId: string, createDto: CreateEducationDto, userId?: string): Promise<CandidateEducation> {
-    // Verify candidate exists and belongs to user
-    const candidate = await this.candidateRepository.findOne({
-      where: { id: candidateId },
+  protected get entityRepository(): Repository<CandidateEducation> {
+    return this._educationRepository;
+  }
+
+  protected get candidateRepository(): Repository<Candidate> {
+    return this._candidateRepository;
+  }
+
+  protected get entityName(): string {
+    return 'Education';
+  }
+
+  async create(
+    candidateId: string,
+    createDto: CreateEducationDto,
+    userId?: string,
+  ): Promise<CandidateEducation> {
+    const candidate = await this.verifyCandidateOwnership(candidateId, {
+      userId,
+      errorMessage: 'You can only add education to your own candidate profile',
     });
 
-    if (!candidate) {
-      throw new NotFoundException(`Candidate with ID ${candidateId} not found`);
-    }
-
-    if (userId && candidate.userId !== userId) {
-      throw new ForbiddenException('You can only add education to your own candidate profile');
-    }
-
-    const education = this.educationRepository.create({
+    const education = this.entityRepository.create({
       candidate,
       institution: createDto.institution,
       major: createDto.major,
@@ -42,46 +57,14 @@ export class CandidateEducationService {
       orderIndex: createDto.orderIndex ?? 0,
     });
 
-    return this.educationRepository.save(education);
+    return this.entityRepository.save(education);
   }
 
-  async findAllByCandidate(candidateId: string, userId?: string): Promise<CandidateEducation[]> {
-    const candidate = await this.candidateRepository.findOne({
-      where: { id: candidateId },
-    });
-
-    if (!candidate) {
-      throw new NotFoundException(`Candidate with ID ${candidateId} not found`);
-    }
-
-    if (userId && candidate.userId !== userId) {
-      throw new ForbiddenException('Access denied');
-    }
-
-    return this.educationRepository.find({
-      where: { candidate: { id: candidateId } },
-      order: { orderIndex: 'ASC', startDate: 'DESC' },
-    });
-  }
-
-  async findOne(id: string, userId?: string): Promise<CandidateEducation> {
-    const education = await this.educationRepository.findOne({
-      where: { id },
-      relations: ['candidate'],
-    });
-
-    if (!education) {
-      throw new NotFoundException(`Education with ID ${id} not found`);
-    }
-
-    if (userId && education.candidate.userId !== userId) {
-      throw new ForbiddenException('Access denied');
-    }
-
-    return education;
-  }
-
-  async updateEducation(id: string, updateDto: UpdateEducationDto, userId?: string): Promise<CandidateEducation> {
+  async update(
+    id: string,
+    updateDto: UpdateEducationDto,
+    userId?: string,
+  ): Promise<CandidateEducation> {
     const education = await this.findOne(id, userId);
 
     if (updateDto.startDate) {
@@ -98,39 +81,48 @@ export class CandidateEducationService {
     if (updateDto.description !== undefined) education.description = updateDto.description;
     if (updateDto.orderIndex !== undefined) education.orderIndex = updateDto.orderIndex;
 
-    return this.educationRepository.save(education);
+    return this.entityRepository.save(education);
+  }
+
+  // Override findAllByCandidate để use custom order
+  async findAllByCandidate(
+    candidateId: string,
+    userId?: string,
+  ): Promise<CandidateEducation[]> {
+    return this.findAllByCandidateWithOwnershipCheck(
+      candidateId,
+      { userId },
+      { orderIndex: 'ASC', startDate: 'DESC' } as FindOptionsOrder<CandidateEducation>,
+    );
+  }
+
+  // Keep old method names for backward compatibility
+  async createEducation(
+    candidateId: string,
+    createDto: CreateEducationDto,
+    userId?: string,
+  ): Promise<CandidateEducation> {
+    return this.create(candidateId, createDto, userId);
+  }
+
+  async updateEducation(
+    id: string,
+    updateDto: UpdateEducationDto,
+    userId?: string,
+  ): Promise<CandidateEducation> {
+    return this.update(id, updateDto, userId);
   }
 
   async deleteEducation(id: string, userId?: string): Promise<void> {
-    const education = await this.findOne(id, userId);
-    await this.educationRepository.remove(education);
+    return this.delete(id, userId);
   }
 
-  async reorderEducation(candidateId: string, orderIds: string[], userId?: string): Promise<CandidateEducation[]> {
-    const candidate = await this.candidateRepository.findOne({
-      where: { id: candidateId },
-    });
-
-    if (!candidate) {
-      throw new NotFoundException(`Candidate with ID ${candidateId} not found`);
-    }
-
-    if (userId && candidate.userId !== userId) {
-      throw new ForbiddenException('Access denied');
-    }
-
-    const educations = await this.findAllByCandidate(candidateId, userId);
-    const educationMap = new Map(educations.map((e) => [e.id, e]));
-
-    // Update orderIndex based on orderIds array
-    orderIds.forEach((id, index) => {
-      const education = educationMap.get(id);
-      if (education) {
-        education.orderIndex = index;
-      }
-    });
-
-    return this.educationRepository.save(educations);
+  async reorderEducation(
+    candidateId: string,
+    orderIds: string[],
+    userId?: string,
+  ): Promise<CandidateEducation[]> {
+    return this.reorder(candidateId, orderIds, userId);
   }
 }
 

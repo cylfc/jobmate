@@ -1,38 +1,50 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CandidateWorkExperience } from '../entities/candidate-work-experience.entity';
-import { Candidate } from '../entities/candidate.entity';
-import { CreateWorkExperienceDto } from '../models/dto/create-work-experience.dto';
-import { UpdateWorkExperienceDto } from '../models/dto/update-work-experience.dto';
+import { Repository, FindOptionsOrder } from 'typeorm';
+import { CandidateWorkExperience } from '@candidate/entities/candidate-work-experience.entity';
+import { Candidate } from '@candidate/entities/candidate.entity';
+import { CreateWorkExperienceDto } from '@candidate/models/dto/create-work-experience.dto';
+import { UpdateWorkExperienceDto } from '@candidate/models/dto/update-work-experience.dto';
+import { BaseCandidateEntityService } from '@shared/services/base-candidate-entity.service';
 
 @Injectable()
-export class CandidateWorkExperienceService {
+export class CandidateWorkExperienceService extends BaseCandidateEntityService<
+  CandidateWorkExperience,
+  CreateWorkExperienceDto,
+  UpdateWorkExperienceDto
+> {
   constructor(
     @InjectRepository(CandidateWorkExperience)
-    private readonly workExperienceRepository: Repository<CandidateWorkExperience>,
+    private readonly _workExperienceRepository: Repository<CandidateWorkExperience>,
     @InjectRepository(Candidate)
-    private readonly candidateRepository: Repository<Candidate>,
-  ) {}
+    private readonly _candidateRepository: Repository<Candidate>,
+  ) {
+    super();
+  }
 
-  async createWorkExperience(
+  protected get entityRepository(): Repository<CandidateWorkExperience> {
+    return this._workExperienceRepository;
+  }
+
+  protected get candidateRepository(): Repository<Candidate> {
+    return this._candidateRepository;
+  }
+
+  protected get entityName(): string {
+    return 'Work experience';
+  }
+
+  async create(
     candidateId: string,
     createDto: CreateWorkExperienceDto,
     userId?: string,
   ): Promise<CandidateWorkExperience> {
-    const candidate = await this.candidateRepository.findOne({
-      where: { id: candidateId },
+    const candidate = await this.verifyCandidateOwnership(candidateId, {
+      userId,
+      errorMessage: 'You can only add work experience to your own candidate profile',
     });
 
-    if (!candidate) {
-      throw new NotFoundException(`Candidate with ID ${candidateId} not found`);
-    }
-
-    if (userId && candidate.userId !== userId) {
-      throw new ForbiddenException('You can only add work experience to your own candidate profile');
-    }
-
-    const workExperience = this.workExperienceRepository.create({
+    const workExperience = this.entityRepository.create({
       candidate,
       companyName: createDto.companyName,
       position: createDto.position,
@@ -48,46 +60,10 @@ export class CandidateWorkExperienceService {
       orderIndex: createDto.orderIndex ?? 0,
     });
 
-    return this.workExperienceRepository.save(workExperience);
+    return this.entityRepository.save(workExperience);
   }
 
-  async findAllByCandidate(candidateId: string, userId?: string): Promise<CandidateWorkExperience[]> {
-    const candidate = await this.candidateRepository.findOne({
-      where: { id: candidateId },
-    });
-
-    if (!candidate) {
-      throw new NotFoundException(`Candidate with ID ${candidateId} not found`);
-    }
-
-    if (userId && candidate.userId !== userId) {
-      throw new ForbiddenException('Access denied');
-    }
-
-    return this.workExperienceRepository.find({
-      where: { candidate: { id: candidateId } },
-      order: { orderIndex: 'ASC', startDate: 'DESC' },
-    });
-  }
-
-  async findOne(id: string, userId?: string): Promise<CandidateWorkExperience> {
-    const workExperience = await this.workExperienceRepository.findOne({
-      where: { id },
-      relations: ['candidate'],
-    });
-
-    if (!workExperience) {
-      throw new NotFoundException(`Work experience with ID ${id} not found`);
-    }
-
-    if (userId && workExperience.candidate.userId !== userId) {
-      throw new ForbiddenException('Access denied');
-    }
-
-    return workExperience;
-  }
-
-  async updateWorkExperience(
+  async update(
     id: string,
     updateDto: UpdateWorkExperienceDto,
     userId?: string,
@@ -111,12 +87,40 @@ export class CandidateWorkExperienceService {
     if (updateDto.technologiesUsed !== undefined) workExperience.technologiesUsed = updateDto.technologiesUsed;
     if (updateDto.orderIndex !== undefined) workExperience.orderIndex = updateDto.orderIndex;
 
-    return this.workExperienceRepository.save(workExperience);
+    return this.entityRepository.save(workExperience);
+  }
+
+  // Override findAllByCandidate để use custom order
+  async findAllByCandidate(
+    candidateId: string,
+    userId?: string,
+  ): Promise<CandidateWorkExperience[]> {
+    return this.findAllByCandidateWithOwnershipCheck(
+      candidateId,
+      { userId },
+      { orderIndex: 'ASC', startDate: 'DESC' } as FindOptionsOrder<CandidateWorkExperience>,
+    );
+  }
+
+  // Keep old method names for backward compatibility
+  async createWorkExperience(
+    candidateId: string,
+    createDto: CreateWorkExperienceDto,
+    userId?: string,
+  ): Promise<CandidateWorkExperience> {
+    return this.create(candidateId, createDto, userId);
+  }
+
+  async updateWorkExperience(
+    id: string,
+    updateDto: UpdateWorkExperienceDto,
+    userId?: string,
+  ): Promise<CandidateWorkExperience> {
+    return this.update(id, updateDto, userId);
   }
 
   async deleteWorkExperience(id: string, userId?: string): Promise<void> {
-    const workExperience = await this.findOne(id, userId);
-    await this.workExperienceRepository.remove(workExperience);
+    return this.delete(id, userId);
   }
 }
 

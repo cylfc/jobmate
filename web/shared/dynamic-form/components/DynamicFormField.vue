@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import type { FieldInfo, FieldConfigItem } from '../types'
+  import type { FieldInfo, FieldConfigItem } from '@shared/dynamic-form/types'
   import { computed } from 'vue'
-  import { fieldRegistry } from '../registry/field-registry'
-  import { beautifyObjectName } from '../utils/zod-utils'
+  import { fieldRegistry } from '@shared/dynamic-form/registry/field-registry'
+  import { beautifyObjectName } from '@shared/dynamic-form/utils/zod-utils'
   
   const props = defineProps<{
     fieldInfo: FieldInfo

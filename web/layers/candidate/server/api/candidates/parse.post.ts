@@ -9,7 +9,7 @@
  * - Integrate with backend AI service when available
  */
 import type { Candidate, CreateCandidateInput } from '@candidate/types/candidate'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 export default defineEventHandler(async (event): Promise<ApiResponse<Candidate>> => {
   try {

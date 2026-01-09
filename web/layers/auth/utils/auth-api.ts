@@ -5,7 +5,7 @@
  */
 import type { LoginInput, RegisterInput, ForgotPasswordInput, ChangePasswordInput } from '@auth/composables/auth/schemas'
 import type { User } from '@auth/stores/auth'
-import type { ApiResponse } from '../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 export interface AuthResponse {
   user: {

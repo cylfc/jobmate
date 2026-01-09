@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { useApiClient } from '@shared/api'
 import type { SecuritySettings } from '@setting/types/setting'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 
 const securitySchema = z.object({
   twoFactorEnabled: z.boolean().optional(),

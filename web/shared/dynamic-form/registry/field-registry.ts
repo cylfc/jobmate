@@ -1,7 +1,7 @@
 import type { z } from 'zod'
 import type { Component } from 'vue'
-import type { FieldRegistry, FieldRegistryEntry } from '../types'
-import { getBaseType } from '../utils/zod-utils'
+import type { FieldRegistry, FieldRegistryEntry } from '@shared/dynamic-form/types'
+import { getBaseType } from '@shared/dynamic-form/utils/zod-utils'
 
 class FieldRegistryManager {
   private registry: FieldRegistry = new Map()

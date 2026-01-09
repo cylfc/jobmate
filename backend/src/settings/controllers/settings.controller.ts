@@ -11,15 +11,15 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { SettingsService } from '../services/settings.service';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { CurrentUser } from '../../auth/decorators/current-user.decorator';
-import { User } from '../../auth/entities/user.entity';
-import { UpdateNotificationSettingsDto } from '../models/dto/notification-settings.dto';
-import { UpdateSystemConfigDto } from '../models/dto/system-config.dto';
-import { UpdateSecuritySettingsDto } from '../models/dto/security-settings.dto';
-import { TimeFormat, DateFormat, Theme, Language } from '../models/enums/system-config.enum';
-import { COMMON_TIMEZONES } from '../models/constants/timezone.constants';
+import { SettingsService } from '@settings/services/settings.service';
+import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
+import { CurrentUser } from '@auth/decorators/current-user.decorator';
+import { User } from '@auth/entities/user.entity';
+import { UpdateNotificationSettingsDto } from '@settings/models/dto/notification-settings.dto';
+import { UpdateSystemConfigDto } from '@settings/models/dto/system-config.dto';
+import { UpdateSecuritySettingsDto } from '@settings/models/dto/security-settings.dto';
+import { TimeFormat, DateFormat, Theme, Language } from '@settings/models/enums/system-config.enum';
+import { COMMON_TIMEZONES } from '@settings/models/constants/timezone.constants';
 
 /**
  * Settings Controller

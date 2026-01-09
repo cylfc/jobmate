@@ -1,29 +1,9 @@
-import { IsOptional, IsString, IsInt, IsEnum, Min, Max } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsOptional, IsEnum } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { JobStatus, EmploymentType } from '../../entities/job.entity';
+import { JobStatus, EmploymentType } from '@job/entities/job.entity';
+import { BaseQueryDto } from '@shared/dto/base-query.dto';
 
-export class QueryJobDto {
-  @ApiPropertyOptional({ example: 1 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  page?: number = 1;
-
-  @ApiPropertyOptional({ example: 10 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  limit?: number = 10;
-
-  @ApiPropertyOptional({ example: 'engineer' })
-  @IsOptional()
-  @IsString()
-  search?: string;
-
+export class QueryJobDto extends BaseQueryDto {
   @ApiPropertyOptional({ enum: JobStatus })
   @IsOptional()
   @IsEnum(JobStatus)
@@ -33,15 +13,5 @@ export class QueryJobDto {
   @IsOptional()
   @IsEnum(EmploymentType)
   employmentType?: EmploymentType;
-
-  @ApiPropertyOptional({ example: 'createdAt' })
-  @IsOptional()
-  @IsString()
-  sortBy?: string = 'createdAt';
-
-  @ApiPropertyOptional({ example: 'DESC' })
-  @IsOptional()
-  @IsString()
-  sortOrder?: 'ASC' | 'DESC' = 'DESC';
 }
 

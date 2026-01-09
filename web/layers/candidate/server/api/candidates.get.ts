@@ -4,7 +4,7 @@
  */
 import { useApiClient } from '@shared/api'
 import type { Candidate, CandidateFilter } from '@candidate/types/candidate'
-import type { ApiResponse } from '../../../../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 import { logError } from '@shared/logging'
 import { candidateTransformer, type BackendCandidate } from '@shared/transformers'
 

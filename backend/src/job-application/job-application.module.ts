@@ -3,8 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JobApplicationController } from './controllers/job-application.controller';
 import { JobApplicationService } from './services/job-application.service';
 import { JobApplication } from './entities/job-application.entity';
-import { Job } from '../job/entities/job.entity';
-import { Candidate } from '../candidate/entities/candidate.entity';
+import { Job } from '@job/entities/job.entity';
+import { Candidate } from '@candidate/entities/candidate.entity';
 
 @Module({
   imports: [

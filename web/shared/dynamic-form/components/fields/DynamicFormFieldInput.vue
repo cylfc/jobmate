@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import type { DynamicFormFieldProps } from '../../types'
+  import type { DynamicFormFieldProps } from '@shared/dynamic-form/types'
   import { computed } from 'vue'
-  import { zodToHtmlInputType } from '../../utils/zod-utils'
-  import { useDynamicFormField } from '../../composables/useDynamicForm'
+  import { zodToHtmlInputType } from '@shared/dynamic-form/utils/zod-utils'
+  import { useDynamicFormField } from '@shared/dynamic-form/composables/useDynamicForm'
   
   const props = defineProps<DynamicFormFieldProps>()
   

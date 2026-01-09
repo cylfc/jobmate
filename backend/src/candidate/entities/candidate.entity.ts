@@ -7,9 +7,9 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { BaseEntity } from '../../shared/entities/base.entity';
-import { JobApplication } from '../../job-application/entities/job-application.entity';
-import { User } from '../../auth/entities/user.entity';
+import { BaseEntity } from '@shared/entities/base.entity';
+import { JobApplication } from '@job-application/entities/job-application.entity';
+import { User } from '@auth/entities/user.entity';
 import { CandidateEducation } from './candidate-education.entity';
 import { CandidateSkill } from './candidate-skill.entity';
 import { CandidateWorkExperience } from './candidate-work-experience.entity';

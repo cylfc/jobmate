@@ -12,17 +12,17 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { CandidateService } from '../services/candidate.service';
-import { CreateCandidateDto } from '../models/dto/create-candidate.dto';
-import { UpdateCandidateDto } from '../models/dto/update-candidate.dto';
-import { QueryCandidateDto } from '../models/dto/query-candidate.dto';
-import { CurrentUser } from '../../auth/decorators/current-user.decorator';
-import { Public } from '../../auth/decorators/public.decorator';
-import { User } from '../../auth/entities/user.entity';
-import { DegreeType } from '../enums/degree-type.enum';
-import { SkillType } from '../enums/skill-type.enum';
-import { SkillLevel } from '../enums/skill-level.enum';
-import { EmploymentType } from '../../job/entities/job.entity';
+import { CandidateService } from '@candidate/services/candidate.service';
+import { CreateCandidateDto } from '@candidate/models/dto/create-candidate.dto';
+import { UpdateCandidateDto } from '@candidate/models/dto/update-candidate.dto';
+import { QueryCandidateDto } from '@candidate/models/dto/query-candidate.dto';
+import { CurrentUser } from '@auth/decorators/current-user.decorator';
+import { Public } from '@auth/decorators/public.decorator';
+import { User } from '@auth/entities/user.entity';
+import { DegreeType } from '@candidate/enums/degree-type.enum';
+import { SkillType } from '@candidate/enums/skill-type.enum';
+import { SkillLevel } from '@candidate/enums/skill-level.enum';
+import { EmploymentType } from '@job/entities/job.entity';
 
 @ApiTags('candidates')
 @Controller('candidates')

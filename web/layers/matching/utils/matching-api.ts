@@ -4,7 +4,7 @@
  * Stateless functions - no reactive state
  */
 import type { Job, Candidate, Matching, CreateJobInput, CreateCandidateInput, CandidateFilter } from '@matching/types/matching'
-import type { ApiResponse } from '../../../types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 import { logError } from '@shared/logging'
 
 export const useMatchingApi = () => {

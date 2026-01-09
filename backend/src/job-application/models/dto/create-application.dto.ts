@@ -6,7 +6,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ApplicationStatus } from '../../entities/job-application.entity';
+import { ApplicationStatus } from '@job-application/entities/job-application.entity';
 
 export class CreateApplicationDto {
   @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })

@@ -1,4 +1,4 @@
-import { Candidate } from '../../entities/candidate.entity';
+import { Candidate } from '@candidate/entities/candidate.entity';
 
 export type CandidateResponse = Candidate;
 

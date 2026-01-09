@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Job, JobStatus } from '../../job/entities/job.entity';
-import { JobApplication } from '../../job-application/entities/job-application.entity';
-import { Candidate } from '../../candidate/entities/candidate.entity';
-import { DashboardKpisResponse } from '../models/types/dashboard-kpis.type';
+import { Job, JobStatus } from '@job/entities/job.entity';
+import { JobApplication } from '@job-application/entities/job-application.entity';
+import { Candidate } from '@candidate/entities/candidate.entity';
+import { DashboardKpisResponse } from '@dashboard/models/types/dashboard-kpis.type';
 
 /**
  * KPI Service
