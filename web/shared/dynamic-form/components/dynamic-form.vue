@@ -4,9 +4,9 @@
   import type { FormSubmitEvent } from '#ui/types'
   import { computed, ref, watch, nextTick } from 'vue'
   import { parseSchema, unwrapSchema } from '@shared/dynamic-form/utils/schema-parser'
-  import { useDynamicForm } from '@shared/dynamic-form/composables/useDynamicForm'
+  import { useDynamicForm } from '@shared/dynamic-form/composables/use-dynamic-form'
   import { getInitialValues } from '@shared/dynamic-form/utils/form-helpers'
-  import DynamicFormField from './DynamicFormField.vue'
+  import DynamicFormField from './dynamic-form-field.vue'
   import { fieldRegistry } from '@shared/dynamic-form/registry/field-registry'
   
   const props = defineProps<DynamicFormProps<T>>()

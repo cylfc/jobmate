@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import type { DynamicFormFieldProps } from '@shared/dynamic-form/types'
   import { computed } from 'vue'
-  import { useDynamicFormField } from '@shared/dynamic-form/composables/useDynamicForm'
+  import { useDynamicFormField } from '@shared/dynamic-form/composables/use-dynamic-form'
   
   const props = defineProps<DynamicFormFieldProps>()
   
@@ -31,12 +31,13 @@
     :required="required"
     :orientation="orientation"
   >
-    <UInput
-      v-model="fieldValue"
+    <UTextarea
       :id="fieldName"
+      v-model="fieldValue"
       :name="fieldName"
-      type="date"
+      :placeholder="config?.placeholder"
       :disabled="disabled || config?.disabled"
+      :rows="3"
       size="lg"
       v-bind="inputProps"
       class="w-full"
