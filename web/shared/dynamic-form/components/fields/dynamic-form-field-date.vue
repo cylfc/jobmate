@@ -1,24 +1,11 @@
 <script setup lang="ts">
   import type { DynamicFormFieldProps } from '@shared/dynamic-form/types'
   import { computed } from 'vue'
-  import { getEnumValues } from '@shared/dynamic-form/utils/zod-utils'
-  import { useDynamicFormField } from '@shared/dynamic-form/composables/useDynamicForm'
+  import { useDynamicFormField } from '@shared/dynamic-form/composables/use-dynamic-form'
   
   const props = defineProps<DynamicFormFieldProps>()
   
   const { fieldValue } = useDynamicFormField(props.fieldName)
-  
-  const options = computed(() => {
-    const enumValues = getEnumValues(props.zodItem)
-    // Support custom options from componentProps
-    if (props.config?.componentProps?.options) {
-      return props.config.componentProps.options
-    }
-    return enumValues.map(value => ({
-      value,
-      label: value
-    }))
-  })
   
   const shouldShowLabel = computed(() => {
     if (props.config?.hideLabel) return false
@@ -30,8 +17,7 @@
   })
   
   const inputProps = computed(() => {
-    const { options: _, ...rest } = props.config?.componentProps || {}
-    return rest
+    return props.config?.componentProps || {}
   })
 </script>
 
@@ -45,12 +31,11 @@
     :required="required"
     :orientation="orientation"
   >
-    <USelect
+    <UInput
       v-model="fieldValue"
       :id="fieldName"
       :name="fieldName"
-      :options="options"
-      :placeholder="config?.placeholder || 'Select an option'"
+      type="date"
       :disabled="disabled || config?.disabled"
       size="lg"
       v-bind="inputProps"

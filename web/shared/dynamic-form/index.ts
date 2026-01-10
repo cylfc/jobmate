@@ -1,6 +1,6 @@
 // Main exports
-export { default as DynamicForm } from './components/DynamicForm.vue'
-export { default as DynamicFormField } from './components/DynamicFormField.vue'
+export { default as DynamicForm } from './components/dynamic-form.vue'
+export { default as DynamicFormField } from './components/dynamic-form-field.vue'
 
 // Registry
 export { fieldRegistry } from './registry/field-registry'
@@ -13,31 +13,31 @@ export { parseSchema, unwrapSchema, getFieldType } from './utils/schema-parser'
 export { getFormValue, setFormValue, getInitialValues } from './utils/form-helpers'
 
 // Composables
-export { useDynamicForm, useDynamicFormField } from './composables/useDynamicForm'
+export { useDynamicForm, useDynamicFormField } from './composables/use-dynamic-form'
 
 // Field components (for direct use if needed)
-export { default as DynamicFormFieldInput } from './components/fields/DynamicFormFieldInput.vue'
-export { default as DynamicFormFieldNumber } from './components/fields/DynamicFormFieldNumber.vue'
-export { default as DynamicFormFieldTextarea } from './components/fields/DynamicFormFieldTextarea.vue'
-export { default as DynamicFormFieldSelect } from './components/fields/DynamicFormFieldSelect.vue'
-export { default as DynamicFormFieldCheckbox } from './components/fields/DynamicFormFieldCheckbox.vue'
-export { default as DynamicFormFieldDate } from './components/fields/DynamicFormFieldDate.vue'
-export { default as DynamicFormFieldRadio } from './components/fields/DynamicFormFieldRadio.vue'
-export { default as DynamicFormFieldSwitch } from './components/fields/DynamicFormFieldSwitch.vue'
+export { default as DynamicFormFieldInput } from './components/fields/dynamic-form-field-input.vue'
+export { default as DynamicFormFieldNumber } from './components/fields/dynamic-form-field-number.vue'
+export { default as DynamicFormFieldTextarea } from './components/fields/dynamic-form-field-textarea.vue'
+export { default as DynamicFormFieldSelect } from './components/fields/dynamic-form-field-select.vue'
+export { default as DynamicFormFieldCheckbox } from './components/fields/dynamic-form-field-checkbox.vue'
+export { default as DynamicFormFieldDate } from './components/fields/dynamic-form-field-date.vue'
+export { default as DynamicFormFieldRadio } from './components/fields/dynamic-form-field-radio.vue'
+export { default as DynamicFormFieldSwitch } from './components/fields/dynamic-form-field-switch.vue'
 
 // Register default field components
 // This runs at module load time to ensure fields are always registered
 import { fieldRegistry } from './registry/field-registry'
 import { getBaseType, getBaseSchema } from './utils/zod-utils'
 import type { z } from 'zod'
-import DynamicFormFieldInput from './components/fields/DynamicFormFieldInput.vue'
-import DynamicFormFieldNumber from './components/fields/DynamicFormFieldNumber.vue'
-import DynamicFormFieldTextarea from './components/fields/DynamicFormFieldTextarea.vue'
-import DynamicFormFieldSelect from './components/fields/DynamicFormFieldSelect.vue'
-import DynamicFormFieldCheckbox from './components/fields/DynamicFormFieldCheckbox.vue'
-import DynamicFormFieldDate from './components/fields/DynamicFormFieldDate.vue'
-import DynamicFormFieldRadio from './components/fields/DynamicFormFieldRadio.vue'
-import DynamicFormFieldSwitch from './components/fields/DynamicFormFieldSwitch.vue'
+import DynamicFormFieldInput from './components/fields/dynamic-form-field-input.vue'
+import DynamicFormFieldNumber from './components/fields/dynamic-form-field-number.vue'
+import DynamicFormFieldTextarea from './components/fields/dynamic-form-field-textarea.vue'
+import DynamicFormFieldSelect from './components/fields/dynamic-form-field-select.vue'
+import DynamicFormFieldCheckbox from './components/fields/dynamic-form-field-checkbox.vue'
+import DynamicFormFieldDate from './components/fields/dynamic-form-field-date.vue'
+import DynamicFormFieldRadio from './components/fields/dynamic-form-field-radio.vue'
+import DynamicFormFieldSwitch from './components/fields/dynamic-form-field-switch.vue'
 
 // Ensure registration only happens once
 let isRegistered = false
