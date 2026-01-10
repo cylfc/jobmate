@@ -16,4 +16,3 @@
   border-radius: 0.5rem;
 }
 </style>
-

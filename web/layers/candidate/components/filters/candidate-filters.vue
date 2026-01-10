@@ -42,7 +42,7 @@
           @update:model-value="
             updateLocalFilter(
               'minExperience',
-              $event ? Number($event) : undefined
+              $event ? Number($event) : undefined,
             )
           "
         />
@@ -65,7 +65,7 @@
           @update:model-value="
             updateLocalFilter(
               'maxExperience',
-              $event ? Number($event) : undefined
+              $event ? Number($event) : undefined,
             )
           "
         />
@@ -112,11 +112,8 @@ const {
 } = useCandidateFilters();
 
 // Use filter options composable
-const {
-  statusOptions,
-  experienceRange,
-  fetchOptions,
-} = useCandidateFilterOptions();
+const { statusOptions, experienceRange, fetchOptions } =
+  useCandidateFilterOptions();
 
 // Load filter options on mount
 onMounted(async () => {
@@ -146,7 +143,7 @@ watch(
       maxExperience: newFilters.maxExperience,
     };
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 );
 
 // Use status options from API (with fallback)
@@ -164,7 +161,7 @@ const statusOptionsWithFallback = computed(() => {
 
 const updateLocalFilter = (
   key: keyof CandidateFilter,
-  value: string | number | undefined
+  value: string | number | undefined,
 ) => {
   localFilters.value = {
     ...localFilters.value,

@@ -11,4 +11,4 @@ export {
   logError,
   LogLevel,
   type LogEntry,
-} from './logger'
+} from "./logger";

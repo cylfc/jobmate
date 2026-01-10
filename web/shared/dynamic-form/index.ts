@@ -1,144 +1,162 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Main exports
-export { default as DynamicForm } from './components/dynamic-form.vue'
-export { default as DynamicFormField } from './components/dynamic-form-field.vue'
-
-// Registry
-export { fieldRegistry } from './registry/field-registry'
-
-// Types
-export type * from './types'
-
-// Utils
-export { parseSchema, unwrapSchema, getFieldType } from './utils/schema-parser'
-export { getFormValue, setFormValue, getInitialValues } from './utils/form-helpers'
-
-// Composables
-export { useDynamicForm, useDynamicFormField } from './composables/use-dynamic-form'
-
-// Field components (for direct use if needed)
-export { default as DynamicFormFieldInput } from './components/fields/dynamic-form-field-input.vue'
-export { default as DynamicFormFieldNumber } from './components/fields/dynamic-form-field-number.vue'
-export { default as DynamicFormFieldTextarea } from './components/fields/dynamic-form-field-textarea.vue'
-export { default as DynamicFormFieldSelect } from './components/fields/dynamic-form-field-select.vue'
-export { default as DynamicFormFieldCheckbox } from './components/fields/dynamic-form-field-checkbox.vue'
-export { default as DynamicFormFieldDate } from './components/fields/dynamic-form-field-date.vue'
-export { default as DynamicFormFieldRadio } from './components/fields/dynamic-form-field-radio.vue'
-export { default as DynamicFormFieldSwitch } from './components/fields/dynamic-form-field-switch.vue'
-
 // Register default field components
 // This runs at module load time to ensure fields are always registered
-import { fieldRegistry } from './registry/field-registry'
-import { getBaseType, getBaseSchema } from './utils/zod-utils'
-import type { z } from 'zod'
-import DynamicFormFieldInput from './components/fields/dynamic-form-field-input.vue'
-import DynamicFormFieldNumber from './components/fields/dynamic-form-field-number.vue'
-import DynamicFormFieldTextarea from './components/fields/dynamic-form-field-textarea.vue'
-import DynamicFormFieldSelect from './components/fields/dynamic-form-field-select.vue'
-import DynamicFormFieldCheckbox from './components/fields/dynamic-form-field-checkbox.vue'
-import DynamicFormFieldDate from './components/fields/dynamic-form-field-date.vue'
-import DynamicFormFieldRadio from './components/fields/dynamic-form-field-radio.vue'
-import DynamicFormFieldSwitch from './components/fields/dynamic-form-field-switch.vue'
+import { fieldRegistry } from "./registry/field-registry";
+import { getBaseType, getBaseSchema } from "./utils/zod-utils";
+import type { z } from "zod";
+import DynamicFormFieldInput from "./components/fields/dynamic-form-field-input.vue";
+import DynamicFormFieldNumber from "./components/fields/dynamic-form-field-number.vue";
+import DynamicFormFieldTextarea from "./components/fields/dynamic-form-field-textarea.vue";
+import DynamicFormFieldSelect from "./components/fields/dynamic-form-field-select.vue";
+import DynamicFormFieldCheckbox from "./components/fields/dynamic-form-field-checkbox.vue";
+import DynamicFormFieldDate from "./components/fields/dynamic-form-field-date.vue";
+import DynamicFormFieldRadio from "./components/fields/dynamic-form-field-radio.vue";
+import DynamicFormFieldSwitch from "./components/fields/dynamic-form-field-switch.vue";
+
+export { default as DynamicForm } from "./components/dynamic-form.vue";
+export { default as DynamicFormField } from "./components/dynamic-form-field.vue";
+
+// Registry
+export { fieldRegistry } from "./registry/field-registry";
+
+// Types
+export type * from "./types";
+
+// Utils
+export { parseSchema, unwrapSchema, getFieldType } from "./utils/schema-parser";
+export {
+  getFormValue,
+  setFormValue,
+  getInitialValues,
+} from "./utils/form-helpers";
+
+// Composables
+export {
+  useDynamicForm,
+  useDynamicFormField,
+} from "./composables/use-dynamic-form";
+
+// Field components (for direct use if needed)
+export { default as DynamicFormFieldInput } from "./components/fields/dynamic-form-field-input.vue";
+export { default as DynamicFormFieldNumber } from "./components/fields/dynamic-form-field-number.vue";
+export { default as DynamicFormFieldTextarea } from "./components/fields/dynamic-form-field-textarea.vue";
+export { default as DynamicFormFieldSelect } from "./components/fields/dynamic-form-field-select.vue";
+export { default as DynamicFormFieldCheckbox } from "./components/fields/dynamic-form-field-checkbox.vue";
+export { default as DynamicFormFieldDate } from "./components/fields/dynamic-form-field-date.vue";
+export { default as DynamicFormFieldRadio } from "./components/fields/dynamic-form-field-radio.vue";
+export { default as DynamicFormFieldSwitch } from "./components/fields/dynamic-form-field-switch.vue";
 
 // Ensure registration only happens once
-let isRegistered = false
+let _isRegistered = false;
 
 // Helper to unwrap zod item for supportsType checks
 function unwrapForTypeCheck(zodItem: z.ZodAny): z.ZodAny {
-  const typeName = zodItem._def?.typeName
-  if (typeName === 'ZodOptional' || typeName === 'ZodNullable' || typeName === 'ZodDefault') {
-    return zodItem._def.innerType ? unwrapForTypeCheck(zodItem._def.innerType) : zodItem
+  const typeName = zodItem._def?.typeName;
+  if (
+    typeName === "ZodOptional" ||
+    typeName === "ZodNullable" ||
+    typeName === "ZodDefault"
+  ) {
+    return zodItem._def.innerType
+      ? unwrapForTypeCheck(zodItem._def.innerType)
+      : zodItem;
   }
-  if (typeName === 'ZodEffects') {
-    return zodItem._def.schema ? unwrapForTypeCheck(zodItem._def.schema) : zodItem
+  if (typeName === "ZodEffects") {
+    return zodItem._def.schema
+      ? unwrapForTypeCheck(zodItem._def.schema)
+      : zodItem;
   }
-  return zodItem
+  return zodItem;
 }
 
 // Register default fields
-fieldRegistry.register('input', {
+fieldRegistry.register("input", {
   component: DynamicFormFieldInput,
   supportsType: (zodItem: z.ZodAny) => {
-    const unwrapped = unwrapForTypeCheck(zodItem)
-    return getBaseType(unwrapped) === 'string'
-  }
-})
+    const unwrapped = unwrapForTypeCheck(zodItem);
+    return getBaseType(unwrapped) === "string";
+  },
+});
 
-fieldRegistry.register('number', {
+fieldRegistry.register("number", {
   component: DynamicFormFieldNumber,
   supportsType: (zodItem: z.ZodAny) => {
-    const unwrapped = unwrapForTypeCheck(zodItem)
-    return getBaseType(unwrapped) === 'number'
-  }
-})
+    const unwrapped = unwrapForTypeCheck(zodItem);
+    return getBaseType(unwrapped) === "number";
+  },
+});
 
-fieldRegistry.register('textarea', {
+fieldRegistry.register("textarea", {
   component: DynamicFormFieldTextarea,
   supportsType: (zodItem: z.ZodAny) => {
-    const unwrapped = unwrapForTypeCheck(zodItem)
-    const type = getBaseType(unwrapped)
-    if (type !== 'string') return false
+    const unwrapped = unwrapForTypeCheck(zodItem);
+    const type = getBaseType(unwrapped);
+    if (type !== "string") return false;
     // Check if it's a long text field (has min check > 50)
-    const baseSchema = getBaseSchema(unwrapped)
-    const checks = baseSchema._def?.checks || []
-    return checks.some((check: any) => check.kind === 'min' && check.value > 50)
-  }
-})
+    const baseSchema = getBaseSchema(unwrapped);
+    const checks = baseSchema._def?.checks || [];
+    return checks.some(
+      (check: { kind: string; value?: number }) =>
+        check.kind === "min" && check.value && check.value > 50,
+    );
+  },
+});
 
-fieldRegistry.register('select', {
+fieldRegistry.register("select", {
   component: DynamicFormFieldSelect,
   supportsType: (zodItem: z.ZodAny) => {
-    const unwrapped = unwrapForTypeCheck(zodItem)
-    return getBaseType(unwrapped) === 'enum'
-  }
-})
+    const unwrapped = unwrapForTypeCheck(zodItem);
+    return getBaseType(unwrapped) === "enum";
+  },
+});
 
-fieldRegistry.register('checkbox', {
+fieldRegistry.register("checkbox", {
   component: DynamicFormFieldCheckbox,
   supportsType: (zodItem: z.ZodAny) => {
-    const unwrapped = unwrapForTypeCheck(zodItem)
-    return getBaseType(unwrapped) === 'boolean'
-  }
-})
+    const unwrapped = unwrapForTypeCheck(zodItem);
+    return getBaseType(unwrapped) === "boolean";
+  },
+});
 
-fieldRegistry.register('date', {
+fieldRegistry.register("date", {
   component: DynamicFormFieldDate,
   supportsType: (zodItem: z.ZodAny) => {
-    const unwrapped = unwrapForTypeCheck(zodItem)
-    return getBaseType(unwrapped) === 'date'
-  }
-})
+    const unwrapped = unwrapForTypeCheck(zodItem);
+    return getBaseType(unwrapped) === "date";
+  },
+});
 
-fieldRegistry.register('radio', {
+fieldRegistry.register("radio", {
   component: DynamicFormFieldRadio,
   supportsType: (zodItem: z.ZodAny) => {
-    const unwrapped = unwrapForTypeCheck(zodItem)
-    return getBaseType(unwrapped) === 'enum'
-  }
-})
+    const unwrapped = unwrapForTypeCheck(zodItem);
+    return getBaseType(unwrapped) === "enum";
+  },
+});
 
-fieldRegistry.register('switch', {
+fieldRegistry.register("switch", {
   component: DynamicFormFieldSwitch,
   supportsType: (zodItem: z.ZodAny) => {
-    const unwrapped = unwrapForTypeCheck(zodItem)
-    return getBaseType(unwrapped) === 'boolean'
-  }
-})
+    const unwrapped = unwrapForTypeCheck(zodItem);
+    return getBaseType(unwrapped) === "boolean";
+  },
+});
 
-fieldRegistry.register('toggle', {
+fieldRegistry.register("toggle", {
   component: DynamicFormFieldSwitch,
   supportsType: (zodItem: z.ZodAny) => {
-    const unwrapped = unwrapForTypeCheck(zodItem)
-    return getBaseType(unwrapped) === 'boolean'
-  }
-})
+    const unwrapped = unwrapForTypeCheck(zodItem);
+    return getBaseType(unwrapped) === "boolean";
+  },
+});
 
-isRegistered = true
+_isRegistered = true;
 
 // Debug: log registration
 if (import.meta.client) {
-  console.log('[DynamicForm] Field registry initialized', {
+  console.log("[DynamicForm] Field registry initialized", {
     registeredFields: Array.from(fieldRegistry.getAll().keys()),
-    count: fieldRegistry.getAll().size
-  })
+    count: fieldRegistry.getAll().size,
+  });
 }
-

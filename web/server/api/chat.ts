@@ -1,4 +1,9 @@
-import { convertToModelMessages, createGateway, streamText, type UIMessage } from "ai";
+import {
+  convertToModelMessages,
+  createGateway,
+  streamText,
+  type UIMessage,
+} from "ai";
 
 export default defineLazyEventHandler(async () => {
   const apiKey = useRuntimeConfig().aiGatewayApiKey;

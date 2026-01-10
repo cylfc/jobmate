@@ -4,5 +4,4 @@
  */
 export default defineNuxtPlugin(() => {
   // TODO: Initialize matching-related functionality
-})
-
+});

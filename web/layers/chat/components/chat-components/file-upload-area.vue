@@ -19,8 +19,10 @@
           name="i-lucide-plus"
           class="w-8 h-8 text-muted group-hover:text-primary transition-colors"
         />
-        <span class="text-xs text-muted mt-1 group-hover:text-primary transition-colors">
-          {{ $t('chat.components.file-upload.upload') }}
+        <span
+          class="text-xs text-muted mt-1 group-hover:text-primary transition-colors"
+        >
+          {{ $t("chat.components.file-upload.upload") }}
         </span>
       </div>
 
@@ -56,79 +58,84 @@
       {{ hint }}
     </p>
     <p v-else class="text-xs text-muted">
-      {{ $t('chat.components.file-upload.accept-formats', { formats: accept }) }}
+      {{
+        $t("chat.components.file-upload.accept-formats", { formats: accept })
+      }}
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
 interface Props {
-  accept?: string
-  multiple?: boolean
-  hint?: string
+  accept?: string;
+  multiple?: boolean;
+  hint?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  accept: '.pdf,.doc,.docx,.txt',
+  accept: ".pdf,.doc,.docx,.txt",
   multiple: false,
   hint: undefined,
-})
+});
 
 const emit = defineEmits<{
-  (e: 'update', data: { files: File[] }): void
-}>()
+  (e: "update", data: { files: File[] }): void;
+}>();
 
-const files = defineModel<File[]>({ default: () => [] })
+const files = defineModel<File[]>({ default: () => [] });
 
-const fileInputRef = ref<HTMLInputElement>()
+const fileInputRef = ref<HTMLInputElement>();
 
 // Emit updates when files change
-watch(files, (newFiles) => {
-  emit('update', { files: newFiles })
-}, { deep: true })
+watch(
+  files,
+  (newFiles) => {
+    emit("update", { files: newFiles });
+  },
+  { deep: true },
+);
 
 const triggerFileInput = () => {
-  fileInputRef.value?.click()
-}
+  fileInputRef.value?.click();
+};
 
 const handleFileChange = (event: Event) => {
-  const target = event.target as HTMLInputElement
+  const target = event.target as HTMLInputElement;
   if (target.files && target.files.length > 0) {
     if (props.multiple) {
       // Add new files to existing ones
-      const newFiles = Array.from(target.files)
-      files.value = [...files.value, ...newFiles]
+      const newFiles = Array.from(target.files);
+      files.value = [...files.value, ...newFiles];
     } else {
       // Replace with single file
-      files.value = [target.files[0]]
+      files.value = [target.files[0]];
     }
     // Reset input to allow selecting the same file again
-    target.value = ''
+    target.value = "";
   }
-}
+};
 
 const removeFile = (index: number) => {
   if (files.value) {
-    files.value.splice(index, 1)
+    files.value.splice(index, 1);
   }
-}
+};
 
 const formatFileSize = (bytes: number) => {
-  if (!bytes || bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
-}
+  if (!bytes || bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+};
 
 // Expose methods for parent components
 defineExpose({
   clearFiles: () => {
     if (files.value) {
-      files.value = []
+      files.value = [];
     }
   },
   getFiles: () => files.value,
-})
+});
 </script>
-

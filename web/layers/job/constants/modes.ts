@@ -4,10 +4,10 @@
  */
 
 export const JOB_CREATE_MODE = {
-  INPUT: 'input',
-  UPLOAD: 'upload',
-  FORM: 'form',
-} as const
+  INPUT: "input",
+  UPLOAD: "upload",
+  FORM: "form",
+} as const;
 
-export type JobCreateMode = typeof JOB_CREATE_MODE[keyof typeof JOB_CREATE_MODE]
-
+export type JobCreateMode =
+  (typeof JOB_CREATE_MODE)[keyof typeof JOB_CREATE_MODE];

@@ -3,8 +3,8 @@
  * Manages chat UI configuration and setup
  * Layer 2: Shared composable with createSharedComposable
  */
-import { createSharedComposable } from '@vueuse/core'
-import type { ChatFeature } from '@chat/types/chat'
+import { createSharedComposable } from "@vueuse/core";
+import type { ChatFeature } from "@chat/types/chat";
 
 export interface ChatSetupConfig {
   status?: "submitted" | "streaming" | "ready" | "error";
@@ -26,10 +26,12 @@ export interface ChatSetupConfig {
   };
   shouldAutoScroll?: boolean;
   shouldScrollToBottom?: boolean;
-  autoScroll?: boolean | {
-    onClick?: () => void;
-    [key: string]: any;
-  };
+  autoScroll?:
+    | boolean
+    | {
+        onClick?: () => void;
+        [key: string]: any;
+      };
   compact?: boolean;
   spacingOffset?: number;
   ui?: {
@@ -38,7 +40,7 @@ export interface ChatSetupConfig {
     viewport?: string;
     autoScroll?: string;
   };
-  displayMode?: 'modal' | 'inline';
+  displayMode?: "modal" | "inline";
   purposes?: PurposeConfig[];
   selectedPurpose?: ChatFeature;
 }
@@ -57,54 +59,54 @@ export interface ChatSetupOptions {
 
 const defaultPurposes: PurposeConfig[] = [
   {
-    value: 'matching',
-    label: 'Matching',
-    icon: 'i-lucide-users',
-    i18nKey: 'chat.purpose.matching',
+    value: "matching",
+    label: "Matching",
+    icon: "i-lucide-users",
+    i18nKey: "chat.purpose.matching",
   },
   {
-    value: 'create-candidate',
+    value: "create-candidate",
     label: undefined,
-    icon: 'i-lucide-user-plus',
-    i18nKey: 'chat.purpose.create-candidate',
+    icon: "i-lucide-user-plus",
+    i18nKey: "chat.purpose.create-candidate",
   },
   {
-    value: 'create-job',
+    value: "create-job",
     label: undefined,
-    icon: 'i-lucide-briefcase',
-    i18nKey: 'chat.purpose.create-job',
+    icon: "i-lucide-briefcase",
+    i18nKey: "chat.purpose.create-job",
   },
   {
-    value: 'create-company',
+    value: "create-company",
     label: undefined,
-    icon: 'i-lucide-building',
-    i18nKey: 'chat.purpose.create-company',
+    icon: "i-lucide-building",
+    i18nKey: "chat.purpose.create-company",
   },
   {
-    value: 'general',
+    value: "general",
     label: undefined,
-    icon: 'i-lucide-message-circle',
-    i18nKey: 'chat.purpose.general',
+    icon: "i-lucide-message-circle",
+    i18nKey: "chat.purpose.general",
   },
-]
+];
 
 const _useChatSetup = (options: ChatSetupOptions = {}) => {
   const { syncStatus = true } = options;
-  
-  const status = ref<'submitted' | 'streaming' | 'ready' | 'error'>('ready')
-  const shouldAutoScroll = ref(true)
-  const shouldScrollToBottom = ref(true)
-  const autoScroll = ref<boolean | Record<string, any>>(true)
-  const compact = ref(false)
-  const spacingOffset = ref(0)
-  const user = ref<ChatSetupConfig['user']>(undefined)
-  const assistant = reactive<ChatSetupConfig['assistant']>({ variant: 'soft' })
-  const ui = ref<ChatSetupConfig['ui']>(undefined)
-  const displayMode = ref<'modal' | 'inline'>('modal')
-  const purposes = reactive<PurposeConfig[]>([...defaultPurposes])
-  const selectedPurpose = ref<ChatFeature>('matching')
-  const _initialized = ref(false)
-  const isLoading = ref(false)
+
+  const status = ref<"submitted" | "streaming" | "ready" | "error">("ready");
+  const shouldAutoScroll = ref(true);
+  const shouldScrollToBottom = ref(true);
+  const autoScroll = ref<boolean | Record<string, any>>(true);
+  const compact = ref(false);
+  const spacingOffset = ref(0);
+  const user = ref<ChatSetupConfig["user"]>(undefined);
+  const assistant = reactive<ChatSetupConfig["assistant"]>({ variant: "soft" });
+  const ui = ref<ChatSetupConfig["ui"]>(undefined);
+  const displayMode = ref<"modal" | "inline">("modal");
+  const purposes = reactive<PurposeConfig[]>([...defaultPurposes]);
+  const _selectedPurpose = ref<ChatFeature>("matching");
+  const _initialized = ref(false);
+  const isLoading = ref(false);
 
   const computedStatus = computed(() => {
     if (syncStatus && isLoading.value) {
@@ -113,7 +115,9 @@ const _useChatSetup = (options: ChatSetupOptions = {}) => {
     return status.value;
   });
 
-  const setStatus = (newStatus: "submitted" | "streaming" | "ready" | "error") => {
+  const setStatus = (
+    newStatus: "submitted" | "streaming" | "ready" | "error",
+  ) => {
     status.value = newStatus;
   };
 
@@ -125,7 +129,7 @@ const _useChatSetup = (options: ChatSetupOptions = {}) => {
     if (config) {
       Object.assign(assistant, config);
     } else {
-      Object.assign(assistant, { variant: 'soft' });
+      Object.assign(assistant, { variant: "soft" });
     }
   };
 
@@ -205,18 +209,18 @@ const _useChatSetup = (options: ChatSetupOptions = {}) => {
   };
 
   const reset = () => {
-    status.value = 'ready';
+    status.value = "ready";
     shouldAutoScroll.value = true;
     shouldScrollToBottom.value = true;
     autoScroll.value = true;
     compact.value = false;
     spacingOffset.value = 0;
     user.value = undefined;
-    Object.assign(assistant, { variant: 'soft' });
+    Object.assign(assistant, { variant: "soft" });
     ui.value = undefined;
-    displayMode.value = 'modal';
+    displayMode.value = "modal";
     purposes.splice(0, purposes.length, ...defaultPurposes);
-    selectedPurpose.value = 'matching';
+    selectedPurpose.value = "matching";
   };
 
   const init = (defaultConfig?: ChatSetupConfig) => {
@@ -224,7 +228,7 @@ const _useChatSetup = (options: ChatSetupOptions = {}) => {
       return;
     }
     _initialized.value = true;
-    
+
     if (defaultConfig) {
       updateConfig(defaultConfig);
     }
@@ -265,10 +269,9 @@ const _useChatSetup = (options: ChatSetupOptions = {}) => {
   };
 };
 
-export const useChatSetup = createSharedComposable(_useChatSetup)
+export const useChatSetup = createSharedComposable(_useChatSetup);
 
 export const initChatSetup = (defaultConfig?: ChatSetupConfig) => {
   const setup = useChatSetup();
   setup.init(defaultConfig);
 };
-

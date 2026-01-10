@@ -2,7 +2,8 @@
   <div class="space-y-4">
     <UFormField :label="$t('chat.components.job-input.label')">
       <UTextarea
- size="lg"        v-model="jobText"
+        v-model="jobText"
+        size="lg"
         :placeholder="$t('chat.components.job-input.placeholder')"
         :rows="8"
       />
@@ -14,13 +15,10 @@
         :disabled="!jobText.trim()"
         @click="handleSubmit"
       >
-        {{ $t('chat.components.job-input.confirm') }}
+        {{ $t("chat.components.job-input.confirm") }}
       </UButton>
-      <UButton
-        variant="outline"
-        @click="handleUseDatabase"
-      >
-        {{ $t('chat.components.job-input.select-database') }}
+      <UButton variant="outline" @click="handleUseDatabase">
+        {{ $t("chat.components.job-input.select-database") }}
       </UButton>
     </div>
 
@@ -36,45 +34,44 @@
 </template>
 
 <script setup lang="ts">
-import StepActionButtons from './step-action-buttons.vue'
+import StepActionButtons from "./step-action-buttons.vue";
 
 interface Props {
-  value?: string
-  showBack?: boolean
+  value?: string;
+  showBack?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  value: '',
+  value: "",
   showBack: true,
-})
+});
 
 const emit = defineEmits<{
-  (e: 'update', data: { jobText?: string; useDatabase?: boolean }): void
-  (e: 'clear'): void
-  (e: 'back'): void
-}>()
+  (e: "update", data: { jobText?: string; useDatabase?: boolean }): void;
+  (e: "clear"): void;
+  (e: "back"): void;
+}>();
 
-const jobText = ref(props.value)
+const jobText = ref(props.value);
 
 const handleSubmit = () => {
   if (jobText.value.trim()) {
-    emit('update', {
+    emit("update", {
       jobText: jobText.value.trim(),
-    })
+    });
   }
-}
+};
 
 const handleUseDatabase = () => {
-  emit('update', { useDatabase: true })
-}
+  emit("update", { useDatabase: true });
+};
 
 const handleClear = () => {
-  jobText.value = ''
-  emit('clear')
-}
+  jobText.value = "";
+  emit("clear");
+};
 
 const handleBack = () => {
-  emit('back')
-}
+  emit("back");
+};
 </script>
-

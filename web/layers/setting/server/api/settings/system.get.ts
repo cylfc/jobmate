@@ -1,50 +1,51 @@
-import { useApiClient } from '@shared/api'
-import type { SystemConfig } from '@setting/types/setting'
-import type { ApiResponse } from '@/types/api-response'
+import { useApiClient } from "@shared/api";
+import type { SystemConfig } from "@setting/types/setting";
+import type { ApiResponse } from "@/types/api-response";
 
 export default defineEventHandler(async (event) => {
   try {
     // Get access token from Authorization header
-    const authHeader = getHeader(event, 'authorization')
+    const authHeader = getHeader(event, "authorization");
     if (!authHeader) {
       throw createError({
         statusCode: 401,
-        message: 'Authorization header required',
-      })
+        message: "Authorization header required",
+      });
     }
 
-    const apiClient = useApiClient()
+    const apiClient = useApiClient();
 
     // Call backend API - returns { data, meta, status } format
     const backendResponse = await apiClient.get<SystemConfig>(
-      '/settings/system',
+      "/settings/system",
       {
         Authorization: authHeader,
-      }
-    )
+      },
+    );
 
     // Return in standard format
     return {
       data: backendResponse.data,
       meta: undefined,
       status: backendResponse.status,
-    } as ApiResponse<SystemConfig>
+    } as ApiResponse<SystemConfig>;
   } catch (error) {
     // Handle backend errors
-    if (error && typeof error === 'object' && 'statusCode' in error) {
-      const statusCode = (error as { statusCode: number }).statusCode
-      const message = (error as { message: string }).message || 'Failed to fetch system config'
+    if (error && typeof error === "object" && "statusCode" in error) {
+      const statusCode = (error as { statusCode: number }).statusCode;
+      const message =
+        (error as { message: string }).message ||
+        "Failed to fetch system config";
 
       throw createError({
         statusCode,
         message,
-      })
+      });
     }
 
     throw createError({
       statusCode: 500,
-      message: 'Failed to fetch system config',
-    })
+      message: "Failed to fetch system config",
+    });
   }
-})
-
+});

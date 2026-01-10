@@ -27,27 +27,21 @@ interface Props {
    * Whether to show action buttons
    * @default true
    */
-  showActions?: boolean
+  showActions?: boolean;
 }
 
 interface Emits {
-  (e: 'add'): void
-  (e: 'settings'): void
+  (e: "add"): void;
+  (e: "settings"): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showActions: true,
-})
+});
 
-const emit = defineEmits<Emits>()
-
-const route = useRoute()
-
-// Check if we're on chat page
-const isChatPage = computed(() => route.path === '/chat')
+const emit = defineEmits<Emits>();
 
 const handleAdd = () => {
-  emit('add')
-}
+  emit("add");
+};
 </script>
-

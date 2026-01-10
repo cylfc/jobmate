@@ -1,7 +1,11 @@
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <h4 class="text-md font-semibold">{{ t('candidate.create.education.title', { defaultValue: 'Education' }) }}</h4>
+      <h4 class="text-md font-semibold">
+        {{
+          t("candidate.create.education.title", { defaultValue: "Education" })
+        }}
+      </h4>
       <UButton
         color="primary"
         variant="outline"
@@ -9,12 +13,22 @@
         icon="i-lucide-plus"
         @click="handleAdd"
       >
-        {{ t('candidate.create.education.add', { defaultValue: 'Add Education' }) }}
+        {{
+          t("candidate.create.education.add", { defaultValue: "Add Education" })
+        }}
       </UButton>
     </div>
 
-    <div v-if="educations.length === 0" class="text-sm text-muted text-center py-4">
-      {{ t('candidate.create.education.empty', { defaultValue: 'No education entries. Click "Add Education" to add one.' }) }}
+    <div
+      v-if="educations.length === 0"
+      class="text-sm text-muted text-center py-4"
+    >
+      {{
+        t("candidate.create.education.empty", {
+          defaultValue:
+            'No education entries. Click "Add Education" to add one.',
+        })
+      }}
     </div>
 
     <div
@@ -82,7 +96,9 @@
 
               <UFormField
                 :label="
-                  t('candidate.create.education.major', { defaultValue: 'Major' })
+                  t('candidate.create.education.major', {
+                    defaultValue: 'Major',
+                  })
                 "
                 name="major"
                 class="w-full"
@@ -260,142 +276,146 @@
 </template>
 
 <script setup lang="ts">
-import type { EducationEntry } from '@candidate/types/candidate'
-import { CalendarDate, parseDate } from '@internationalized/date'
-import { reactive } from 'vue'
+import type { EducationEntry } from "@candidate/types/candidate";
+import { CalendarDate, parseDate } from "@internationalized/date";
+import { reactive } from "vue";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 interface Props {
-  modelValue: EducationEntry[]
+  modelValue: EducationEntry[];
 }
 
 interface Emits {
-  (e: 'update:modelValue', value: EducationEntry[]): void
+  (e: "update:modelValue", value: EducationEntry[]): void;
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+const props = defineProps<Props>();
+const emit = defineEmits<Emits>();
 
 // Helper function to convert date to CalendarDate
 const toCalendarDateValue = (
-  value: Date | string | CalendarDate | undefined
+  value: Date | string | CalendarDate | undefined,
 ): CalendarDate | undefined => {
-  if (!value) return undefined
-  if (value instanceof CalendarDate) return value
-  if (typeof value === 'string') {
+  if (!value) return undefined;
+  if (value instanceof CalendarDate) return value;
+  if (typeof value === "string") {
     try {
       // Try parsing as YYYY-MM-DD format first
-      return parseDate(value)
+      return parseDate(value);
     } catch {
       // If parseDate fails, try parsing as ISO string and convert
-      const date = new Date(value)
+      const date = new Date(value);
       if (!isNaN(date.getTime())) {
         return new CalendarDate(
           date.getFullYear(),
           date.getMonth() + 1,
-          date.getDate()
-        )
+          date.getDate(),
+        );
       }
-      return undefined
+      return undefined;
     }
   }
   if (value instanceof Date) {
     return new CalendarDate(
       value.getFullYear(),
       value.getMonth() + 1,
-      value.getDate()
-    )
+      value.getDate(),
+    );
   }
-  return undefined
-}
+  return undefined;
+};
 
 // Helper function to convert CalendarDate back to string (for API)
 const fromCalendarDateValue = (
-  value: CalendarDate | undefined
+  value: CalendarDate | undefined,
 ): string | undefined => {
-  if (!value) return undefined
+  if (!value) return undefined;
   if (value instanceof CalendarDate) {
-    return `${value.year}-${String(value.month).padStart(2, '0')}-${String(value.day).padStart(2, '0')}`
+    return `${value.year}-${String(value.month).padStart(2, "0")}-${String(value.day).padStart(2, "0")}`;
   }
-  return undefined
-}
+  return undefined;
+};
 
 // Local reactive array with CalendarDate conversions
 type EducationWithCalendarDate = Omit<
   EducationEntry,
-  'startDate' | 'endDate'
+  "startDate" | "endDate"
 > & {
-  startDate?: CalendarDate
-  endDate?: CalendarDate
-}
+  startDate?: CalendarDate;
+  endDate?: CalendarDate;
+};
 
-const educations = reactive<EducationWithCalendarDate[]>([])
-let isSyncingFromProps = false
+const educations = reactive<EducationWithCalendarDate[]>([]);
+let isSyncingFromProps = false;
 
 // Sync with props and convert dates
 watch(
   () => props.modelValue,
   (newValue) => {
-    isSyncingFromProps = true
-    educations.splice(0, educations.length, ...newValue.map((edu) => ({
-      ...edu,
-      startDate: toCalendarDateValue(edu.startDate),
-      endDate: toCalendarDateValue(edu.endDate),
-    })))
+    isSyncingFromProps = true;
+    educations.splice(
+      0,
+      educations.length,
+      ...newValue.map((edu) => ({
+        ...edu,
+        startDate: toCalendarDateValue(edu.startDate),
+        endDate: toCalendarDateValue(edu.endDate),
+      })),
+    );
     nextTick(() => {
-      isSyncingFromProps = false
-    })
+      isSyncingFromProps = false;
+    });
   },
-  { immediate: true, deep: true }
-)
+  { immediate: true, deep: true },
+);
 
 // Watch for changes and emit converted values (only when not syncing from props)
 watch(
   () => educations,
   (newValue) => {
-    if (isSyncingFromProps) return
+    if (isSyncingFromProps) return;
 
     const converted = newValue.map((edu) => {
-      let startDate: Date | string | CalendarDate | undefined = edu.startDate
-      let endDate: Date | string | CalendarDate | undefined = edu.endDate
+      let startDate: Date | string | CalendarDate | undefined = edu.startDate;
+      let endDate: Date | string | CalendarDate | undefined = edu.endDate;
 
       if (startDate instanceof CalendarDate) {
-        startDate = fromCalendarDateValue(startDate)
+        startDate = fromCalendarDateValue(startDate);
       } else if (startDate instanceof Date) {
-        startDate = startDate.toISOString().split('T')[0]
+        startDate = startDate.toISOString().split("T")[0];
       }
 
       if (endDate instanceof CalendarDate) {
-        endDate = fromCalendarDateValue(endDate)
+        endDate = fromCalendarDateValue(endDate);
       } else if (endDate instanceof Date) {
-        endDate = endDate.toISOString().split('T')[0]
+        endDate = endDate.toISOString().split("T")[0];
       }
 
       return {
         ...edu,
         startDate,
         endDate,
-      }
-    })
-    emit('update:modelValue', converted as EducationEntry[])
+      };
+    });
+    emit("update:modelValue", converted as EducationEntry[]);
   },
-  { deep: true }
-)
+  { deep: true },
+);
 
 // Fetch form options from API
-const { formOptions } = useCandidateFormOptions()
-const degreeTypeOptions = computed(() => formOptions.value.degreeTypes)
+const { formOptions } = useCandidateFormOptions();
+const degreeTypeOptions = computed(() => formOptions.value.degreeTypes);
 
 const gpaScaleOptions = [
-  { label: '4.0', value: 4.0 },
-  { label: '10.0', value: 10.0 },
-]
+  { label: "4.0", value: 4.0 },
+  { label: "10.0", value: 10.0 },
+];
 
 const handleAdd = () => {
   educations.push({
-    institution: '',
-    major: '',
+    institution: "",
+    major: "",
     degreeType: undefined,
     startDate: undefined,
     endDate: undefined,
@@ -403,29 +423,30 @@ const handleAdd = () => {
     gpaScale: 4.0,
     description: undefined,
     orderIndex: educations.length,
-  })
-}
+  });
+};
 
 const handleRemove = (index: number) => {
-  educations.splice(index, 1)
+  educations.splice(index, 1);
   // Update orderIndex
   educations.forEach((edu, idx) => {
-    edu.orderIndex = idx
-  })
-}
+    edu.orderIndex = idx;
+  });
+};
 
-const dateInputRefs = reactive<Record<string, any>>({})
+const dateInputRefs = reactive<Record<string, HTMLElement | null>>({});
 
-const setDateInputRef = (el: any, index: number, field: 'startDate' | 'endDate') => {
+const setDateInputRef = (
+  el: HTMLElement | null,
+  index: number,
+  field: "startDate" | "endDate",
+) => {
   if (el) {
-    dateInputRefs[`${index}-${field}`] = el
+    dateInputRefs[`${index}-${field}`] = el;
   }
-}
+};
 
-const getDateInputRef = (index: number, field: 'startDate' | 'endDate') => {
-  return dateInputRefs[`${index}-${field}`]
-}
-
-
+const getDateInputRef = (index: number, field: "startDate" | "endDate") => {
+  return dateInputRefs[`${index}-${field}`];
+};
 </script>
-

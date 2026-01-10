@@ -120,7 +120,7 @@
                   value-key="value"
                   :placeholder="
                     t(
-                      'candidate.create.work-experience.employment-type-placeholder'
+                      'candidate.create.work-experience.employment-type-placeholder',
                     )
                   "
                   size="lg"
@@ -270,7 +270,7 @@
                     v-model="exp.achievements[aIndex]"
                     :placeholder="
                       t(
-                        'candidate.create.work-experience.achievement-placeholder'
+                        'candidate.create.work-experience.achievement-placeholder',
                       )
                     "
                     size="lg"
@@ -305,7 +305,7 @@
 <script setup lang="ts">
 import type { WorkExperienceEntry } from "@candidate/types/candidate";
 import { CalendarDate, parseDate } from "@internationalized/date";
-import { reactive } from 'vue';
+import { reactive } from "vue";
 
 const { t } = useI18n();
 
@@ -322,7 +322,7 @@ const emit = defineEmits<Emits>();
 
 // Helper function to convert date to CalendarDate
 const toCalendarDateValue = (
-  value: Date | string | CalendarDate | undefined
+  value: Date | string | CalendarDate | undefined,
 ): CalendarDate | undefined => {
   if (!value) return undefined;
   if (value instanceof CalendarDate) return value;
@@ -337,7 +337,7 @@ const toCalendarDateValue = (
         return new CalendarDate(
           date.getFullYear(),
           date.getMonth() + 1,
-          date.getDate()
+          date.getDate(),
         );
       }
       return undefined;
@@ -347,7 +347,7 @@ const toCalendarDateValue = (
     return new CalendarDate(
       value.getFullYear(),
       value.getMonth() + 1,
-      value.getDate()
+      value.getDate(),
     );
   }
   return undefined;
@@ -355,7 +355,7 @@ const toCalendarDateValue = (
 
 // Helper function to convert CalendarDate back to string (for API)
 const fromCalendarDateValue = (
-  value: CalendarDate | undefined
+  value: CalendarDate | undefined,
 ): string | undefined => {
   if (!value) return undefined;
   if (value instanceof CalendarDate) {
@@ -381,16 +381,20 @@ watch(
   () => props.modelValue,
   (newValue) => {
     isSyncingFromProps = true;
-    workExperiences.splice(0, workExperiences.length, ...newValue.map((exp) => ({
-      ...exp,
-      startDate: toCalendarDateValue(exp.startDate),
-      endDate: toCalendarDateValue(exp.endDate),
-    })));
+    workExperiences.splice(
+      0,
+      workExperiences.length,
+      ...newValue.map((exp) => ({
+        ...exp,
+        startDate: toCalendarDateValue(exp.startDate),
+        endDate: toCalendarDateValue(exp.endDate),
+      })),
+    );
     nextTick(() => {
       isSyncingFromProps = false;
     });
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 );
 
 // Watch for changes and emit converted values (only when not syncing from props)
@@ -423,7 +427,7 @@ watch(
     });
     emit("update:modelValue", converted as WorkExperienceEntry[]);
   },
-  { deep: true }
+  { deep: true },
 );
 
 const technologiesText = reactive<string[]>([]);
@@ -431,16 +435,18 @@ const technologiesText = reactive<string[]>([]);
 watch(
   () => workExperiences,
   (newValue) => {
-    technologiesText.splice(0, technologiesText.length, ...newValue.map(
-      (exp) => exp.technologiesUsed?.join(", ") || ""
-    ));
+    technologiesText.splice(
+      0,
+      technologiesText.length,
+      ...newValue.map((exp) => exp.technologiesUsed?.join(", ") || ""),
+    );
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 );
 
 // Fetch form options from API
-const { formOptions } = useCandidateFormOptions()
-const employmentTypeOptions = computed(() => formOptions.value.employmentTypes)
+const { formOptions } = useCandidateFormOptions();
+const employmentTypeOptions = computed(() => formOptions.value.employmentTypes);
 
 const handleAdd = () => {
   const today = new Date();
@@ -451,7 +457,7 @@ const handleAdd = () => {
     startDate: new CalendarDate(
       today.getFullYear(),
       today.getMonth() + 1,
-      today.getDate()
+      today.getDate(),
     ),
     endDate: undefined,
     isCurrent: false,
@@ -483,12 +489,12 @@ const handleTechnologiesChange = (index: number, value: string) => {
     .filter((t) => t.length > 0);
 };
 
-const dateInputRefs = reactive<Record<string, any>>({});
+const dateInputRefs = reactive<Record<string, HTMLElement | null>>({});
 
 const setDateInputRef = (
-  el: any,
+  el: HTMLElement | null,
   index: number,
-  field: "startDate" | "endDate"
+  field: "startDate" | "endDate",
 ) => {
   if (el) {
     dateInputRefs[`${index}-${field}`] = el;

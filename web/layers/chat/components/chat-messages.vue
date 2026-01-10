@@ -16,7 +16,10 @@
     <template #content="{ message }">
       <slot name="content" :message="message">
         <div v-if="hasCustomComponent(message)" class="space-y-2">
-          <div v-if="getMessageText(message)" class="text-pretty whitespace-pre-wrap mb-2">
+          <div
+            v-if="getMessageText(message)"
+            class="text-pretty whitespace-pre-wrap mb-2"
+          >
             {{ getMessageText(message) }}
           </div>
           <component
@@ -85,20 +88,20 @@ const {
 } = useChatSetup({ syncStatus: true });
 
 const emit = defineEmits<{
-  (e: "component-update", messageId: string, data: any): void;
+  (e: "component-update", messageId: string, data: unknown): void;
   (e: "component-action", messageId: string, action: string): void;
 }>();
 
-const hasCustomComponent = (message: any): boolean => {
+const hasCustomComponent = (message: { id: string }): boolean => {
   const originalMessage = props.messages.find((m) => m.id === message.id);
   return !!originalMessage?.component;
 };
 
-const getMessageText = (message: any): string => {
+const getMessageText = (message: { content?: string }): string => {
   return getTextFromMessage(message) || "";
 };
 
-const getComponent = (message: any) => {
+const getComponent = (message: { id: string }) => {
   const originalMessage = props.messages.find((m) => m.id === message.id);
   if (!originalMessage?.component) return null;
 
@@ -106,7 +109,7 @@ const getComponent = (message: any) => {
   return entry?.component || null;
 };
 
-const getComponentProps = (message: any) => {
+const getComponentProps = (message: { id: string }) => {
   const originalMessage = props.messages.find((m) => m.id === message.id);
   if (!originalMessage?.component) return {};
 
@@ -117,11 +120,11 @@ const getComponentProps = (message: any) => {
   };
 };
 
-const handleComponentUpdate = (message: any, data: any) => {
+const handleComponentUpdate = (message: { id: string }, data: unknown) => {
   emit("component-update", message.id, data);
 };
 
-const handleComponentAction = (message: any, action: string) => {
+const handleComponentAction = (message: { id: string }, action: string) => {
   emit("component-action", message.id, action);
 };
 

@@ -10,7 +10,7 @@
         :loading="loading"
         class="w-full jobs-table"
       >
-      <!-- eslint-enable vue/no-v-model-argument -->
+        <!-- eslint-enable vue/no-v-model-argument -->
 
         <template #title-cell="{ row }">
           <span class="font-medium">{{ row.original.title }}</span>
@@ -51,14 +51,13 @@
           <span v-if="row.original.salary" class="text-sm">
             {{ formatSalary(row.original.salary) }}
           </span>
-          <span v-else class="text-sm text-dimmed">{{ t('job.salary-not-specified') }}</span>
+          <span v-else class="text-sm text-dimmed">{{
+            t("job.salary-not-specified")
+          }}</span>
         </template>
 
         <template #status-cell="{ row }">
-          <UBadge
-            :color="getStatusColor(row.original.status)"
-            variant="subtle"
-          >
+          <UBadge :color="getStatusColor(row.original.status)" variant="subtle">
             {{ t(`job.status.${row.original.status}`) }}
           </UBadge>
         </template>
@@ -66,10 +65,12 @@
         <template #candidates-cell="{ row }">
           <div class="flex flex-col">
             <span class="text-sm font-medium">
-              {{ row.original.candidates?.active || 0 }} / {{ row.original.candidates?.total || 0 }}
+              {{ row.original.candidates?.active || 0 }} /
+              {{ row.original.candidates?.total || 0 }}
             </span>
             <span class="text-xs text-muted">
-              {{ t('job.candidates.applying') }} / {{ t('job.candidates.total') }}
+              {{ t("job.candidates.applying") }} /
+              {{ t("job.candidates.total") }}
             </span>
           </div>
         </template>
@@ -90,16 +91,21 @@
 
         <template #empty-state>
           <div class="text-center py-8">
-            <p class="text-muted">{{ t('job.no-jobs-found') }}</p>
+            <p class="text-muted">{{ t("job.no-jobs-found") }}</p>
           </div>
         </template>
       </UTable>
     </div>
 
-    <div v-if="Object.keys(rowSelection).length > 0" class="p-4 bg-muted rounded-lg">
+    <div
+      v-if="Object.keys(rowSelection).length > 0"
+      class="p-4 bg-muted rounded-lg"
+    >
       <div class="flex items-center justify-between">
         <p class="text-sm font-medium">
-          {{ t('job.selected-count', { count: Object.keys(rowSelection).length }) }}
+          {{
+            t("job.selected-count", { count: Object.keys(rowSelection).length })
+          }}
         </p>
         <div class="flex gap-2">
           <UButton
@@ -109,7 +115,7 @@
             icon="i-lucide-trash"
             @click="handleBulkDelete"
           >
-            {{ t('job.bulk-delete') }}
+            {{ t("job.bulk-delete") }}
           </UButton>
         </div>
       </div>
@@ -118,148 +124,173 @@
 </template>
 
 <script setup lang="ts">
-import { h, resolveComponent } from 'vue'
-import type { Job } from '@job/types/job'
-import type { DropdownMenuItem, TableColumn } from '@nuxt/ui'
+import { h, resolveComponent } from "vue";
+import type { Job } from "@job/types/job";
+import type { DropdownMenuItem, TableColumn } from "@nuxt/ui";
 
-const UCheckbox = resolveComponent('UCheckbox')
-const { t } = useI18n()
+const UCheckbox = resolveComponent("UCheckbox");
+const { t } = useI18n();
 
 interface Props {
-  jobs: Job[]
-  loading?: boolean
+  jobs: Job[];
+  loading?: boolean;
 }
 
 interface Emits {
-  (e: 'view-detail' | 'delete' | 'match-candidates', job: Job): void
-  (e: 'bulk-delete', jobIds: string[]): void
+  (e: "view-detail" | "delete" | "match-candidates", job: Job): void;
+  (e: "bulk-delete", jobIds: string[]): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
-})
+});
 
-const emit = defineEmits<Emits>()
+const emit = defineEmits<Emits>();
 
-const rowSelection = ref<Record<string, boolean>>({})
-const table = useTemplateRef('table')
-const sortBy = ref('title')
+const rowSelection = ref<Record<string, boolean>>({});
+const table = useTemplateRef("table");
+const sortBy = ref("title");
 
 const columns: TableColumn<Job>[] = [
   {
-    id: 'select',
+    id: "select",
     header: ({ table }) =>
       h(UCheckbox, {
         modelValue: table.getIsSomePageRowsSelected()
-          ? 'indeterminate'
+          ? "indeterminate"
           : table.getIsAllPageRowsSelected(),
-        'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
+        "onUpdate:modelValue": (value: boolean | "indeterminate") =>
           table.toggleAllPageRowsSelected(!!value),
-        'aria-label': t('common.select-all'),
+        "aria-label": t("common.select-all"),
       }),
     cell: ({ row }) =>
       h(UCheckbox, {
         modelValue: row.getIsSelected(),
-        'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
-        'aria-label': t('common.select-row'),
+        "onUpdate:modelValue": (value: boolean | "indeterminate") =>
+          row.toggleSelected(!!value),
+        "aria-label": t("common.select-row"),
       }),
     enableSorting: false,
     enableHiding: false,
   },
   {
-    accessorKey: 'title',
-    header: t('job.title-label'),
+    accessorKey: "title",
+    header: t("job.title-label"),
   },
   {
-    accessorKey: 'company',
-    header: t('job.company'),
+    accessorKey: "company",
+    header: t("job.company"),
   },
   {
-    accessorKey: 'requirements',
-    header: t('job.requirements'),
+    accessorKey: "requirements",
+    header: t("job.requirements"),
   },
   {
-    accessorKey: 'salary',
-    header: t('job.salary'),
+    accessorKey: "salary",
+    header: t("job.salary"),
   },
   {
-    accessorKey: 'status',
-    header: t('job.status-label'),
+    accessorKey: "status",
+    header: t("job.status-label"),
   },
   {
-    accessorKey: 'candidates',
-    header: t('job.candidates.label'),
+    accessorKey: "candidates",
+    header: t("job.candidates.label"),
   },
   {
-    id: 'action',
-    header: t('common.actions'),
+    id: "action",
+    header: t("common.actions"),
     enableSorting: false,
   },
-]
+];
 
 const filteredJobs = computed(() => {
-  const filtered = [...props.jobs]
+  const filtered = [...props.jobs];
 
   // Apply sorting
-  if (sortBy.value === 'title') {
-    filtered.sort((a, b) => a.title.localeCompare(b.title))
-  } else if (sortBy.value === 'title-desc') {
-    filtered.sort((a, b) => b.title.localeCompare(a.title))
+  if (sortBy.value === "title") {
+    filtered.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (sortBy.value === "title-desc") {
+    filtered.sort((a, b) => b.title.localeCompare(a.title));
   }
 
-  return filtered
-})
+  return filtered;
+});
 
-const formatSalary = (salary: { min: number; max: number; currency: string }) => {
-  return `${salary.min.toLocaleString()} - ${salary.max.toLocaleString()} ${salary.currency}`
-}
+const formatSalary = (salary: {
+  min: number;
+  max: number;
+  currency: string;
+}) => {
+  return `${salary.min.toLocaleString()} - ${salary.max.toLocaleString()} ${salary.currency}`;
+};
 
-const getStatusColor = (status: string): 'neutral' | 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' => {
-  const statusMap: Record<string, 'neutral' | 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error'> = {
-    draft: 'neutral',
-    published: 'success',
-    closed: 'warning',
-  }
-  return statusMap[status] || 'neutral'
-}
+const getStatusColor = (
+  status: string,
+):
+  | "neutral"
+  | "primary"
+  | "secondary"
+  | "success"
+  | "info"
+  | "warning"
+  | "error" => {
+  const statusMap: Record<
+    string,
+    | "neutral"
+    | "primary"
+    | "secondary"
+    | "success"
+    | "info"
+    | "warning"
+    | "error"
+  > = {
+    draft: "neutral",
+    published: "success",
+    closed: "warning",
+  };
+  return statusMap[status] || "neutral";
+};
 
 const getActionItems = (job: Job): DropdownMenuItem[][] => {
   return [
     [
       {
-        label: t('job.view-detail'),
-        icon: 'i-lucide-eye',
-        onSelect: () => emit('view-detail', job),
+        label: t("job.view-detail"),
+        icon: "i-lucide-eye",
+        onSelect: () => emit("view-detail", job),
       },
     ],
     [
       {
-        label: t('job.match-candidates'),
-        icon: 'i-lucide-users',
-        onSelect: () => emit('match-candidates', job),
+        label: t("job.match-candidates"),
+        icon: "i-lucide-users",
+        onSelect: () => emit("match-candidates", job),
       },
       {
-        label: t('job.delete'),
-        icon: 'i-lucide-trash',
-        color: 'error',
-        onSelect: () => emit('delete', job),
+        label: t("job.delete"),
+        icon: "i-lucide-trash",
+        color: "error",
+        onSelect: () => emit("delete", job),
       },
     ],
-  ]
-}
+  ];
+};
 
 const getSelectedIds = (): string[] => {
-  return Object.keys(rowSelection.value).filter((key) => rowSelection.value[key])
-}
+  return Object.keys(rowSelection.value).filter(
+    (key) => rowSelection.value[key],
+  );
+};
 
 const handleBulkDelete = () => {
-  const selectedIds = getSelectedIds()
-  emit('bulk-delete', selectedIds)
-}
+  const selectedIds = getSelectedIds();
+  emit("bulk-delete", selectedIds);
+};
 
 defineExpose({
   sortBy,
-})
+});
 </script>
 
 <style scoped>
@@ -277,4 +308,3 @@ defineExpose({
   max-width: 80px;
 }
 </style>
-

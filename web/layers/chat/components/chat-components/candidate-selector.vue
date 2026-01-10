@@ -2,7 +2,8 @@
   <div class="space-y-4">
     <UFormField label="Chọn ứng viên từ database">
       <USelectMenu
- size="lg"        v-model="selectedCandidateId"
+        v-model="selectedCandidateId"
+        size="lg"
         :options="candidates"
         option-attribute="name"
         value-attribute="id"
@@ -36,40 +37,41 @@
 </template>
 
 <script setup lang="ts">
+import type { Candidate } from "@candidate/types/candidate";
+
 interface Props {
   candidates?: Array<{
-    id: string
-    name: string
-    email: string
-  }>
-  value?: string
+    id: string;
+    name: string;
+    email: string;
+  }>;
+  value?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   candidates: () => [],
   value: undefined,
-})
+});
 
 const emit = defineEmits<{
-  (e: 'update', data: { candidateId: string; candidate: any }): void
-}>()
+  (e: "update", data: { candidateId: string; candidate: Candidate }): void;
+}>();
 
-const selectedCandidateId = ref(props.value)
+const selectedCandidateId = ref(props.value);
 const selectedCandidate = computed(() => {
-  return props.candidates.find((c) => c.id === selectedCandidateId.value)
-})
+  return props.candidates.find((c) => c.id === selectedCandidateId.value);
+});
 
 const handleSelect = (candidateId: string) => {
-  selectedCandidateId.value = candidateId
-}
+  selectedCandidateId.value = candidateId;
+};
 
 const handleConfirm = () => {
   if (selectedCandidate.value) {
-    emit('update', {
+    emit("update", {
       candidateId: selectedCandidate.value.id,
       candidate: selectedCandidate.value,
-    })
+    });
   }
-}
+};
 </script>
-

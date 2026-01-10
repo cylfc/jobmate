@@ -34,21 +34,13 @@
             @select="handlePurposeSelect"
           />
 
-          <UChatPrompt
-            v-model="input"
-            variant="soft"
-            @submit="handleSubmit"
-          >
+          <UChatPrompt v-model="input" variant="soft" @submit="handleSubmit">
             <template #footer>
               <div
                 class="w-full flex flex-row justify-between items-center mt-2"
               >
-                <ChatPromptActions
-                  :show-actions="true"
-                />
-                <UChatPromptSubmit
-                  :status="chatStatus"
-                />
+                <ChatPromptActions :show-actions="true" />
+                <UChatPromptSubmit :status="chatStatus" />
               </div>
             </template>
           </UChatPrompt>
@@ -60,25 +52,33 @@
 
 <script setup lang="ts">
 import type { ChatFeature } from "@chat/types/chat";
-import { useChatSetup } from '@chat/composables/use-chat-setup'
+import { useChatSetup } from "@chat/composables/use-chat-setup";
 
 interface Props {
   showPurposeButtons?: boolean;
   stickyFooter?: boolean;
-  mode: 'inline' | 'modal';
+  mode: "inline" | "modal";
 }
 
 withDefaults(defineProps<Props>(), {
   showPurposeButtons: true,
   stickyFooter: true,
-  mode: 'inline',
+  mode: "inline",
 });
 
-const { selectedPurpose, setSelectedPurpose } = useChatSetup()
+const { setSelectedPurpose } = useChatSetup();
 
 // Simple message state (UI only)
-const messages = reactive<Array<{ id: string; role: 'user' | 'assistant'; content: string; timestamp: Date; component?: any }>>([])
-const isLoading = ref(false)
+const messages = reactive<
+  Array<{
+    id: string;
+    role: "user" | "assistant";
+    content: string;
+    timestamp: Date;
+    component?: { type: string; props?: Record<string, unknown> };
+  }>
+>([]);
+const isLoading = ref(false);
 const input = ref("");
 
 const chatStatus = computed(() => {
@@ -94,7 +94,7 @@ const handleSubmit = async (e: Event) => {
     // Add user message
     messages.push({
       id: `msg-${Date.now()}`,
-      role: 'user',
+      role: "user",
       content: input.value.trim(),
       timestamp: new Date(),
     });
@@ -107,13 +107,13 @@ const handlePurposeSelect = (purpose: ChatFeature) => {
   setSelectedPurpose(purpose);
 };
 
-const handleComponentUpdate = (messageId: string, data: any) => {
+const handleComponentUpdate = (messageId: string, data: unknown) => {
   // TODO: Handle component update
-  console.log('Component update:', messageId, data);
+  console.log("Component update:", messageId, data);
 };
 
 const handleComponentAction = (messageId: string, action: string) => {
   // TODO: Handle component action
-  console.log('Component action:', messageId, action);
+  console.log("Component action:", messageId, action);
 };
 </script>

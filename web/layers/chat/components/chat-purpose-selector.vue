@@ -1,10 +1,13 @@
 <template>
-  <div v-if="showPurposeButtons" class="flex justify-center items-start flex-wrap gap-2">
+  <div
+    v-if="showPurposeButtons"
+    class="flex justify-center items-start flex-wrap gap-2"
+  >
     <UButton
       v-for="purpose in purposes"
       :key="purpose.value"
-      :variant="selectedPurpose === purpose.value ? 'solid' : 'outline'"
-      :color="selectedPurpose === purpose.value ? 'primary' : 'neutral'"
+      :variant="props.selectedPurpose === purpose.value ? 'solid' : 'outline'"
+      :color="props.selectedPurpose === purpose.value ? 'primary' : 'neutral'"
       size="sm"
       class="rounded-full"
       @click="handleSelect(purpose.value)"
@@ -18,36 +21,35 @@
 </template>
 
 <script setup lang="ts">
-import type { ChatFeature } from '@chat/types/chat'
+import type { ChatFeature } from "@chat/types/chat";
 
-const { t } = useI18n()
-const { purposes } = useChatSetup()
+const { t } = useI18n();
+const { purposes } = useChatSetup();
 
 interface Props {
   /**
    * Whether to show purpose buttons
    * @default true
    */
-  showPurposeButtons?: boolean
+  showPurposeButtons?: boolean;
   /**
    * Currently selected purpose
    */
-  selectedPurpose?: ChatFeature
+  selectedPurpose?: ChatFeature;
 }
 
 interface Emits {
-  (e: 'select', purpose: ChatFeature): void
+  (e: "select", purpose: ChatFeature): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showPurposeButtons: true,
-  selectedPurpose: 'matching',
-})
+  selectedPurpose: "matching",
+});
 
-const emit = defineEmits<Emits>()
+const emit = defineEmits<Emits>();
 
 const handleSelect = (purpose: ChatFeature) => {
-  emit('select', purpose)
-}
+  emit("select", purpose);
+};
 </script>
-

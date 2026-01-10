@@ -5,32 +5,37 @@
  * Backend returns format: { data, meta, status }
  */
 
-import type { ApiResponse } from '@/types/api-response'
-import { handleApiError, parseApiError, type ApiError } from './api-error-handler'
+import type { ApiResponse } from "@/types/api-response";
+import {
+  handleApiError,
+  parseApiError,
+  type ApiError,
+} from "./api-error-handler";
 
 export interface ApiClientOptions {
-  timeout?: number
-  retries?: number
-  retryDelay?: number
+  timeout?: number;
+  retries?: number;
+  retryDelay?: number;
 }
 
 export interface ApiClientConfig {
-  baseURL: string
-  options?: ApiClientOptions
+  baseURL: string;
+  options?: ApiClientOptions;
 }
 
 /**
  * Create API client instance
  */
 export const useApiClient = (config?: Partial<ApiClientConfig>) => {
-  const runtimeConfig = useRuntimeConfig()
-  const baseURL = config?.baseURL || runtimeConfig.apiBaseUrl || 'http://localhost:3000'
+  const runtimeConfig = useRuntimeConfig();
+  const baseURL =
+    config?.baseURL || runtimeConfig.apiBaseUrl || "http://localhost:3000";
   const options: ApiClientOptions = {
     timeout: 30000, // 30 seconds
     retries: 0,
     retryDelay: 1000,
     ...config?.options,
-  }
+  };
 
   /**
    * Make a request to backend API
@@ -40,34 +45,35 @@ export const useApiClient = (config?: Partial<ApiClientConfig>) => {
     endpoint: string,
     requestOptions: RequestInit = {},
   ): Promise<ApiResponse<T>> => {
-    const url = `${baseURL}${endpoint}`
+    const url = `${baseURL}${endpoint}`;
 
     try {
       // Create abort controller for timeout
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), options.timeout)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), options.timeout);
 
       const response = await fetch(url, {
         ...requestOptions,
         signal: controller.signal,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...(requestOptions.headers as Record<string, string>),
         },
-      })
+      });
 
-      clearTimeout(timeoutId)
+      clearTimeout(timeoutId);
 
-      const responseData = await response.json().catch(() => ({}))
+      const responseData = await response.json().catch(() => ({}));
 
       // Check if response follows new format { data, meta, status }
-      const isNewFormat = responseData && 
-                          typeof responseData === 'object' && 
-                          'data' in responseData && 
-                          'status' in responseData
+      const isNewFormat =
+        responseData &&
+        typeof responseData === "object" &&
+        "data" in responseData &&
+        "status" in responseData;
 
       if (!response.ok) {
-        const apiError = parseApiError(response, responseData)
+        const apiError = parseApiError(response, responseData);
         throw createError({
           statusCode: apiError.statusCode,
           message: apiError.message,
@@ -75,12 +81,12 @@ export const useApiClient = (config?: Partial<ApiClientConfig>) => {
             ...apiError.data,
             code: apiError.code,
           },
-        })
+        });
       }
 
       // Return full ApiResponse format
       if (isNewFormat) {
-        return responseData as ApiResponse<T>
+        return responseData as ApiResponse<T>;
       }
 
       // Fallback for old format (shouldn't happen with new backend)
@@ -89,10 +95,10 @@ export const useApiClient = (config?: Partial<ApiClientConfig>) => {
         data: responseData as T,
         meta: undefined,
         status: response.status,
-      } as ApiResponse<T>
+      } as ApiResponse<T>;
     } catch (error) {
       // Handle abort (timeout)
-      if (error instanceof Error && error.name === 'AbortError') {
+      if (error instanceof Error && error.name === "AbortError") {
         throw createError({
           statusCode: 408,
           message: `Request timeout after ${options.timeout}ms`,
@@ -100,11 +106,11 @@ export const useApiClient = (config?: Partial<ApiClientConfig>) => {
             url,
             timeout: options.timeout,
           },
-        })
+        });
       }
 
       // Handle other errors
-      const apiError = handleApiError(error, endpoint, baseURL)
+      const apiError = handleApiError(error, endpoint, baseURL);
       throw createError({
         statusCode: apiError.statusCode,
         message: apiError.message,
@@ -112,19 +118,22 @@ export const useApiClient = (config?: Partial<ApiClientConfig>) => {
           ...apiError.data,
           code: apiError.code,
         },
-      })
+      });
     }
-  }
+  };
 
   /**
    * GET request
    */
-  const get = <T = unknown>(endpoint: string, headers?: Record<string, string>) => {
+  const get = <T = unknown>(
+    endpoint: string,
+    headers?: Record<string, string>,
+  ) => {
     return request<T>(endpoint, {
-      method: 'GET',
+      method: "GET",
       headers,
-    })
-  }
+    });
+  };
 
   /**
    * POST request
@@ -135,11 +144,11 @@ export const useApiClient = (config?: Partial<ApiClientConfig>) => {
     headers?: Record<string, string>,
   ) => {
     return request<T>(endpoint, {
-      method: 'POST',
+      method: "POST",
       body: body ? JSON.stringify(body) : undefined,
       headers,
-    })
-  }
+    });
+  };
 
   /**
    * PATCH request
@@ -150,11 +159,11 @@ export const useApiClient = (config?: Partial<ApiClientConfig>) => {
     headers?: Record<string, string>,
   ) => {
     return request<T>(endpoint, {
-      method: 'PATCH',
+      method: "PATCH",
       body: body ? JSON.stringify(body) : undefined,
       headers,
-    })
-  }
+    });
+  };
 
   /**
    * PUT request
@@ -165,21 +174,24 @@ export const useApiClient = (config?: Partial<ApiClientConfig>) => {
     headers?: Record<string, string>,
   ) => {
     return request<T>(endpoint, {
-      method: 'PUT',
+      method: "PUT",
       body: body ? JSON.stringify(body) : undefined,
       headers,
-    })
-  }
+    });
+  };
 
   /**
    * DELETE request
    */
-  const del = <T = unknown>(endpoint: string, headers?: Record<string, string>) => {
+  const del = <T = unknown>(
+    endpoint: string,
+    headers?: Record<string, string>,
+  ) => {
     return request<T>(endpoint, {
-      method: 'DELETE',
+      method: "DELETE",
       headers,
-    })
-  }
+    });
+  };
 
   return {
     request,
@@ -189,8 +201,8 @@ export const useApiClient = (config?: Partial<ApiClientConfig>) => {
     put,
     delete: del,
     baseURL,
-  }
-}
+  };
+};
 
 // Export types
-export type { ApiError }
+export type { ApiError };

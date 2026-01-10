@@ -2,25 +2,28 @@
   <UCard>
     <template #header>
       <div class="text-center">
-        <h1 class="text-2xl font-bold text-default">{{ t('auth.forgot-password-form.title') }}</h1>
+        <h1 class="text-2xl font-bold text-default">
+          {{ t("auth.forgot-password-form.title") }}
+        </h1>
         <p class="mt-2 text-sm text-muted">
-          {{ t('auth.forgot-password-form.subtitle') }}
+          {{ t("auth.forgot-password-form.subtitle") }}
         </p>
       </div>
     </template>
 
     <div v-if="isEmailSent" class="text-center py-8">
-      <UIcon name="i-lucide-mail-check" class="w-16 h-16 text-primary mx-auto mb-4" />
-      <h2 class="text-lg font-semibold text-default mb-2">{{ t('auth.forgot-password-form.email-sent-title') }}</h2>
+      <UIcon
+        name="i-lucide-mail-check"
+        class="w-16 h-16 text-primary mx-auto mb-4"
+      />
+      <h2 class="text-lg font-semibold text-default mb-2">
+        {{ t("auth.forgot-password-form.email-sent-title") }}
+      </h2>
       <p class="text-sm text-muted mb-6">
-        {{ t('auth.forgot-password-form.email-sent-message') }}
+        {{ t("auth.forgot-password-form.email-sent-message") }}
       </p>
-      <UButton
-        to="/auth/login"
-        color="primary"
-        size="lg"
-      >
-        {{ t('auth.forgot-password-form.back-to-login') }}
+      <UButton to="/auth/login" color="primary" size="lg">
+        {{ t("auth.forgot-password-form.back-to-login") }}
       </UButton>
     </div>
 
@@ -38,7 +41,7 @@
           :placeholder="t('auth.forgot-password-form.email-placeholder')"
           autocomplete="email"
           size="lg"
-           class="w-full"
+          class="w-full"
         />
       </UFormField>
 
@@ -49,7 +52,7 @@
         block
         :loading="isLoading"
       >
-        {{ t('auth.forgot-password-form.submit-button') }}
+        {{ t("auth.forgot-password-form.submit-button") }}
       </UButton>
     </UForm>
 
@@ -59,7 +62,7 @@
           to="/auth/login"
           class="font-medium text-primary hover:text-primary"
         >
-          {{ t('auth.forgot-password-form.back-to-login') }}
+          {{ t("auth.forgot-password-form.back-to-login") }}
         </NuxtLink>
       </div>
     </template>
@@ -67,9 +70,9 @@
 </template>
 
 <script setup lang="ts">
-import { useForgotPassword } from '@auth/composables/auth/use-forgot-password'
+import { useForgotPassword } from "@auth/composables/auth/use-forgot-password";
 
-const { t } = useI18n()
-const { schema, state, isLoading, isEmailSent, handleSubmit } = useForgotPassword()
+const { t } = useI18n();
+const { schema, state, isLoading, isEmailSent, handleSubmit } =
+  useForgotPassword();
 </script>
-

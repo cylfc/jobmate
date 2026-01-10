@@ -4,7 +4,7 @@
       <div class="flex items-center justify-between h-16">
         <NuxtLink to="/" class="flex items-center gap-2">
           <UIcon name="i-lucide-briefcase" class="w-8 h-8 text-primary" />
-            <span class="text-xl font-bold text-default">JobMate</span>
+          <span class="text-xl font-bold text-default">JobMate</span>
         </NuxtLink>
         <div class="flex items-center gap-4">
           <UButton

@@ -7,12 +7,12 @@ export default defineAppConfig({
     button: {
       variants: {
         color: {
-          'primary': "border-primary-600 ring-primary-500"
+          primary: "border-primary-600 ring-primary-500",
         },
         variant: {
-          'solid': "border-b-2 ring"
-        }
-      }
-    }
+          solid: "border-b-2 ring",
+        },
+      },
+    },
   },
 });

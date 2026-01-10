@@ -1,226 +1,230 @@
-export type KpiTrend = 'up' | 'down' | 'flat'
+export type KpiTrend = "up" | "down" | "flat";
 
-export type KpiChartType = 'progress' | 'line' | 'line-compare' | 'bar'
+export type KpiChartType = "progress" | "line" | "line-compare" | "bar";
 
 export interface KpiCard {
-  id: string
-  label: string
-  value: string | number
-  delta?: number
-  icon?: string
-  loading?: boolean
+  id: string;
+  label: string;
+  value: string | number;
+  delta?: number;
+  icon?: string;
+  loading?: boolean;
   /**
    * Trend data array (e.g., last 7 days values) for chart
    */
-  trendData?: number[]
+  trendData?: number[];
   /**
    * Chart type to display
    */
-  chartType?: KpiChartType
+  chartType?: KpiChartType;
   /**
    * Sub-metric label (e.g., "Conversion rate")
    */
-  subMetric?: string
+  subMetric?: string;
   /**
    * Sub-metric value (e.g., "7%")
    */
-  subMetricValue?: string | number
+  subMetricValue?: string | number;
   /**
    * Comparison data for line-compare chart type
    */
-  compareData?: number[]
+  compareData?: number[];
 }
 
-export type JobStatus = 'published' | 'draft' | 'closed'
+export type JobStatus = "published" | "draft" | "closed";
 
 export interface ActiveJobRow {
-  id: string
-  title: string
-  status: JobStatus
-  candidatesCount: number
-  topMatchScore: number | null
-  lastActivityAt: string // ISO string
-  lastMatchingRunAt: string | null // ISO string
+  id: string;
+  title: string;
+  status: JobStatus;
+  candidatesCount: number;
+  topMatchScore: number | null;
+  lastActivityAt: string; // ISO string
+  lastMatchingRunAt: string | null; // ISO string
 }
 
-export type TaskSeverity = 'info' | 'warning' | 'error' | 'success'
+export type TaskSeverity = "info" | "warning" | "error" | "success";
 
 export interface TaskItem {
-  id: string
-  title: string
-  description?: string
-  severity: TaskSeverity
-  due?: string
-  ctaLabel?: string
+  id: string;
+  title: string;
+  description?: string;
+  severity: TaskSeverity;
+  due?: string;
+  ctaLabel?: string;
 }
 
-export type DashboardAlertSeverity = 'info' | 'warning' | 'critical'
+export type DashboardAlertSeverity = "info" | "warning" | "critical";
 
 export interface DashboardAlert {
-  id: string
-  type: string
-  message: string
-  actionUrl: string
-  severity: DashboardAlertSeverity
+  id: string;
+  type: string;
+  message: string;
+  actionUrl: string;
+  severity: DashboardAlertSeverity;
 }
 
 export interface MatchingHealthMetric {
-  id: string
-  label: string
-  value: number
-  hint?: string
+  id: string;
+  label: string;
+  value: number;
+  hint?: string;
 }
 
 export interface MatchScoreDistributionBin {
   /**
    * Label to display, e.g. "0–20", "20–40", "80–100"
    */
-  label: string
+  label: string;
   /**
    * Share of matches that fall in this bin, expressed as 0..1.
    * NOTE: Provided by backend aggregation; do not compute on frontend.
    */
-  ratio: number
+  ratio: number;
   /**
    * Optional absolute count (also backend-provided).
    */
-  count?: number
+  count?: number;
 }
 
 export interface MatchingHealthAggregates {
-  scoreDistribution: MatchScoreDistributionBin[]
+  scoreDistribution: MatchScoreDistributionBin[];
   /**
    * Share of high-quality matches (score > 80), 0..1.
    */
-  highQualityRatio: number
+  highQualityRatio: number;
   /**
    * Share of low-quality matches (score < 60), 0..1.
    */
-  lowQualityRatio: number
+  lowQualityRatio: number;
 }
 
 export interface PipelineStage {
-  id: string
-  label: string
-  count: number
-  color?: 'neutral' | 'primary' | 'success' | 'info' | 'warning' | 'error'
+  id: string;
+  label: string;
+  count: number;
+  color?: "neutral" | "primary" | "success" | "info" | "warning" | "error";
 }
 
-export type CandidatePipelineStageId = 'uploaded' | 'matched' | 'contacted' | 'interviewing' | 'offer' | (string & {})
+export type CandidatePipelineStageId =
+  | "uploaded"
+  | "matched"
+  | "contacted"
+  | "interviewing"
+  | "offer"
+  | (string & {});
 
 export interface CandidatePipelineStage {
-  id: CandidatePipelineStageId
-  count: number
+  id: CandidatePipelineStageId;
+  count: number;
 }
 
 export interface ActivityItem {
-  id: string
-  title: string
-  description?: string
-  at: string
-  icon?: string
+  id: string;
+  title: string;
+  description?: string;
+  at: string;
+  icon?: string;
 }
 
 export type RecentActivityType =
-  | 'cv_uploaded'
-  | 'job_saved'
-  | 'matching_completed'
-  | 'interview_scheduled'
-  | (string & {})
+  | "cv_uploaded"
+  | "job_saved"
+  | "matching_completed"
+  | "interview_scheduled"
+  | (string & {});
 
 export interface RecentActivityEvent {
-  id: string
-  type: RecentActivityType
+  id: string;
+  type: RecentActivityType;
   /**
    * ISO string for stable grouping/sorting.
    */
-  occurredAt: string
+  occurredAt: string;
   /**
    * Optional metadata provided by backend (e.g. candidateName, jobTitle).
    * Keep untyped for forward compatibility; UI can choose what to show.
    */
-  meta?: Record<string, unknown>
+  meta?: Record<string, unknown>;
 }
 
 export interface RecentActivitiesResponse {
-  events: RecentActivityEvent[]
+  events: RecentActivityEvent[];
   /**
    * Pagination-ready fields (optional for now).
    */
-  nextCursor?: string | null
-  hasMore?: boolean
+  nextCursor?: string | null;
+  hasMore?: boolean;
 }
 
 /**
  * Dashboard API Response Types
  */
 export interface DashboardKpisResponse {
-  openJobs: number
-  candidatesInPipeline: number
-  matchesThisWeek: number
-  averageMatchScore: number
-  timeToShortlist: number
+  openJobs: number;
+  candidatesInPipeline: number;
+  matchesThisWeek: number;
+  averageMatchScore: number;
+  timeToShortlist: number;
 }
 
 export interface DashboardKpisNormalized {
-  openJobs: number
-  candidatesInPipeline: number
-  matchesThisWeek: number
-  averageMatchScore: number
-  timeToShortlist: number
+  openJobs: number;
+  candidatesInPipeline: number;
+  matchesThisWeek: number;
+  averageMatchScore: number;
+  timeToShortlist: number;
 }
 
 export interface ActiveJobsApiItem {
-  id: string
-  title: string
-  status: JobStatus
-  candidatesCount: number
-  topMatchScore: number | null
-  lastActivityAt: string
-  lastMatchingRunAt: string | null
+  id: string;
+  title: string;
+  status: JobStatus;
+  candidatesCount: number;
+  topMatchScore: number | null;
+  lastActivityAt: string;
+  lastMatchingRunAt: string | null;
 }
 
 export interface ActiveJobsApiResponse {
-  jobs: ActiveJobsApiItem[]
+  jobs: ActiveJobsApiItem[];
 }
 
 export interface ActiveJob {
-  id: string
-  title: string
-  status: JobStatus
-  candidatesCount: number
-  topMatchScore: number | null
-  lastActivityAt: string
-  lastMatchingRunAt: string | null
+  id: string;
+  title: string;
+  status: JobStatus;
+  candidatesCount: number;
+  topMatchScore: number | null;
+  lastActivityAt: string;
+  lastMatchingRunAt: string | null;
 }
 
 export interface DashboardAlertsApiItem {
-  id?: string
-  type?: string
-  message?: string
-  actionUrl?: string
-  severity?: string
-  [key: string]: unknown
+  id?: string;
+  type?: string;
+  message?: string;
+  actionUrl?: string;
+  severity?: string;
+  [key: string]: unknown;
 }
 
 export interface DashboardAlertsApiResponse {
-  alerts: DashboardAlertsApiItem[]
+  alerts: DashboardAlertsApiItem[];
 }
 
 export interface MatchingHealthApiResponse {
-  scoreDistribution: MatchScoreDistributionBin[]
-  highQualityRatio: number
-  lowQualityRatio: number
+  scoreDistribution: MatchScoreDistributionBin[];
+  highQualityRatio: number;
+  lowQualityRatio: number;
 }
 
 export interface CandidatePipelineApiItem {
-  id: CandidatePipelineStageId
-  count: number
-  [key: string]: unknown
+  id: CandidatePipelineStageId;
+  count: number;
+  [key: string]: unknown;
 }
 
 export interface CandidatePipelineApiResponse {
-  stages: CandidatePipelineApiItem[]
+  stages: CandidatePipelineApiItem[];
 }
-
-
