@@ -8,26 +8,38 @@
             <span class="text-xl font-bold text-default">JobMate</span>
           </NuxtLink>
           <nav class="hidden md:flex items-center gap-6">
-            <NuxtLink to="/" class="text-sm font-medium text-toned hover:text-primary">
-              {{ t('nav.home') }}
+            <NuxtLink
+              to="/"
+              class="text-sm font-medium text-toned hover:text-primary"
+            >
+              {{ t("nav.home") }}
             </NuxtLink>
-            <NuxtLink to="/jobs" class="text-sm font-medium text-toned hover:text-primary">
-              {{ t('nav.jobs') }}
+            <NuxtLink
+              to="/jobs"
+              class="text-sm font-medium text-toned hover:text-primary"
+            >
+              {{ t("nav.jobs") }}
             </NuxtLink>
-            <NuxtLink to="/candidates" class="text-sm font-medium text-toned hover:text-primary">
-              {{ t('nav.candidates') }}
+            <NuxtLink
+              to="/candidates"
+              class="text-sm font-medium text-toned hover:text-primary"
+            >
+              {{ t("nav.candidates") }}
             </NuxtLink>
-            <NuxtLink to="/matching" class="text-sm font-medium text-toned hover:text-primary">
-              {{ t('nav.matching') }}
+            <NuxtLink
+              to="/matching"
+              class="text-sm font-medium text-toned hover:text-primary"
+            >
+              {{ t("nav.matching") }}
             </NuxtLink>
           </nav>
         </div>
         <div class="flex items-center gap-4">
           <UButton to="/auth/login" color="neutral" variant="ghost" size="lg">
-            {{ t('auth.login') }}
+            {{ t("auth.login") }}
           </UButton>
           <UButton to="/auth/register" color="primary" size="lg">
-            {{ t('auth.register') }}
+            {{ t("auth.register") }}
           </UButton>
         </div>
       </div>
@@ -36,6 +48,5 @@
 </template>
 
 <script setup lang="ts">
-const { t } = useI18n()
+const { t } = useI18n();
 </script>
-

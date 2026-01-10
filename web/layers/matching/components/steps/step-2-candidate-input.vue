@@ -1,31 +1,44 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-2xl font-bold mb-2">{{ t('matching.step-2.title') }}</h2>
-      <p class="text-muted">{{ t('matching.step-2.description') }}</p>
+      <h2 class="text-2xl font-bold mb-2">{{ t("matching.step-2.title") }}</h2>
+      <p class="text-muted">{{ t("matching.step-2.description") }}</p>
     </div>
 
     <div class="space-y-4">
       <div v-if="selectedMode === CANDIDATE_INPUT_MODE.INPUT" class="space-y-4">
-        <UFormField :label="t('matching.step-2.candidate-information')" name="candidateText" class="w-full">
+        <UFormField
+          :label="t('matching.step-2.candidate-information')"
+          name="candidateText"
+          class="w-full"
+        >
           <UTextarea
- size="lg"            v-model="candidateText"
+            v-model="candidateText"
+            size="lg"
             :placeholder="t('matching.step-2.candidate-placeholder')"
             :rows="10"
             class="w-full"
           />
           <template #hint>
             <p class="text-sm text-muted mt-1">
-              {{ t('matching.step-2.candidate-hint') }}
+              {{ t("matching.step-2.candidate-hint") }}
             </p>
           </template>
         </UFormField>
       </div>
 
-      <div v-else-if="selectedMode === CANDIDATE_INPUT_MODE.UPLOAD" class="space-y-4">
-        <UFormField :label="t('matching.step-2.upload-cvs')" name="cvs" class="w-full">
+      <div
+        v-else-if="selectedMode === CANDIDATE_INPUT_MODE.UPLOAD"
+        class="space-y-4"
+      >
+        <UFormField
+          :label="t('matching.step-2.upload-cvs')"
+          name="cvs"
+          class="w-full"
+        >
           <UInput
- size="lg"            type="file"
+            size="lg"
+            type="file"
             accept=".pdf,.doc,.docx"
             multiple
             class="w-full"
@@ -33,13 +46,15 @@
           />
           <template #hint>
             <p class="text-sm text-muted mt-1">
-              {{ t('matching.step-2.upload-hint') }}
+              {{ t("matching.step-2.upload-hint") }}
             </p>
           </template>
         </UFormField>
 
         <div v-if="uploadedFiles.length > 0" class="space-y-2">
-          <p class="text-sm font-medium">{{ t('matching.step-2.uploaded-files') }}</p>
+          <p class="text-sm font-medium">
+            {{ t("matching.step-2.uploaded-files") }}
+          </p>
           <div class="space-y-2">
             <div
               v-for="(file, index) in uploadedFiles"
@@ -62,21 +77,38 @@
         </div>
       </div>
 
-      <div v-else-if="selectedMode === CANDIDATE_INPUT_MODE.DATABASE" class="space-y-4">
-        <UFormField :label="t('matching.step-2.filter-candidates')" name="filters" class="w-full">
+      <div
+        v-else-if="selectedMode === CANDIDATE_INPUT_MODE.DATABASE"
+        class="space-y-4"
+      >
+        <UFormField
+          :label="t('matching.step-2.filter-candidates')"
+          name="filters"
+          class="w-full"
+        >
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <UFormField :label="t('matching.step-2.status')" name="status" class="w-full">
+            <UFormField
+              :label="t('matching.step-2.status')"
+              name="status"
+              class="w-full"
+            >
               <USelectMenu
- size="lg"                v-model="filters.status"
+                v-model="filters.status"
+                size="lg"
                 :options="statusOptions"
                 :placeholder="t('matching.step-2.select-status')"
                 clearable
                 class="w-full"
               />
             </UFormField>
-            <UFormField :label="t('matching.step-2.min-experience')" name="minExperience" class="w-full">
+            <UFormField
+              :label="t('matching.step-2.min-experience')"
+              name="minExperience"
+              class="w-full"
+            >
               <UInput
- size="lg"                v-model.number="filters.minExperience"
+                v-model.number="filters.minExperience"
+                size="lg"
                 type="number"
                 :placeholder="t('matching.step-2.min-experience-placeholder')"
                 class="w-full"
@@ -91,11 +123,13 @@
           icon="i-lucide-search"
           @click="loadCandidates"
         >
-          {{ t('matching.step-2.load-candidates') }}
+          {{ t("matching.step-2.load-candidates") }}
         </UButton>
 
         <div v-if="candidatesFromDatabase.length > 0" class="space-y-2">
-          <p class="text-sm font-medium">{{ t('matching.step-2.select-candidates') }}</p>
+          <p class="text-sm font-medium">
+            {{ t("matching.step-2.select-candidates") }}
+          </p>
           <div class="space-y-2 max-h-96 overflow-y-auto">
             <div
               v-for="candidate in candidatesFromDatabase"
@@ -103,7 +137,9 @@
               class="flex items-center justify-between p-3 bg-muted rounded-lg hover:bg-elevated transition-colors"
             >
               <div>
-                <p class="font-medium">{{ `${candidate.firstName} ${candidate.lastName}` }}</p>
+                <p class="font-medium">
+                  {{ `${candidate.firstName} ${candidate.lastName}` }}
+                </p>
                 <p class="text-sm text-muted">{{ candidate.email }}</p>
               </div>
               <UCheckbox
@@ -133,7 +169,11 @@
 
     <div v-if="selectedCandidates.length > 0" class="p-4 bg-muted rounded-lg">
       <p class="text-sm font-medium mb-2">
-        {{ t('matching.step-2.selected-candidates', { count: selectedCandidates.length }) }}
+        {{
+          t("matching.step-2.selected-candidates", {
+            count: selectedCandidates.length,
+          })
+        }}
       </p>
       <div class="flex flex-wrap gap-2">
         <UBadge
@@ -156,7 +196,7 @@
         icon="i-lucide-arrow-left"
         @click="$emit('previous')"
       >
-        {{ t('matching.step-2.previous') }}
+        {{ t("matching.step-2.previous") }}
       </UButton>
       <div class="flex gap-2">
         <UButton
@@ -166,7 +206,7 @@
           icon="i-lucide-save"
           @click="openSaveCandidateModal"
         >
-          {{ t('matching.step-2.save-candidates') }}
+          {{ t("matching.step-2.save-candidates") }}
         </UButton>
         <UButton
           color="primary"
@@ -175,7 +215,11 @@
           icon="i-lucide-arrow-right"
           @click="handleNext"
         >
-          {{ isProcessing ? t('matching.step-2.processing') : t('matching.step-2.next-step') }}
+          {{
+            isProcessing
+              ? t("matching.step-2.processing")
+              : t("matching.step-2.next-step")
+          }}
         </UButton>
       </div>
     </div>
@@ -183,161 +227,195 @@
 </template>
 
 <script setup lang="ts">
-import type { Candidate, CandidateFilter } from '@matching/types/matching'
-import { CANDIDATE_INPUT_MODE, type CandidateInputMode } from '@matching/constants/modes'
+import type { Candidate, CandidateFilter } from "@matching/types/matching";
+import {
+  CANDIDATE_INPUT_MODE,
+  type CandidateInputMode,
+} from "@matching/constants/modes";
 
-const { t } = useI18n()
+import { useMatchingCandidate } from "@matching/composables/use-matching-candidate";
+
+const { t } = useI18n();
 
 interface Props {
-  candidates: Candidate[]
+  candidates: Candidate[];
 }
 
 interface Emits {
-  (e: 'update:candidates', value: Candidate[]): void
-  (e: 'next'): void
-  (e: 'previous'): void
-  (e: 'save-candidate'): void
+  (e: "update:candidates", value: Candidate[]): void;
+  (e: "next"): void;
+  (e: "previous"): void;
+  (e: "save-candidate"): void;
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+const props = defineProps<Props>();
+const emit = defineEmits<Emits>();
 
-import { useMatchingCandidate } from '@matching/composables/use-matching-candidate'
+const { getCandidatesFromDatabase, parseCandidatesFromText } =
+  useMatchingCandidate();
 
-const { getCandidatesFromDatabase, parseCandidatesFromText } = useMatchingCandidate()
-
-const selectedMode = ref<CandidateInputMode>(CANDIDATE_INPUT_MODE.INPUT)
-const uploadedFiles = ref<File[]>([])
-const selectedCandidates = ref<Candidate[]>([])
-const candidatesFromDatabase = ref<Candidate[]>([])
-const filters = ref<CandidateFilter>({})
-const candidateText = ref('')
-const isProcessing = ref(false)
+const selectedMode = ref<CandidateInputMode>(CANDIDATE_INPUT_MODE.INPUT);
+const uploadedFiles = ref<File[]>([]);
+const selectedCandidates = ref<Candidate[]>([]);
+const candidatesFromDatabase = ref<Candidate[]>([]);
+const filters = ref<CandidateFilter>({});
+const candidateText = ref("");
+const isProcessing = ref(false);
 
 const tabs = computed(() => [
-  { label: t('matching.step-2.input'), value: CANDIDATE_INPUT_MODE.INPUT, icon: 'i-lucide-pencil' },
-  { label: t('matching.step-2.upload-cvs-label'), value: CANDIDATE_INPUT_MODE.UPLOAD, icon: 'i-lucide-file-up' },
-  { label: t('matching.step-2.from-database'), value: CANDIDATE_INPUT_MODE.DATABASE, icon: 'i-lucide-database' },
-])
+  {
+    label: t("matching.step-2.input"),
+    value: CANDIDATE_INPUT_MODE.INPUT,
+    icon: "i-lucide-pencil",
+  },
+  {
+    label: t("matching.step-2.upload-cvs-label"),
+    value: CANDIDATE_INPUT_MODE.UPLOAD,
+    icon: "i-lucide-file-up",
+  },
+  {
+    label: t("matching.step-2.from-database"),
+    value: CANDIDATE_INPUT_MODE.DATABASE,
+    icon: "i-lucide-database",
+  },
+]);
 
 const statusOptions = computed(() => [
-  { label: t('matching.status.active'), value: 'active' },
-  { label: t('matching.status.inactive'), value: 'inactive' },
-  { label: t('matching.status.archived'), value: 'archived' },
-])
+  { label: t("matching.status.active"), value: "active" },
+  { label: t("matching.status.inactive"), value: "inactive" },
+  { label: t("matching.status.archived"), value: "archived" },
+]);
 
 const canProceed = computed(() => {
   if (selectedMode.value === CANDIDATE_INPUT_MODE.INPUT) {
-    return candidateText.value.trim().length > 0
+    return candidateText.value.trim().length > 0;
   }
-  if (selectedMode.value === CANDIDATE_INPUT_MODE.UPLOAD) return uploadedFiles.value.length > 0
-  if (selectedMode.value === CANDIDATE_INPUT_MODE.DATABASE) return selectedCandidates.value.length > 0
-  return false
-})
+  if (selectedMode.value === CANDIDATE_INPUT_MODE.UPLOAD)
+    return uploadedFiles.value.length > 0;
+  if (selectedMode.value === CANDIDATE_INPUT_MODE.DATABASE)
+    return selectedCandidates.value.length > 0;
+  return false;
+});
 
 const canSaveCandidate = computed(() => {
-  return uploadedFiles.value.length > 0 || candidateText.value.trim().length > 0
-})
+  return (
+    uploadedFiles.value.length > 0 || candidateText.value.trim().length > 0
+  );
+});
 
 const handleFileUpload = (event: Event) => {
-  const target = event.target as HTMLInputElement
+  const target = event.target as HTMLInputElement;
   if (target.files) {
-    uploadedFiles.value = Array.from(target.files)
-    
+    uploadedFiles.value = Array.from(target.files);
+
     // Create candidate objects from uploaded files
-    const newCandidates: Candidate[] = Array.from(target.files).map(file => ({
-      firstName: file.name.split('.')[0],
-      lastName: '',
-      email: '',
+    const newCandidates: Candidate[] = Array.from(target.files).map((file) => ({
+      firstName: file.name.split(".")[0],
+      lastName: "",
+      email: "",
       skills: [],
       experience: 0,
       cvFile: file,
-    }))
-    
-    selectedCandidates.value = [...selectedCandidates.value, ...newCandidates]
+    }));
+
+    selectedCandidates.value = [...selectedCandidates.value, ...newCandidates];
   }
-}
+};
 
 const removeFile = (index: number) => {
-  uploadedFiles.value.splice(index, 1)
+  uploadedFiles.value.splice(index, 1);
   // Remove corresponding candidate from selectedCandidates
-  const fileCandidates = selectedCandidates.value.filter(c => c.cvFile)
+  const fileCandidates = selectedCandidates.value.filter((c) => c.cvFile);
   if (fileCandidates[index]) {
-    const candidateToRemove = fileCandidates[index]
-    const candidateIndex = selectedCandidates.value.findIndex(c => c === candidateToRemove)
+    const candidateToRemove = fileCandidates[index];
+    const candidateIndex = selectedCandidates.value.findIndex(
+      (c) => c === candidateToRemove,
+    );
     if (candidateIndex >= 0) {
-      selectedCandidates.value.splice(candidateIndex, 1)
+      selectedCandidates.value.splice(candidateIndex, 1);
     }
   }
-}
+};
 
 const loadCandidates = async () => {
-  candidatesFromDatabase.value = await getCandidatesFromDatabase(filters.value)
-}
+  candidatesFromDatabase.value = await getCandidatesFromDatabase(filters.value);
+};
 
 const isSelected = (id?: string) => {
-  if (!id) return false
-  return selectedCandidates.value.some(c => c.id === id)
-}
+  if (!id) return false;
+  return selectedCandidates.value.some((c) => c.id === id);
+};
 
 const toggleCandidate = (candidate: Candidate) => {
-  if (!candidate.id) return
-  
-  const index = selectedCandidates.value.findIndex(c => c.id === candidate.id)
+  if (!candidate.id) return;
+
+  const index = selectedCandidates.value.findIndex(
+    (c) => c.id === candidate.id,
+  );
   if (index >= 0) {
-    selectedCandidates.value.splice(index, 1)
+    selectedCandidates.value.splice(index, 1);
   } else {
-    selectedCandidates.value.push(candidate)
+    selectedCandidates.value.push(candidate);
   }
-}
+};
 
 const getCandidateName = (candidate: Candidate) => {
   if (candidate.firstName || candidate.lastName) {
-    return `${candidate.firstName} ${candidate.lastName}`.trim()
+    return `${candidate.firstName} ${candidate.lastName}`.trim();
   }
-  return candidate.email || t('common.unknown')
-}
+  return candidate.email || t("common.unknown");
+};
 
 const handleNext = async () => {
   // Combine all candidates from different modes
-  const allCandidates = [...selectedCandidates.value]
-  
+  const allCandidates = [...selectedCandidates.value];
+
   // If there's candidate text, parse candidates from text via API
-  if (selectedMode.value === CANDIDATE_INPUT_MODE.INPUT && candidateText.value.trim().length > 0) {
-    isProcessing.value = true
+  if (
+    selectedMode.value === CANDIDATE_INPUT_MODE.INPUT &&
+    candidateText.value.trim().length > 0
+  ) {
+    isProcessing.value = true;
     try {
-      const parsedCandidates = await parseCandidatesFromText(candidateText.value.trim())
-      
+      const parsedCandidates = await parseCandidatesFromText(
+        candidateText.value.trim(),
+      );
+
       // Add parsed candidates if not already in list
-      parsedCandidates.forEach(candidate => {
-        const isDuplicate = allCandidates.some(c => 
-          (c.email && candidate.email && c.email === candidate.email) ||
-          (c.firstName === candidate.firstName && 
-           c.lastName === candidate.lastName &&
-           candidate.firstName !== 'Candidate')
-        )
-        
+      parsedCandidates.forEach((candidate) => {
+        const isDuplicate = allCandidates.some(
+          (c) =>
+            (c.email && candidate.email && c.email === candidate.email) ||
+            (c.firstName === candidate.firstName &&
+              c.lastName === candidate.lastName &&
+              candidate.firstName !== "Candidate"),
+        );
+
         if (!isDuplicate) {
-          allCandidates.push(candidate)
+          allCandidates.push(candidate);
         }
-      })
+      });
     } catch (error) {
-      console.error('Error parsing candidates from text:', error)
+      console.error("Error parsing candidates from text:", error);
       // Continue with existing candidates if parsing fails
     } finally {
-      isProcessing.value = false
+      isProcessing.value = false;
     }
   }
-  
-  emit('update:candidates', allCandidates)
-  emit('next')
-}
+
+  emit("update:candidates", allCandidates);
+  emit("next");
+};
 
 const openSaveCandidateModal = () => {
-  emit('save-candidate')
-}
+  emit("save-candidate");
+};
 
-watch(() => props.candidates, (newCandidates) => {
-  selectedCandidates.value = [...newCandidates]
-}, { immediate: true })
+watch(
+  () => props.candidates,
+  (newCandidates) => {
+    selectedCandidates.value = [...newCandidates];
+  },
+  { immediate: true },
+);
 </script>

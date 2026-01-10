@@ -9,7 +9,9 @@
       </p>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-4 justify-start items-stretch gap-4">
+    <div
+      class="grid grid-cols-1 lg:grid-cols-4 justify-start items-stretch gap-4"
+    >
       <div class="lg:col-span-1">
         <UTabs
           :model-value="selectedTab"
@@ -19,7 +21,7 @@
           :ui="{
             list: 'items-stretch w-full justify-start',
             leadingIcon: 'size-4',
-            content: 'hidden'
+            content: 'hidden',
           }"
           @update:model-value="updateTab"
         />
@@ -36,19 +38,21 @@
 </template>
 
 <script setup lang="ts">
-import { useSettingTabs } from '@setting/composables/use-setting-tabs'
+import { useSettingTabs } from "@setting/composables/use-setting-tabs";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 definePageMeta({
   layout: "dashboard",
-  middleware: '01-auth',
-})
+  middleware: "01-auth",
+});
 
-const { tabs, selectedTab, updateTab } = useSettingTabs()
+const { tabs, selectedTab, updateTab } = useSettingTabs();
 
-const tabsWithLabels = computed(() => tabs.map(tab => ({
-  ...tab,
-  label: t(`setting.${tab.value}.title`),
-})))
+const tabsWithLabels = computed(() =>
+  tabs.map((tab) => ({
+    ...tab,
+    label: t(`setting.${tab.value}.title`),
+  })),
+);
 </script>

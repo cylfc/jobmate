@@ -4,11 +4,11 @@
  */
 
 export const CANDIDATE_CREATE_MODE = {
-  INPUT: 'input',
-  UPLOAD: 'upload',
-  DATABASE: 'database',
-  FORM: 'form',
-} as const
+  INPUT: "input",
+  UPLOAD: "upload",
+  DATABASE: "database",
+  FORM: "form",
+} as const;
 
-export type CandidateCreateMode = typeof CANDIDATE_CREATE_MODE[keyof typeof CANDIDATE_CREATE_MODE]
-
+export type CandidateCreateMode =
+  (typeof CANDIDATE_CREATE_MODE)[keyof typeof CANDIDATE_CREATE_MODE];

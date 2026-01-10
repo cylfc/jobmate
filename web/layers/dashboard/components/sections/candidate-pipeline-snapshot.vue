@@ -65,7 +65,7 @@ import { useI18n } from "vue-i18n";
 import type {
   CandidatePipelineStage,
   CandidatePipelineStageId,
-} from '@/types/dashboard';
+} from "@/types/dashboard";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -84,22 +84,6 @@ const stageLabel = (id: CandidatePipelineStageId) => {
   // If key missing, i18n returns the key; fallback to raw id for future stages.
   return translated === key ? String(id) : translated;
 };
-
-const clampPct = (n: number) =>
-  Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : 0;
-
-type Segment = {
-  id: CandidatePipelineStageId;
-  label: string;
-  count: number;
-  widthPct: number;
-  isBottleneck: boolean;
-  bgClass: string;
-};
-
-const maxCount = computed(() =>
-  Math.max(1, ...props.stages.map((s) => s.count))
-);
 
 // Identify bottleneck as the stage with the largest relative drop from previous stage.
 const bottleneckStageId = computed<CandidatePipelineStageId | null>(() => {
@@ -120,29 +104,6 @@ const bottleneckStageId = computed<CandidatePipelineStageId | null>(() => {
   }
   return bestId;
 });
-
-const bgByIndex = (idx: number) => {
-  // Simple, high-contrast palette using Tailwind colors (avoid relying on custom tokens like bg-info).
-  const classes = [
-    "bg-primary/15",
-    "bg-sky-500/15",
-    "bg-emerald-500/15",
-    "bg-amber-500/15",
-    "bg-slate-500/15",
-  ];
-  return classes[idx % classes.length];
-};
-
-const segments = computed<Segment[]>(() =>
-  props.stages.map((s, idx) => ({
-    id: s.id,
-    label: stageLabel(s.id),
-    count: s.count,
-    widthPct: clampPct((s.count / maxCount.value) * 100),
-    isBottleneck: bottleneckStageId.value === s.id,
-    bgClass: bgByIndex(idx),
-  }))
-);
 
 const stageCards = computed(() => {
   const stages = props.stages;

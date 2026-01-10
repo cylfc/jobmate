@@ -5,7 +5,7 @@
     </div>
 
     <div v-else-if="items.length === 0" class="text-center p-8 text-muted">
-      <p>{{ $t('chat.components.source-table.no-data') }}</p>
+      <p>{{ $t("chat.components.source-table.no-data") }}</p>
     </div>
 
     <div v-else class="space-y-2 max-h-96 overflow-y-auto">
@@ -34,82 +34,116 @@
       block
       @click="handleConfirm"
     >
-      {{ $t('chat.components.source-table.confirm', { count: selectedItems.length }) }}
+      {{
+        $t("chat.components.source-table.confirm", {
+          count: selectedItems.length,
+        })
+      }}
     </UButton>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useMatchingJob } from '@matching/composables/use-matching-job'
-import { useMatchingCandidate } from '@matching/composables/use-matching-candidate'
+import { useMatchingJob } from "@matching/composables/use-matching-job";
+import { useMatchingCandidate } from "@matching/composables/use-matching-candidate";
+import type { Job } from "@job/types/job";
+import type { Candidate } from "@candidate/types/candidate";
 
 interface Props {
-  type: 'job' | 'candidate'
+  type: "job" | "candidate";
 }
 
-const props = defineProps<Props>()
+type SourceTableItem =
+  | Job
+  | Candidate
+  | { id?: string; value?: string; [key: string]: unknown };
+
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  (e: 'update', data: { items: any[] }): void
-}>()
+  (e: "update", data: { items: SourceTableItem[] }): void;
+}>();
 
-const jobOps = useMatchingJob()
-const candidateOps = useMatchingCandidate()
+const jobOps = useMatchingJob();
+const candidateOps = useMatchingCandidate();
 
-const loading = ref(true)
-const items = ref<any[]>([])
-const selectedItems = ref<any[]>([])
+const loading = ref(true);
+const items = ref<SourceTableItem[]>([]);
+const selectedItems = ref<SourceTableItem[]>([]);
 
-const isSelected = (item: any) => {
-  return selectedItems.value.some((selected) => getItemId(selected) === getItemId(item))
-}
+const isSelected = (item: SourceTableItem) => {
+  return selectedItems.value.some(
+    (selected) => getItemId(selected) === getItemId(item),
+  );
+};
 
-const getItemId = (item: any) => {
-  return item.id || item.value || JSON.stringify(item)
-}
+const getItemId = (item: SourceTableItem) => {
+  if ("id" in item && item.id) return String(item.id);
+  if ("value" in item && item.value) return String(item.value);
+  return JSON.stringify(item);
+};
 
-const { t } = useI18n()
+const { t } = useI18n();
 
-const getItemTitle = (item: any) => {
-  if (props.type === 'job') {
-    return item.title || item.label || t('chat.components.source-table.untitled-job')
+const getItemTitle = (item: SourceTableItem) => {
+  if (props.type === "job") {
+    if ("title" in item && item.title) return String(item.title);
+    if ("label" in item && item.label) return String(item.label);
+    return t("chat.components.source-table.untitled-job");
   }
-  return `${item.firstName || ''} ${item.lastName || ''}`.trim() || item.name || item.label || t('chat.components.source-table.unknown')
-}
-
-const getItemSubtitle = (item: any) => {
-  if (props.type === 'job') {
-    return item.company || item.description?.substring(0, 50) || ''
+  if ("firstName" in item || "lastName" in item) {
+    const firstName = "firstName" in item ? String(item.firstName || "") : "";
+    const lastName = "lastName" in item ? String(item.lastName || "") : "";
+    const name = `${firstName} ${lastName}`.trim();
+    if (name) return name;
   }
-  return item.email || item.description?.substring(0, 50) || ''
-}
+  if ("name" in item && item.name) return String(item.name);
+  if ("label" in item && item.label) return String(item.label);
+  return t("chat.components.source-table.unknown");
+};
 
-const toggleItem = (item: any) => {
-  const index = selectedItems.value.findIndex((selected) => getItemId(selected) === getItemId(item))
+const getItemSubtitle = (item: SourceTableItem) => {
+  if (props.type === "job") {
+    if ("company" in item && item.company) return String(item.company);
+    if ("description" in item && typeof item.description === "string") {
+      return item.description.substring(0, 50);
+    }
+    return "";
+  }
+  if ("email" in item && item.email) return String(item.email);
+  if ("description" in item && typeof item.description === "string") {
+    return item.description.substring(0, 50);
+  }
+  return "";
+};
+
+const toggleItem = (item: SourceTableItem) => {
+  const index = selectedItems.value.findIndex(
+    (selected) => getItemId(selected) === getItemId(item),
+  );
   if (index >= 0) {
-    selectedItems.value.splice(index, 1)
+    selectedItems.value.splice(index, 1);
   } else {
-    selectedItems.value.push(item)
+    selectedItems.value.push(item);
   }
-}
+};
 
 const handleConfirm = () => {
-  emit('update', { items: selectedItems.value })
-}
+  emit("update", { items: selectedItems.value });
+};
 
 onMounted(async () => {
-  loading.value = true
+  loading.value = true;
   try {
-    if (props.type === 'job') {
-      items.value = await jobOps.getJobsFromDatabase()
+    if (props.type === "job") {
+      items.value = await jobOps.getJobsFromDatabase();
     } else {
-      items.value = await candidateOps.getCandidatesFromDatabase()
+      items.value = await candidateOps.getCandidatesFromDatabase();
     }
   } catch (error) {
-    console.error('Error loading items:', error)
+    console.error("Error loading items:", error);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-})
+});
 </script>
-

@@ -2,7 +2,8 @@
   <div class="space-y-4">
     <UFormField label="Chọn công việc từ database">
       <USelectMenu
- size="lg"        v-model="selectedJobId"
+        v-model="selectedJobId"
+        size="lg"
         :options="jobs"
         option-attribute="title"
         value-attribute="id"
@@ -24,53 +25,49 @@
       <p class="text-sm text-muted">{{ selectedJob.description }}</p>
     </div>
 
-    <UButton
-      v-if="selectedJobId"
-      color="primary"
-      block
-      @click="handleConfirm"
-    >
+    <UButton v-if="selectedJobId" color="primary" block @click="handleConfirm">
       Xác nhận
     </UButton>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { Job } from "@job/types/job";
+
 interface Props {
   jobs?: Array<{
-    id: string
-    title: string
-    company: string
-    description?: string
-  }>
-  value?: string
+    id: string;
+    title: string;
+    company: string;
+    description?: string;
+  }>;
+  value?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   jobs: () => [],
   value: undefined,
-})
+});
 
 const emit = defineEmits<{
-  (e: 'update', data: { jobId: string; job: any }): void
-}>()
+  (e: "update", data: { jobId: string; job: Job }): void;
+}>();
 
-const selectedJobId = ref(props.value)
+const selectedJobId = ref(props.value);
 const selectedJob = computed(() => {
-  return props.jobs.find((j) => j.id === selectedJobId.value)
-})
+  return props.jobs.find((j) => j.id === selectedJobId.value);
+});
 
 const handleSelect = (jobId: string) => {
-  selectedJobId.value = jobId
-}
+  selectedJobId.value = jobId;
+};
 
 const handleConfirm = () => {
   if (selectedJob.value) {
-    emit('update', {
+    emit("update", {
       jobId: selectedJob.value.id,
       job: selectedJob.value,
-    })
+    });
   }
-}
+};
 </script>
-

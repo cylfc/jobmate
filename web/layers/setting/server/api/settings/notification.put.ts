@@ -1,7 +1,7 @@
-import { z } from 'zod'
-import { useApiClient } from '@shared/api'
-import type { NotificationSettings } from '@setting/types/setting'
-import type { ApiResponse } from '@/types/api-response'
+import { z } from "zod";
+import { useApiClient } from "@shared/api";
+import type { NotificationSettings } from "@setting/types/setting";
+import type { ApiResponse } from "@/types/api-response";
 
 const notificationSchema = z.object({
   emailJobMatches: z.boolean().optional(),
@@ -13,63 +13,64 @@ const notificationSchema = z.object({
   inAppJobMatches: z.boolean().optional(),
   inAppNewCandidates: z.boolean().optional(),
   inAppMessages: z.boolean().optional(),
-})
+});
 
 export default defineEventHandler(async (event) => {
   try {
-    const body = await readBody(event)
-    const validated = notificationSchema.parse(body)
+    const body = await readBody(event);
+    const validated = notificationSchema.parse(body);
 
     // Get access token from Authorization header
-    const authHeader = getHeader(event, 'authorization')
+    const authHeader = getHeader(event, "authorization");
     if (!authHeader) {
       throw createError({
         statusCode: 401,
-        message: 'Authorization header required',
-      })
+        message: "Authorization header required",
+      });
     }
 
-    const apiClient = useApiClient()
+    const apiClient = useApiClient();
 
     // Call backend API - returns { data, meta, status } format
     const backendResponse = await apiClient.put<NotificationSettings>(
-      '/settings/notification',
+      "/settings/notification",
       validated,
       {
         Authorization: authHeader,
-      }
-    )
+      },
+    );
 
     // Return in standard format
     return {
       data: backendResponse.data,
       meta: undefined,
       status: backendResponse.status,
-    } as ApiResponse<NotificationSettings>
+    } as ApiResponse<NotificationSettings>;
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw createError({
         statusCode: 400,
-        message: 'Invalid input',
+        message: "Invalid input",
         data: error.errors,
-      })
+      });
     }
 
     // Handle backend errors
-    if (error && typeof error === 'object' && 'statusCode' in error) {
-      const statusCode = (error as { statusCode: number }).statusCode
-      const message = (error as { message: string }).message || 'Failed to update notification settings'
+    if (error && typeof error === "object" && "statusCode" in error) {
+      const statusCode = (error as { statusCode: number }).statusCode;
+      const message =
+        (error as { message: string }).message ||
+        "Failed to update notification settings";
 
       throw createError({
         statusCode,
         message,
-      })
+      });
     }
 
     throw createError({
       statusCode: 500,
-      message: 'Failed to update notification settings',
-    })
+      message: "Failed to update notification settings",
+    });
   }
-})
-
+});

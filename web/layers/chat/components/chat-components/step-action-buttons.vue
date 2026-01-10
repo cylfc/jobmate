@@ -27,26 +27,25 @@
 
 <script setup lang="ts">
 interface Props {
-  showClear?: boolean
-  showBack?: boolean
+  showClear?: boolean;
+  showBack?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showClear: true,
   showBack: true,
-})
+});
 
 const emit = defineEmits<{
-  (e: 'clear'): void
-  (e: 'back'): void
-}>()
+  (e: "clear"): void;
+  (e: "back"): void;
+}>();
 
 const handleClear = () => {
-  emit('clear')
-}
+  emit("clear");
+};
 
 const handleBack = () => {
-  emit('back')
-}
+  emit("back");
+};
 </script>
-

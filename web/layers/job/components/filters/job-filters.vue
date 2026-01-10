@@ -88,10 +88,7 @@ const {
 } = useJobFilters();
 
 // Use filter options composable
-const {
-  statusOptions,
-  fetchOptions,
-} = useJobFilterOptions();
+const { statusOptions, fetchOptions } = useJobFilterOptions();
 
 // Load filter options on mount
 onMounted(async () => {
@@ -121,7 +118,7 @@ watch(
       location: newFilters.location,
     };
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 );
 
 // Use status options from API (with fallback)
@@ -139,7 +136,7 @@ const statusOptionsWithFallback = computed(() => {
 
 const updateLocalFilter = (
   key: keyof JobFilter,
-  value: string | number | undefined
+  value: string | number | undefined,
 ) => {
   localFilters.value = {
     ...localFilters.value,

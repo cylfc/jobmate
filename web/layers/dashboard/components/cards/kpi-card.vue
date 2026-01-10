@@ -17,7 +17,7 @@
     <!-- Main Value -->
     <div class="flex-1">
       <USkeleton v-if="loading" class="h-10 w-32 mb-2" />
-      <div v-else class="text-3xl font-bold text-default tabular-nums ">
+      <div v-else class="text-3xl font-bold text-default tabular-nums">
         {{ value }}
       </div>
 
@@ -116,20 +116,18 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { KpiChartType } from '@/types/dashboard';
+import type { KpiChartType } from "@/types/dashboard";
 import type { BarChartItem } from "@dashboard/components/charts/bar-chart.vue";
 import {
   KPI_BADGE_COLOR,
   KPI_ICON,
   KPI_COLORS,
-  KPI_TEXT_COLOR,
   KPI_LABELS,
   KPI_PROGRESS,
   KPI_CHART_DIMENSIONS,
   type KpiBadgeColor,
   type KpiIcon,
-  type KpiTextColor,
-} from '@dashboard/constants/kpi';
+} from "@dashboard/constants/kpi";
 
 const props = withDefaults(
   defineProps<{
@@ -153,7 +151,7 @@ const props = withDefaults(
     subMetric: undefined,
     subMetricValue: undefined,
     compareData: undefined,
-  }
+  },
 );
 
 const emit = defineEmits<{
@@ -192,20 +190,6 @@ const sparklineColor = computed(() => {
   if (props.delta > 0) return KPI_COLORS.EMERALD_500;
   if (props.delta < 0) return KPI_COLORS.ROSE_500;
   return KPI_COLORS.EMERALD_500;
-});
-
-const deltaColorClass = computed((): KpiTextColor => {
-  if (props.delta === undefined) return KPI_TEXT_COLOR.MUTED;
-  if (props.delta > 0) return KPI_TEXT_COLOR.EMERALD_600;
-  if (props.delta < 0) return KPI_TEXT_COLOR.ROSE_600;
-  return KPI_TEXT_COLOR.AMBER_600;
-});
-
-const subMetricColorClass = computed((): KpiTextColor => {
-  if (props.delta === undefined) return KPI_TEXT_COLOR.EMERALD_600;
-  if (props.delta > 0) return KPI_TEXT_COLOR.EMERALD_600;
-  if (props.delta < 0) return KPI_TEXT_COLOR.ROSE_600;
-  return KPI_TEXT_COLOR.AMBER_600;
 });
 
 const progressColor = computed((): KpiBadgeColor => {

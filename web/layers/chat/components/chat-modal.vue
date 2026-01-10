@@ -10,7 +10,9 @@
     </template>
 
     <template #description>
-      <span class="sr-only">{{ t("chat.description", { defaultValue: "Chat assistant" }) }}</span>
+      <span class="sr-only">{{
+        t("chat.description", { defaultValue: "Chat assistant" })
+      }}</span>
     </template>
 
     <div class="fixed bottom-4 right-4 z-50">
@@ -47,8 +49,6 @@
 </template>
 
 <script setup lang="ts">
-import { useChatSetup } from '@chat/composables/use-chat-setup'
-
 interface Props {
   feature?: string;
   unreadCount?: number;
@@ -60,13 +60,4 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const { t } = useI18n();
-const route = useRoute();
-const { displayMode } = useChatSetup();
-
-const isChatPage = computed(() => route.path === "/chat");
-const shouldShow = computed(
-  () => !isChatPage.value && displayMode.value === "modal"
-);
-
-const isModalOpen = ref(false);
 </script>

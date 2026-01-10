@@ -3,30 +3,29 @@
  * Protects routes that require authentication
  * Redirects to login if user is not authenticated
  */
-import { useAuthStore } from '@auth/stores/auth'
+import { useAuthStore } from "@auth/stores/auth";
 
 export default defineNuxtRouteMiddleware((to, _from) => {
   // Skip middleware on server side
   if (import.meta.server) {
-    return
+    return;
   }
 
-  const authStore = useAuthStore()
+  const authStore = useAuthStore();
 
   // Initialize auth store if not already initialized
   if (!authStore.accessToken) {
-    authStore.init()
+    authStore.init();
   }
 
   // Check if user is authenticated
   if (!authStore.isAuthenticated) {
     // Redirect to login page
     return navigateTo({
-      path: '/auth/login',
+      path: "/auth/login",
       query: {
         redirect: to.fullPath,
       },
-    })
+    });
   }
-})
-
+});

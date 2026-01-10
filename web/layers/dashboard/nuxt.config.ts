@@ -1,9 +1,7 @@
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath } from "node:url";
 
 export default defineNuxtConfig({
   alias: {
-    '@dashboard': fileURLToPath(new URL('.', import.meta.url)),
+    "@dashboard": fileURLToPath(new URL(".", import.meta.url)),
   },
-})
-
-
+});

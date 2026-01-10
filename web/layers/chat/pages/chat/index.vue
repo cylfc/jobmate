@@ -10,34 +10,34 @@
 </template>
 
 <script setup lang="ts">
-import { initChatSetup, useChatSetup } from '@chat/composables/use-chat-setup'
-import type { ChatFeature } from '@chat/types/chat'
+import { initChatSetup, useChatSetup } from "@chat/composables/use-chat-setup";
+import type { ChatFeature } from "@chat/types/chat";
 
 definePageMeta({
-  layout: 'dashboard',
-  middleware: '01-auth',
-})
+  layout: "dashboard",
+  middleware: "01-auth",
+});
 
-const route = useRoute()
-const { selectedPurpose, setDisplayMode, setSelectedPurpose } = useChatSetup()
+const route = useRoute();
+const { selectedPurpose, setDisplayMode, setSelectedPurpose } = useChatSetup();
 
 initChatSetup({
-  status: 'ready',
+  status: "ready",
   shouldAutoScroll: true,
   shouldScrollToBottom: true,
   autoScroll: true,
   compact: false,
   spacingOffset: 0,
-  displayMode: 'inline',
-  selectedPurpose: 'matching',
+  displayMode: "inline",
+  selectedPurpose: "matching",
   assistant: {
-    variant: 'soft',
+    variant: "soft",
   },
-})
+});
 
 onMounted(() => {
-  setDisplayMode('inline')
-  const feature = (route.query.feature as ChatFeature) || selectedPurpose.value
-  setSelectedPurpose(feature)
-})
+  setDisplayMode("inline");
+  const feature = (route.query.feature as ChatFeature) || selectedPurpose.value;
+  setSelectedPurpose(feature);
+});
 </script>

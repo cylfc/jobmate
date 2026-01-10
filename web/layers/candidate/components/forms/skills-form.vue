@@ -1,7 +1,9 @@
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <h4 class="text-md font-semibold">{{ t('candidate.create.skills.title', { defaultValue: 'Skills' }) }}</h4>
+      <h4 class="text-md font-semibold">
+        {{ t("candidate.create.skills.title", { defaultValue: "Skills" }) }}
+      </h4>
       <UButton
         color="primary"
         variant="outline"
@@ -9,12 +11,16 @@
         icon="i-lucide-plus"
         @click="handleAdd"
       >
-        {{ t('candidate.create.skills.add', { defaultValue: 'Add Skill' }) }}
+        {{ t("candidate.create.skills.add", { defaultValue: "Add Skill" }) }}
       </UButton>
     </div>
 
     <div v-if="skills.length === 0" class="text-sm text-muted text-center py-4">
-      {{ t('candidate.create.skills.empty', { defaultValue: 'No skills added. Click "Add Skill" to add one.' }) }}
+      {{
+        t("candidate.create.skills.empty", {
+          defaultValue: 'No skills added. Click "Add Skill" to add one.',
+        })
+      }}
     </div>
 
     <div
@@ -56,46 +62,96 @@
         <template #content>
           <div class="w-full">
             <div class="grid grid-cols-2 gap-4">
-              <UFormField :label="t('candidate.create.skills.name', { defaultValue: 'Skill Name' })" name="name" required class="w-full">
+              <UFormField
+                :label="
+                  t('candidate.create.skills.name', {
+                    defaultValue: 'Skill Name',
+                  })
+                "
+                name="name"
+                required
+                class="w-full"
+              >
                 <UInput
                   v-model="skill.name"
-                  :placeholder="t('candidate.create.skills.name-placeholder', { defaultValue: 'JavaScript' })"
+                  :placeholder="
+                    t('candidate.create.skills.name-placeholder', {
+                      defaultValue: 'JavaScript',
+                    })
+                  "
                   size="lg"
                   class="w-full"
                 />
               </UFormField>
 
-              <UFormField :label="t('candidate.create.skills.type', { defaultValue: 'Skill Type' })" name="skillType" class="w-full">
+              <UFormField
+                :label="
+                  t('candidate.create.skills.type', {
+                    defaultValue: 'Skill Type',
+                  })
+                "
+                name="skillType"
+                class="w-full"
+              >
                 <USelectMenu
                   v-model="skill.skillType"
                   :items="skillTypeOptions"
                   value-key="value"
-                  :placeholder="t('candidate.create.skills.type-placeholder', { defaultValue: 'Select type' })"
+                  :placeholder="
+                    t('candidate.create.skills.type-placeholder', {
+                      defaultValue: 'Select type',
+                    })
+                  "
                   size="lg"
                   class="w-full"
                 />
               </UFormField>
             </div>
 
-            <div v-if="skill.skillType === 'language'" class="grid grid-cols-2 gap-4">
-              <UFormField :label="t('candidate.create.skills.level', { defaultValue: 'Level' })" name="level" class="w-full">
+            <div
+              v-if="skill.skillType === 'language'"
+              class="grid grid-cols-2 gap-4"
+            >
+              <UFormField
+                :label="
+                  t('candidate.create.skills.level', { defaultValue: 'Level' })
+                "
+                name="level"
+                class="w-full"
+              >
                 <USelectMenu
                   v-model="skill.level"
                   :items="levelOptions"
                   value-key="value"
-                  :placeholder="t('candidate.create.skills.level-placeholder', { defaultValue: 'Select level' })"
+                  :placeholder="
+                    t('candidate.create.skills.level-placeholder', {
+                      defaultValue: 'Select level',
+                    })
+                  "
                   size="lg"
                   class="w-full"
                 />
               </UFormField>
 
-              <UFormField :label="t('candidate.create.skills.proficiency', { defaultValue: 'Proficiency (%)' })" name="proficiencyPercentage" class="w-full">
+              <UFormField
+                :label="
+                  t('candidate.create.skills.proficiency', {
+                    defaultValue: 'Proficiency (%)',
+                  })
+                "
+                name="proficiencyPercentage"
+                class="w-full"
+              >
                 <UInput
                   v-model.number="skill.proficiencyPercentage"
                   type="number"
                   min="0"
                   max="100"
-                  :placeholder="t('candidate.create.skills.proficiency-placeholder', { defaultValue: '85' })"
+                  :placeholder="
+                    t('candidate.create.skills.proficiency-placeholder', {
+                      defaultValue: '85',
+                    })
+                  "
                   size="lg"
                   class="w-full"
                 />
@@ -103,26 +159,50 @@
             </div>
 
             <div v-else class="grid grid-cols-2 gap-4">
-              <UFormField :label="t('candidate.create.skills.years', { defaultValue: 'Years of Experience' })" name="yearsOfExperience" class="w-full">
+              <UFormField
+                :label="
+                  t('candidate.create.skills.years', {
+                    defaultValue: 'Years of Experience',
+                  })
+                "
+                name="yearsOfExperience"
+                class="w-full"
+              >
                 <UInput
                   v-model.number="skill.yearsOfExperience"
                   type="number"
                   step="0.5"
                   min="0"
-                  :placeholder="t('candidate.create.skills.years-placeholder', { defaultValue: '5' })"
+                  :placeholder="
+                    t('candidate.create.skills.years-placeholder', {
+                      defaultValue: '5',
+                    })
+                  "
                   size="lg"
                   class="w-full"
                 />
               </UFormField>
 
-              <UFormField :label="t('candidate.create.skills.last-used', { defaultValue: 'Last Used' })" name="lastUsedDate" class="w-full">
+              <UFormField
+                :label="
+                  t('candidate.create.skills.last-used', {
+                    defaultValue: 'Last Used',
+                  })
+                "
+                name="lastUsedDate"
+                class="w-full"
+              >
                 <UInputDate
                   :ref="(el) => setDateInputRef(el, index)"
                   v-model="skill.lastUsedDate"
                   class="w-full"
                 >
                   <template #trailing>
-                    <UPopover :reference="getDateInputRef(index)?.inputsRef?.[3]?.$el || undefined">
+                    <UPopover
+                      :reference="
+                        getDateInputRef(index)?.inputsRef?.[3]?.$el || undefined
+                      "
+                    >
                       <UButton
                         color="neutral"
                         variant="link"
@@ -140,11 +220,23 @@
               </UFormField>
             </div>
 
-            <UFormField :label="t('candidate.create.skills.description', { defaultValue: 'Description' })" name="description" class="w-full">
+            <UFormField
+              :label="
+                t('candidate.create.skills.description', {
+                  defaultValue: 'Description',
+                })
+              "
+              name="description"
+              class="w-full"
+            >
               <UTextarea
                 v-model="skill.description"
                 :rows="2"
-                :placeholder="t('candidate.create.skills.description-placeholder', { defaultValue: 'Additional details...' })"
+                :placeholder="
+                  t('candidate.create.skills.description-placeholder', {
+                    defaultValue: 'Additional details...',
+                  })
+                "
                 size="lg"
                 class="w-full"
               />
@@ -157,175 +249,174 @@
 </template>
 
 <script setup lang="ts">
-import type { SkillEntry } from '@candidate/types/candidate'
-import { CalendarDate, parseDate } from '@internationalized/date'
-import { reactive } from 'vue'
+import type { SkillEntry } from "@candidate/types/candidate";
+import { CalendarDate, parseDate } from "@internationalized/date";
+import { reactive } from "vue";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 interface Props {
-  modelValue: SkillEntry[]
+  modelValue: SkillEntry[];
 }
 
 interface Emits {
-  (e: 'update:modelValue', value: SkillEntry[]): void
+  (e: "update:modelValue", value: SkillEntry[]): void;
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+const props = defineProps<Props>();
+const emit = defineEmits<Emits>();
 
 // Helper function to convert date to CalendarDate
 const toCalendarDateValue = (
-  value: Date | string | CalendarDate | undefined
+  value: Date | string | CalendarDate | undefined,
 ): CalendarDate | undefined => {
-  if (!value) return undefined
-  if (value instanceof CalendarDate) return value
-  if (typeof value === 'string') {
+  if (!value) return undefined;
+  if (value instanceof CalendarDate) return value;
+  if (typeof value === "string") {
     try {
       // Try parsing as YYYY-MM-DD format first
-      return parseDate(value)
+      return parseDate(value);
     } catch {
       // If parseDate fails, try parsing as ISO string and convert
-      const date = new Date(value)
+      const date = new Date(value);
       if (!isNaN(date.getTime())) {
         return new CalendarDate(
           date.getFullYear(),
           date.getMonth() + 1,
-          date.getDate()
-        )
+          date.getDate(),
+        );
       }
-      return undefined
+      return undefined;
     }
   }
   if (value instanceof Date) {
     return new CalendarDate(
       value.getFullYear(),
       value.getMonth() + 1,
-      value.getDate()
-    )
+      value.getDate(),
+    );
   }
-  return undefined
-}
+  return undefined;
+};
 
 // Helper function to convert CalendarDate back to string (for API)
 const fromCalendarDateValue = (
-  value: CalendarDate | undefined
+  value: CalendarDate | undefined,
 ): string | undefined => {
-  if (!value) return undefined
+  if (!value) return undefined;
   if (value instanceof CalendarDate) {
-    return `${value.year}-${String(value.month).padStart(2, '0')}-${String(value.day).padStart(2, '0')}`
+    return `${value.year}-${String(value.month).padStart(2, "0")}-${String(value.day).padStart(2, "0")}`;
   }
-  return undefined
-}
+  return undefined;
+};
 
 // Local reactive array with CalendarDate conversions
-type SkillWithCalendarDate = Omit<
-  SkillEntry,
-  'lastUsedDate'
-> & {
-  lastUsedDate?: CalendarDate
-}
+type SkillWithCalendarDate = Omit<SkillEntry, "lastUsedDate"> & {
+  lastUsedDate?: CalendarDate;
+};
 
-const skills = reactive<SkillWithCalendarDate[]>([])
-let isSyncingFromProps = false
+const skills = reactive<SkillWithCalendarDate[]>([]);
+let isSyncingFromProps = false;
 
 // Sync with props and convert dates
 watch(
   () => props.modelValue,
   (newValue) => {
-    isSyncingFromProps = true
-    skills.splice(0, skills.length, ...newValue.map((skill) => ({
-      ...skill,
-      lastUsedDate: toCalendarDateValue(skill.lastUsedDate),
-    })))
+    isSyncingFromProps = true;
+    skills.splice(
+      0,
+      skills.length,
+      ...newValue.map((skill) => ({
+        ...skill,
+        lastUsedDate: toCalendarDateValue(skill.lastUsedDate),
+      })),
+    );
     nextTick(() => {
-      isSyncingFromProps = false
-    })
+      isSyncingFromProps = false;
+    });
   },
-  { immediate: true, deep: true }
-)
+  { immediate: true, deep: true },
+);
 
 // Watch for changes and emit converted values (only when not syncing from props)
 watch(
   () => skills,
   (newValue) => {
-    if (isSyncingFromProps) return
+    if (isSyncingFromProps) return;
 
     const converted = newValue.map((skill) => {
-      let lastUsedDate: Date | string | CalendarDate | undefined = skill.lastUsedDate
+      let lastUsedDate: Date | string | CalendarDate | undefined =
+        skill.lastUsedDate;
 
       if (lastUsedDate instanceof CalendarDate) {
-        lastUsedDate = fromCalendarDateValue(lastUsedDate)
+        lastUsedDate = fromCalendarDateValue(lastUsedDate);
       } else if (lastUsedDate instanceof Date) {
-        lastUsedDate = lastUsedDate.toISOString().split('T')[0]
+        lastUsedDate = lastUsedDate.toISOString().split("T")[0];
       }
 
       return {
         ...skill,
         lastUsedDate,
-      }
-    })
-    emit('update:modelValue', converted as SkillEntry[])
+      };
+    });
+    emit("update:modelValue", converted as SkillEntry[]);
   },
-  { deep: true }
-)
+  { deep: true },
+);
 
 // Fetch form options from API
-const { formOptions } = useCandidateFormOptions()
-const skillTypeOptions = computed(() => formOptions.value.skillTypes)
-const levelOptions = computed(() => formOptions.value.skillLevels)
+const { formOptions } = useCandidateFormOptions();
+const skillTypeOptions = computed(() => formOptions.value.skillTypes);
+const levelOptions = computed(() => formOptions.value.skillLevels);
 
 const handleAdd = () => {
   skills.push({
-    name: '',
-    skillType: 'technical',
+    name: "",
+    skillType: "technical",
     level: undefined,
     yearsOfExperience: undefined,
     proficiencyPercentage: undefined,
     lastUsedDate: undefined,
     description: undefined,
     orderIndex: skills.length,
-  })
-}
+  });
+};
 
 const handleRemove = (index: number) => {
   // Clean up ref before removing
-  const key = `${index}-lastUsedDate`
+  const key = `${index}-lastUsedDate`;
   if (key in dateInputRefs) {
-    delete dateInputRefs[key]
+    delete dateInputRefs[key];
   }
-  
-  skills.splice(index, 1)
+
+  skills.splice(index, 1);
   // Update orderIndex
   skills.forEach((skill, idx) => {
-    skill.orderIndex = idx
-  })
-  
+    skill.orderIndex = idx;
+  });
+
   // Clean up refs for remaining items (reindex)
   Object.keys(dateInputRefs).forEach((oldKey) => {
-    const oldIndex = parseInt(oldKey.split('-')[0] || '0', 10)
+    const oldIndex = parseInt(oldKey.split("-")[0] || "0", 10);
     if (oldIndex > index) {
       // Move ref to new index
-      const newKey = `${oldIndex - 1}-lastUsedDate`
-      dateInputRefs[newKey] = dateInputRefs[oldKey]
-      delete dateInputRefs[oldKey]
+      const newKey = `${oldIndex - 1}-lastUsedDate`;
+      dateInputRefs[newKey] = dateInputRefs[oldKey];
+      delete dateInputRefs[oldKey];
     }
-  })
-}
+  });
+};
 
-const dateInputRefs = reactive<Record<string, any>>({})
+const dateInputRefs = reactive<Record<string, HTMLElement | null>>({});
 
-const setDateInputRef = (el: any, index: number) => {
+const setDateInputRef = (el: HTMLElement | null, index: number) => {
   if (el) {
-    dateInputRefs[`${index}-lastUsedDate`] = el
+    dateInputRefs[`${index}-lastUsedDate`] = el;
   }
-}
+};
 
 const getDateInputRef = (index: number) => {
-  const key = `${index}-lastUsedDate`
-  return dateInputRefs[key] || undefined
-}
-
-
+  const key = `${index}-lastUsedDate`;
+  return dateInputRefs[key] || undefined;
+};
 </script>
-

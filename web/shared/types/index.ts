@@ -3,4 +3,4 @@
  * Common TypeScript types used across multiple layers
  */
 
-export type { FilterOption, BaseFilter } from './filters'
+export type { FilterOption, BaseFilter } from "./filters";

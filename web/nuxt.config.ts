@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath } from "node:url";
 
 export default defineNuxtConfig({
   extends: [
@@ -12,14 +12,14 @@ export default defineNuxtConfig({
     "./layers/chat",
   ],
   alias: {
-    '@matching': fileURLToPath(new URL('./layers/matching', import.meta.url)),
-    '@auth': fileURLToPath(new URL('./layers/auth', import.meta.url)),
-    '@candidate': fileURLToPath(new URL('./layers/candidate', import.meta.url)),
-    '@job': fileURLToPath(new URL('./layers/job', import.meta.url)),
-    '@setting': fileURLToPath(new URL('./layers/setting', import.meta.url)),
-    '@dashboard': fileURLToPath(new URL('./layers/dashboard', import.meta.url)),
-    '@chat': fileURLToPath(new URL('./layers/chat', import.meta.url)),
-    '@shared': fileURLToPath(new URL('./shared', import.meta.url)),
+    "@matching": fileURLToPath(new URL("./layers/matching", import.meta.url)),
+    "@auth": fileURLToPath(new URL("./layers/auth", import.meta.url)),
+    "@candidate": fileURLToPath(new URL("./layers/candidate", import.meta.url)),
+    "@job": fileURLToPath(new URL("./layers/job", import.meta.url)),
+    "@setting": fileURLToPath(new URL("./layers/setting", import.meta.url)),
+    "@dashboard": fileURLToPath(new URL("./layers/dashboard", import.meta.url)),
+    "@chat": fileURLToPath(new URL("./layers/chat", import.meta.url)),
+    "@shared": fileURLToPath(new URL("./shared", import.meta.url)),
   },
   devtools: { enabled: true },
   modules: [
@@ -31,27 +31,27 @@ export default defineNuxtConfig({
     "@nuxt/ui",
     "@nuxt/hints",
     "@nuxtjs/i18n",
-    '@pinia/nuxt',
-    'nuxt-echarts',
+    "@pinia/nuxt",
+    "nuxt-echarts",
   ],
   echarts: {
-    charts: ['BarChart', 'LineChart', 'PieChart'],
-    components: ['GridComponent', 'TooltipComponent', 'LegendComponent'],
-    renderer: ['svg', 'canvas']
+    charts: ["BarChart", "LineChart", "PieChart"],
+    components: ["GridComponent", "TooltipComponent", "LegendComponent"],
+    renderer: ["svg", "canvas"],
   },
   i18n: {
     lazy: true,
-    langDir: 'locales',
-    defaultLocale: 'vi',
+    langDir: "locales",
+    defaultLocale: "vi",
     locales: [
-      { code: 'vi', name: 'Tiếng Việt', file: 'vi.json' },
-      { code: 'en', name: 'English', file: 'en.json' }
+      { code: "vi", name: "Tiếng Việt", file: "vi.json" },
+      { code: "en", name: "English", file: "en.json" },
     ],
-    strategy: 'no_prefix',
+    strategy: "no_prefix",
     detectBrowserLanguage: {
       useCookie: true,
-      cookieKey: 'i18n_redirected',
-      redirectOn: 'root',
+      cookieKey: "i18n_redirected",
+      redirectOn: "root",
     },
   },
   css: ["~/assets/css/main.css"],
@@ -80,7 +80,8 @@ export default defineNuxtConfig({
        * Backend API Base URL (public)
        * - Set via env: NUXT_PUBLIC_API_BASE_URL=http://localhost:3000
        */
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "http://localhost:3000",
+      apiBaseUrl:
+        process.env.NUXT_PUBLIC_API_BASE_URL || "http://localhost:3000",
     },
   },
 });

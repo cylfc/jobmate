@@ -1,26 +1,26 @@
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia";
 
 export interface User {
-  id: string
-  email: string
-  firstName?: string
-  lastName?: string
-  phone?: string
-  avatarUrl?: string
-  role: string
-  emailVerified?: boolean
-  isActive?: boolean
-  lastLoginAt?: string
-  createdAt?: string
-  updatedAt?: string
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  avatarUrl?: string;
+  role: string;
+  emailVerified?: boolean;
+  isActive?: boolean;
+  lastLoginAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface AuthTokens {
-  accessToken: string
-  refreshToken: string
+  accessToken: string;
+  refreshToken: string;
 }
 
-export const useAuthStore = defineStore('auth', {
+export const useAuthStore = defineStore("auth", {
   state: () => ({
     user: null as User | null,
     accessToken: null as string | null,
@@ -30,9 +30,9 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     isAuthenticated: (state) => !!state.accessToken && !!state.user,
     fullName: (state) => {
-      if (!state.user) return ''
-      const parts = [state.user.firstName, state.user.lastName].filter(Boolean)
-      return parts.length > 0 ? parts.join(' ') : state.user.email
+      if (!state.user) return "";
+      const parts = [state.user.firstName, state.user.lastName].filter(Boolean);
+      return parts.length > 0 ? parts.join(" ") : state.user.email;
     },
   },
 
@@ -41,19 +41,19 @@ export const useAuthStore = defineStore('auth', {
      * Initialize auth state from storage
      */
     init() {
-      if (process.client) {
-        const storedAccessToken = localStorage.getItem('accessToken')
-        const storedRefreshToken = localStorage.getItem('refreshToken')
-        const storedUser = localStorage.getItem('user')
+      if (import.meta.client) {
+        const storedAccessToken = localStorage.getItem("accessToken");
+        const storedRefreshToken = localStorage.getItem("refreshToken");
+        const storedUser = localStorage.getItem("user");
 
         if (storedAccessToken && storedRefreshToken && storedUser) {
           try {
-            this.accessToken = storedAccessToken
-            this.refreshToken = storedRefreshToken
-            this.user = JSON.parse(storedUser) as User
+            this.accessToken = storedAccessToken;
+            this.refreshToken = storedRefreshToken;
+            this.user = JSON.parse(storedUser) as User;
           } catch (error) {
-            console.error('Failed to parse stored user data:', error)
-            this.clearAuth()
+            console.error("Failed to parse stored user data:", error);
+            this.clearAuth();
           }
         }
       }
@@ -63,15 +63,15 @@ export const useAuthStore = defineStore('auth', {
      * Login user and store tokens
      */
     async login(user: User, tokens: AuthTokens) {
-      this.user = user
-      this.accessToken = tokens.accessToken
-      this.refreshToken = tokens.refreshToken
+      this.user = user;
+      this.accessToken = tokens.accessToken;
+      this.refreshToken = tokens.refreshToken;
 
       // Persist to storage
-      if (process.client) {
-        localStorage.setItem('accessToken', tokens.accessToken)
-        localStorage.setItem('refreshToken', tokens.refreshToken)
-        localStorage.setItem('user', JSON.stringify(user))
+      if (import.meta.client) {
+        localStorage.setItem("accessToken", tokens.accessToken);
+        localStorage.setItem("refreshToken", tokens.refreshToken);
+        localStorage.setItem("user", JSON.stringify(user));
       }
     },
 
@@ -79,14 +79,14 @@ export const useAuthStore = defineStore('auth', {
      * Logout user and clear all auth data
      */
     logout() {
-      this.user = null
-      this.accessToken = null
-      this.refreshToken = null
+      this.user = null;
+      this.accessToken = null;
+      this.refreshToken = null;
 
-      if (process.client) {
-        localStorage.removeItem('accessToken')
-        localStorage.removeItem('refreshToken')
-        localStorage.removeItem('user')
+      if (import.meta.client) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
       }
     },
 
@@ -94,10 +94,10 @@ export const useAuthStore = defineStore('auth', {
      * Update access token (after refresh)
      */
     updateAccessToken(accessToken: string) {
-      this.accessToken = accessToken
+      this.accessToken = accessToken;
 
-      if (process.client) {
-        localStorage.setItem('accessToken', accessToken)
+      if (import.meta.client) {
+        localStorage.setItem("accessToken", accessToken);
       }
     },
 
@@ -105,12 +105,12 @@ export const useAuthStore = defineStore('auth', {
      * Update tokens (after refresh)
      */
     updateTokens(tokens: AuthTokens) {
-      this.accessToken = tokens.accessToken
-      this.refreshToken = tokens.refreshToken
+      this.accessToken = tokens.accessToken;
+      this.refreshToken = tokens.refreshToken;
 
-      if (process.client) {
-        localStorage.setItem('accessToken', tokens.accessToken)
-        localStorage.setItem('refreshToken', tokens.refreshToken)
+      if (import.meta.client) {
+        localStorage.setItem("accessToken", tokens.accessToken);
+        localStorage.setItem("refreshToken", tokens.refreshToken);
       }
     },
 
@@ -119,10 +119,10 @@ export const useAuthStore = defineStore('auth', {
      */
     updateUser(user: Partial<User>) {
       if (this.user) {
-        this.user = { ...this.user, ...user }
+        this.user = { ...this.user, ...user };
 
-        if (process.client) {
-          localStorage.setItem('user', JSON.stringify(this.user))
+        if (import.meta.client) {
+          localStorage.setItem("user", JSON.stringify(this.user));
         }
       }
     },
@@ -131,8 +131,7 @@ export const useAuthStore = defineStore('auth', {
      * Clear all auth data
      */
     clearAuth() {
-      this.logout()
+      this.logout();
     },
   },
-})
-
+});

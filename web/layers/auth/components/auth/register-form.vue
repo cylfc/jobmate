@@ -2,9 +2,11 @@
   <UCard>
     <template #header>
       <div class="text-center">
-        <h1 class="text-2xl font-bold text-default">{{ t('auth.register-form.title') }}</h1>
+        <h1 class="text-2xl font-bold text-default">
+          {{ t("auth.register-form.title") }}
+        </h1>
         <p class="mt-2 text-sm text-muted">
-          {{ t('auth.register-form.subtitle') }}
+          {{ t("auth.register-form.subtitle") }}
         </p>
       </div>
     </template>
@@ -16,7 +18,12 @@
       @submit="handleSubmit"
     >
       <div class="grid grid-cols-2 gap-4">
-        <UFormField :label="t('auth.first-name')" name="firstName" required class="w-full">
+        <UFormField
+          :label="t('auth.first-name')"
+          name="firstName"
+          required
+          class="w-full"
+        >
           <UInput
             v-model="state.firstName"
             :placeholder="t('auth.register-form.first-name-placeholder')"
@@ -26,7 +33,12 @@
           />
         </UFormField>
 
-        <UFormField :label="t('auth.last-name')" name="lastName" required class="w-full">
+        <UFormField
+          :label="t('auth.last-name')"
+          name="lastName"
+          required
+          class="w-full"
+        >
           <UInput
             v-model="state.lastName"
             :placeholder="t('auth.register-form.last-name-placeholder')"
@@ -48,7 +60,12 @@
         />
       </UFormField>
 
-      <UFormField :label="t('auth.password')" name="password" required class="w-full">
+      <UFormField
+        :label="t('auth.password')"
+        name="password"
+        required
+        class="w-full"
+      >
         <UInput
           v-model="state.password"
           type="password"
@@ -82,18 +99,18 @@
         block
         :loading="isLoading"
       >
-        {{ t('auth.register-form.submit-button') }}
+        {{ t("auth.register-form.submit-button") }}
       </UButton>
     </UForm>
 
     <template #footer>
       <div class="text-center text-sm text-muted">
-        {{ t('auth.register-form.has-account') }}
+        {{ t("auth.register-form.has-account") }}
         <NuxtLink
           to="/auth/login"
           class="font-medium text-primary hover:text-primary"
         >
-          {{ t('auth.register-form.login-link') }}
+          {{ t("auth.register-form.login-link") }}
         </NuxtLink>
       </div>
     </template>
@@ -103,6 +120,6 @@
 <script setup lang="ts">
 import { useRegister } from "@auth/composables/auth/use-register";
 
-const { t } = useI18n()
+const { t } = useI18n();
 const { schema, state, isLoading, handleSubmit } = useRegister();
 </script>

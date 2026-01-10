@@ -7,15 +7,15 @@
  * Generic filter option for dropdowns
  */
 export interface FilterOption {
-  label: string
-  value: string | number
+  label: string;
+  value: string | number;
 }
 
 /**
  * Generic filter interface
  */
 export interface BaseFilter {
-  search?: string
-  page?: number
-  limit?: number
+  search?: string;
+  page?: number;
+  limit?: number;
 }

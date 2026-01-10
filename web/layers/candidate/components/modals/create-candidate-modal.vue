@@ -1,5 +1,5 @@
 <template>
-  <UModal :dismissible="false" v-model:open="modelValue">
+  <UModal v-model:open="modelValue" :dismissible="false">
     <template #title>
       {{ candidate ? t("candidate.edit.title") : t("candidate.create.title") }}
     </template>
@@ -527,7 +527,7 @@ watch(
       loadFormFromStorage();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Watch for modal open to load from storage
@@ -538,7 +538,7 @@ watch(
       // Load from storage when modal opens in create mode
       loadFormFromStorage();
     }
-  }
+  },
 );
 
 // Watch form changes and save to storage (debounced)
@@ -565,7 +565,7 @@ watch(
       saveFormToStorage();
     }, 500);
   },
-  { deep: true }
+  { deep: true },
 );
 
 const tabs = computed(() => [
@@ -626,7 +626,7 @@ const schema = computed(() =>
         currency: z.string().optional(),
       })
       .optional(),
-  })
+  }),
 );
 
 const handleFileUpload = (event: Event) => {
@@ -642,7 +642,7 @@ const handleExtractFromText = async () => {
   isExtracting.value = true;
   try {
     const parsedCandidate = await parseCandidateFromText(
-      candidateText.value.trim()
+      candidateText.value.trim(),
     );
     if (parsedCandidate) {
       Object.assign(form, {

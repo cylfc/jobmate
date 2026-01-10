@@ -1,55 +1,55 @@
 /**
  * Invite Candidate API
  * Server API route for inviting a candidate
- * 
+ *
  * Note: Backend does not have a dedicated invite endpoint yet.
  * This endpoint can be extended to:
  * - Create a job application for the candidate
  * - Send an email invitation
  * - Create a notification/activity log entry
  */
-import { useApiClient } from '@shared/api'
-import type { ApiResponse } from '@/types/api-response'
+import { useApiClient } from "@shared/api";
+import type { ApiResponse } from "@/types/api-response";
 
 export default defineEventHandler(async (event) => {
   try {
     // Get access token from Authorization header
-    const authHeader = getHeader(event, 'authorization')
+    const authHeader = getHeader(event, "authorization");
     if (!authHeader) {
       throw createError({
         statusCode: 401,
-        message: 'Authorization header required',
-      })
+        message: "Authorization header required",
+      });
     }
 
-    const id = getRouterParam(event, 'id')
+    const id = getRouterParam(event, "id");
 
     if (!id) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Candidate ID is required',
-      })
+        statusMessage: "Candidate ID is required",
+      });
     }
 
-    const apiClient = useApiClient()
+    const apiClient = useApiClient();
 
     // Verify candidate exists
     try {
       await apiClient.get(`/candidates/${id}`, {
         Authorization: authHeader,
-      })
+      });
     } catch (error) {
-      if (error && typeof error === 'object' && 'statusCode' in error) {
-        const statusCode = (error as { statusCode: number }).statusCode
+      if (error && typeof error === "object" && "statusCode" in error) {
+        const statusCode = (error as { statusCode: number }).statusCode;
         if (statusCode === 404) {
           throw createError({
             statusCode: 404,
-            message: 'Candidate not found',
-          })
+            message: "Candidate not found",
+          });
         }
-        throw error
+        throw error;
       }
-      throw error
+      throw error;
     }
 
     // TODO: Implement actual invitation logic when backend endpoint is available
@@ -63,32 +63,32 @@ export default defineEventHandler(async (event) => {
     return {
       data: {
         success: true,
-        message: 'Invitation sent successfully',
+        message: "Invitation sent successfully",
       },
       meta: undefined,
       status: 200,
     } as ApiResponse<{
-      success: boolean
-      message: string
-    }>
+      success: boolean;
+      message: string;
+    }>;
   } catch (error) {
     // Handle errors
-    if (error && typeof error === 'object' && 'statusCode' in error) {
-      const statusCode = (error as { statusCode: number }).statusCode
-      const message = ('message' in error && typeof error.message === 'string')
-        ? error.message
-        : 'Failed to send invitation'
+    if (error && typeof error === "object" && "statusCode" in error) {
+      const statusCode = (error as { statusCode: number }).statusCode;
+      const message =
+        "message" in error && typeof error.message === "string"
+          ? error.message
+          : "Failed to send invitation";
 
       throw createError({
         statusCode,
         message,
-      })
+      });
     }
 
     throw createError({
       statusCode: 500,
-      message: 'Failed to send invitation',
-    })
+      message: "Failed to send invitation",
+    });
   }
-})
-
+});

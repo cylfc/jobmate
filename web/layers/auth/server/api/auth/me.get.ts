@@ -1,39 +1,39 @@
-import { useApiClient } from '@shared/api'
-import type { ApiResponse } from '@/types/api-response'
+import { useApiClient } from "@shared/api";
+import type { ApiResponse } from "@/types/api-response";
 
 export default defineEventHandler(async (event) => {
   try {
     // Get access token from Authorization header
-    const authHeader = getHeader(event, 'authorization')
+    const authHeader = getHeader(event, "authorization");
     if (!authHeader) {
       throw createError({
         statusCode: 401,
-        message: 'Authorization header required',
-      })
+        message: "Authorization header required",
+      });
     }
 
-    const apiClient = useApiClient()
+    const apiClient = useApiClient();
 
     // Call backend API - returns { data, meta, status } format
     const backendResponse = await apiClient.get<{
-      id: string
-      email: string
-      firstName?: string
-      lastName?: string
-      phone?: string
-      avatarUrl?: string
-      emailVerified: boolean
-      isActive: boolean
-      role: string
-      lastLoginAt?: string
-      createdAt: string
-      updatedAt: string
-    }>('/auth/me', {
+      id: string;
+      email: string;
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+      avatarUrl?: string;
+      emailVerified: boolean;
+      isActive: boolean;
+      role: string;
+      lastLoginAt?: string;
+      createdAt: string;
+      updatedAt: string;
+    }>("/auth/me", {
       Authorization: authHeader,
-    })
+    });
 
     // Transform backend response data to frontend format
-    const responseData = backendResponse.data
+    const responseData = backendResponse.data;
 
     // Return in standard format
     return {
@@ -57,36 +57,36 @@ export default defineEventHandler(async (event) => {
       status: backendResponse.status,
     } as ApiResponse<{
       user: {
-        id: string
-        email: string
-        firstName?: string
-        lastName?: string
-        phone?: string
-        avatarUrl?: string
-        role: string
-        emailVerified: boolean
-        isActive: boolean
-        lastLoginAt?: string
-        createdAt: string
-        updatedAt: string
-      }
-    }>
+        id: string;
+        email: string;
+        firstName?: string;
+        lastName?: string;
+        phone?: string;
+        avatarUrl?: string;
+        role: string;
+        emailVerified: boolean;
+        isActive: boolean;
+        lastLoginAt?: string;
+        createdAt: string;
+        updatedAt: string;
+      };
+    }>;
   } catch (error) {
     // Handle backend errors
-    if (error && typeof error === 'object' && 'statusCode' in error) {
-      const statusCode = (error as { statusCode: number }).statusCode
-      const message = (error as { message: string }).message || 'Failed to get user profile'
+    if (error && typeof error === "object" && "statusCode" in error) {
+      const statusCode = (error as { statusCode: number }).statusCode;
+      const message =
+        (error as { message: string }).message || "Failed to get user profile";
 
       throw createError({
         statusCode,
         message,
-      })
+      });
     }
 
     throw createError({
       statusCode: 401,
-      message: 'Unauthorized',
-    })
+      message: "Unauthorized",
+    });
   }
-})
-
+});

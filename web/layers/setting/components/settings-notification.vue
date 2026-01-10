@@ -4,10 +4,10 @@
       <div class="flex items-center justify-between">
         <div>
           <h2 class="text-lg font-semibold">
-            {{ t('setting.notification.title') }}
+            {{ t("setting.notification.title") }}
           </h2>
           <p class="mt-1 text-xs text-muted">
-            {{ t('setting.notification.subtitle') }}
+            {{ t("setting.notification.subtitle") }}
           </p>
         </div>
       </div>
@@ -17,7 +17,7 @@
       <!-- Email Notifications -->
       <div class="space-y-4">
         <h3 class="text-sm font-semibold text-default">
-          {{ t('setting.notification.email.title') }}
+          {{ t("setting.notification.email.title") }}
         </h3>
         <div class="space-y-3">
           <UCheckbox
@@ -40,7 +40,7 @@
       <!-- Push Notifications -->
       <div class="space-y-4">
         <h3 class="text-sm font-semibold text-default">
-          {{ t('setting.notification.push.title') }}
+          {{ t("setting.notification.push.title") }}
         </h3>
         <div class="space-y-3">
           <UCheckbox
@@ -63,7 +63,7 @@
       <!-- In-App Notifications -->
       <div class="space-y-4">
         <h3 class="text-sm font-semibold text-default">
-          {{ t('setting.notification.in-app.title') }}
+          {{ t("setting.notification.in-app.title") }}
         </h3>
         <div class="space-y-3">
           <UCheckbox
@@ -82,19 +82,11 @@
       </div>
 
       <div class="flex justify-end gap-2 pt-4">
-        <UButton
-          color="neutral"
-          variant="ghost"
-          @click="handleReset"
-        >
-          {{ t('common.cancel') }}
+        <UButton color="neutral" variant="ghost" @click="handleReset">
+          {{ t("common.cancel") }}
         </UButton>
-        <UButton
-          color="primary"
-          :loading="loading"
-          @click="handleSubmit"
-        >
-          {{ t('setting.notification.save-button') }}
+        <UButton color="primary" :loading="loading" @click="handleSubmit">
+          {{ t("setting.notification.save-button") }}
         </UButton>
       </div>
     </div>
@@ -102,19 +94,14 @@
 </template>
 
 <script setup lang="ts">
-import { useSettingNotification } from '@setting/composables/use-setting-notification'
-import type { NotificationSettings } from '@setting/types/setting'
+import { useSettingNotification } from "@setting/composables/use-setting-notification";
+import type { NotificationSettings } from "@setting/types/setting";
 
-const { t } = useI18n()
-const toast = useToast()
+const { t } = useI18n();
+const toast = useToast();
 
-const {
-  settings,
-  loading,
-  error,
-  fetchSettings,
-  updateSettings,
-} = useSettingNotification()
+const { settings, loading, error, fetchSettings, updateSettings } =
+  useSettingNotification();
 
 const form = ref<NotificationSettings>({
   emailJobMatches: true,
@@ -126,45 +113,48 @@ const form = ref<NotificationSettings>({
   inAppJobMatches: true,
   inAppNewCandidates: true,
   inAppMessages: true,
-})
+});
 
 // Load notification settings
 onMounted(async () => {
-  await fetchSettings()
+  await fetchSettings();
   if (settings.value) {
-    form.value = { ...settings.value }
+    form.value = { ...settings.value };
   }
-})
+});
 
 // Watch for settings changes
-watch(settings, (newSettings) => {
-  if (newSettings) {
-    form.value = { ...newSettings }
-  }
-}, { immediate: true })
+watch(
+  settings,
+  (newSettings) => {
+    if (newSettings) {
+      form.value = { ...newSettings };
+    }
+  },
+  { immediate: true },
+);
 
 const handleSubmit = async () => {
   try {
-    await updateSettings(form.value)
+    await updateSettings(form.value);
     toast.add({
-      title: t('setting.notification.success.title'),
-      description: t('setting.notification.success.description'),
-      color: 'success',
-    })
-  } catch (_error) {
+      title: t("setting.notification.success.title"),
+      description: t("setting.notification.success.description"),
+      color: "success",
+    });
+  } catch {
     toast.add({
-      title: t('setting.notification.error.title'),
-      description: error.value || t('setting.notification.error.description'),
-      color: 'error',
-    })
+      title: t("setting.notification.error.title"),
+      description: error.value || t("setting.notification.error.description"),
+      color: "error",
+    });
   }
-}
+};
 
 const handleReset = async () => {
-  await fetchSettings()
+  await fetchSettings();
   if (settings.value) {
-    form.value = { ...settings.value }
+    form.value = { ...settings.value };
   }
-}
+};
 </script>
-

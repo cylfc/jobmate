@@ -1,7 +1,9 @@
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <h4 class="text-md font-semibold">{{ t('candidate.create.projects.title', { defaultValue: 'Projects' }) }}</h4>
+      <h4 class="text-md font-semibold">
+        {{ t("candidate.create.projects.title", { defaultValue: "Projects" }) }}
+      </h4>
       <UButton
         color="primary"
         variant="outline"
@@ -9,12 +11,21 @@
         icon="i-lucide-plus"
         @click="handleAdd"
       >
-        {{ t('candidate.create.projects.add', { defaultValue: 'Add Project' }) }}
+        {{
+          t("candidate.create.projects.add", { defaultValue: "Add Project" })
+        }}
       </UButton>
     </div>
 
-    <div v-if="projects.length === 0" class="text-sm text-muted text-center py-4">
-      {{ t('candidate.create.projects.empty', { defaultValue: 'No projects added. Click "Add Project" to add one.' }) }}
+    <div
+      v-if="projects.length === 0"
+      class="text-sm text-muted text-center py-4"
+    >
+      {{
+        t("candidate.create.projects.empty", {
+          defaultValue: 'No projects added. Click "Add Project" to add one.',
+        })
+      }}
     </div>
 
     <div
@@ -39,7 +50,9 @@
             <span class="text-sm font-medium">
               {{
                 project.name ||
-                t("candidate.create.projects.entry", { defaultValue: "Project" })
+                t("candidate.create.projects.entry", {
+                  defaultValue: "Project",
+                })
               }}
               #{{ index + 1 }}
             </span>
@@ -56,19 +69,44 @@
         <template #content>
           <div class="w-full">
             <div class="grid grid-cols-2 gap-4">
-              <UFormField :label="t('candidate.create.projects.name', { defaultValue: 'Project Name' })" name="name" required class="w-full">
+              <UFormField
+                :label="
+                  t('candidate.create.projects.name', {
+                    defaultValue: 'Project Name',
+                  })
+                "
+                name="name"
+                required
+                class="w-full"
+              >
                 <UInput
                   v-model="project.name"
-                  :placeholder="t('candidate.create.projects.name-placeholder', { defaultValue: 'Project name' })"
+                  :placeholder="
+                    t('candidate.create.projects.name-placeholder', {
+                      defaultValue: 'Project name',
+                    })
+                  "
                   size="lg"
                   class="w-full"
                 />
               </UFormField>
 
-              <UFormField :label="t('candidate.create.projects.company', { defaultValue: 'Company' })" name="company" class="w-full">
+              <UFormField
+                :label="
+                  t('candidate.create.projects.company', {
+                    defaultValue: 'Company',
+                  })
+                "
+                name="company"
+                class="w-full"
+              >
                 <UInput
                   v-model="project.company"
-                  :placeholder="t('candidate.create.projects.company-placeholder', { defaultValue: 'Company name' })"
+                  :placeholder="
+                    t('candidate.create.projects.company-placeholder', {
+                      defaultValue: 'Company name',
+                    })
+                  "
                   size="lg"
                   class="w-full"
                 />
@@ -76,19 +114,41 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-              <UFormField :label="t('candidate.create.projects.position', { defaultValue: 'Position' })" name="position" class="w-full">
+              <UFormField
+                :label="
+                  t('candidate.create.projects.position', {
+                    defaultValue: 'Position',
+                  })
+                "
+                name="position"
+                class="w-full"
+              >
                 <UInput
                   v-model="project.position"
-                  :placeholder="t('candidate.create.projects.position-placeholder', { defaultValue: 'Lead Developer' })"
+                  :placeholder="
+                    t('candidate.create.projects.position-placeholder', {
+                      defaultValue: 'Lead Developer',
+                    })
+                  "
                   size="lg"
                   class="w-full"
                 />
               </UFormField>
 
-              <UFormField :label="t('candidate.create.projects.role', { defaultValue: 'Role' })" name="role" class="w-full">
+              <UFormField
+                :label="
+                  t('candidate.create.projects.role', { defaultValue: 'Role' })
+                "
+                name="role"
+                class="w-full"
+              >
                 <UInput
                   v-model="project.role"
-                  :placeholder="t('candidate.create.projects.role-placeholder', { defaultValue: 'Architect' })"
+                  :placeholder="
+                    t('candidate.create.projects.role-placeholder', {
+                      defaultValue: 'Architect',
+                    })
+                  "
                   size="lg"
                   class="w-full"
                 />
@@ -96,14 +156,26 @@
             </div>
 
             <div class="grid grid-cols-3 gap-4">
-              <UFormField :label="t('candidate.create.projects.start-date', { defaultValue: 'Start Date' })" name="startDate" class="w-full">
+              <UFormField
+                :label="
+                  t('candidate.create.projects.start-date', {
+                    defaultValue: 'Start Date',
+                  })
+                "
+                name="startDate"
+                class="w-full"
+              >
                 <UInputDate
                   :ref="(el) => setDateInputRef(el, index, 'startDate')"
                   v-model="project.startDate"
                   class="w-full"
                 >
                   <template #trailing>
-                    <UPopover :reference="getDateInputRef(index, 'startDate')?.inputsRef?.[3]?.$el">
+                    <UPopover
+                      :reference="
+                        getDateInputRef(index, 'startDate')?.inputsRef?.[3]?.$el
+                      "
+                    >
                       <UButton
                         color="neutral"
                         variant="link"
@@ -120,7 +192,15 @@
                 </UInputDate>
               </UFormField>
 
-              <UFormField :label="t('candidate.create.projects.end-date', { defaultValue: 'End Date' })" name="endDate" class="w-full">
+              <UFormField
+                :label="
+                  t('candidate.create.projects.end-date', {
+                    defaultValue: 'End Date',
+                  })
+                "
+                name="endDate"
+                class="w-full"
+              >
                 <UInputDate
                   :ref="(el) => setDateInputRef(el, index, 'endDate')"
                   v-model="project.endDate"
@@ -128,7 +208,11 @@
                   :disabled="project.isCurrent"
                 >
                   <template #trailing>
-                    <UPopover :reference="getDateInputRef(index, 'endDate')?.inputsRef?.[3]?.$el">
+                    <UPopover
+                      :reference="
+                        getDateInputRef(index, 'endDate')?.inputsRef?.[3]?.$el
+                      "
+                    >
                       <UButton
                         color="neutral"
                         variant="link"
@@ -145,50 +229,114 @@
                 </UInputDate>
               </UFormField>
 
-              <UFormField :label="t('candidate.create.projects.current', { defaultValue: 'Current Project' })" name="isCurrent" class="w-full">
+              <UFormField
+                :label="
+                  t('candidate.create.projects.current', {
+                    defaultValue: 'Current Project',
+                  })
+                "
+                name="isCurrent"
+                class="w-full"
+              >
                 <UCheckbox
                   v-model="project.isCurrent"
-                  :label="t('candidate.create.projects.current-label', { defaultValue: 'Ongoing project' })"
+                  :label="
+                    t('candidate.create.projects.current-label', {
+                      defaultValue: 'Ongoing project',
+                    })
+                  "
                 />
               </UFormField>
             </div>
 
-            <UFormField :label="t('candidate.create.projects.url', { defaultValue: 'Project URL' })" name="projectUrl" class="w-full">
+            <UFormField
+              :label="
+                t('candidate.create.projects.url', {
+                  defaultValue: 'Project URL',
+                })
+              "
+              name="projectUrl"
+              class="w-full"
+            >
               <UInput
                 v-model="project.projectUrl"
                 type="url"
-                :placeholder="t('candidate.create.projects.url-placeholder', { defaultValue: 'https://github.com/user/project' })"
+                :placeholder="
+                  t('candidate.create.projects.url-placeholder', {
+                    defaultValue: 'https://github.com/user/project',
+                  })
+                "
                 size="lg"
                 class="w-full"
               />
             </UFormField>
 
-            <UFormField :label="t('candidate.create.projects.description', { defaultValue: 'Description' })" name="description" class="w-full">
+            <UFormField
+              :label="
+                t('candidate.create.projects.description', {
+                  defaultValue: 'Description',
+                })
+              "
+              name="description"
+              class="w-full"
+            >
               <UTextarea
                 v-model="project.description"
                 :rows="3"
-                :placeholder="t('candidate.create.projects.description-placeholder', { defaultValue: 'Project description...' })"
+                :placeholder="
+                  t('candidate.create.projects.description-placeholder', {
+                    defaultValue: 'Project description...',
+                  })
+                "
                 size="lg"
                 class="w-full"
               />
             </UFormField>
 
-            <UFormField :label="t('candidate.create.projects.technologies', { defaultValue: 'Technologies Used' })" name="technologiesUsed" class="w-full">
+            <UFormField
+              :label="
+                t('candidate.create.projects.technologies', {
+                  defaultValue: 'Technologies Used',
+                })
+              "
+              name="technologiesUsed"
+              class="w-full"
+            >
               <UInput
                 v-model="technologiesText[index]"
-                :placeholder="t('candidate.create.projects.technologies-placeholder', { defaultValue: 'Comma-separated: React, Node.js, TypeScript' })"
+                :placeholder="
+                  t('candidate.create.projects.technologies-placeholder', {
+                    defaultValue: 'Comma-separated: React, Node.js, TypeScript',
+                  })
+                "
                 size="lg"
                 class="w-full"
                 @update:model-value="handleTechnologiesChange(index, $event)"
               />
             </UFormField>
 
-            <UFormField :label="t('candidate.create.projects.achievements', { defaultValue: 'Achievements' })" name="achievements" class="w-full">
+            <UFormField
+              :label="
+                t('candidate.create.projects.achievements', {
+                  defaultValue: 'Achievements',
+                })
+              "
+              name="achievements"
+              class="w-full"
+            >
               <div class="space-y-2">
-                <div v-for="(achievement, aIndex) in project.achievements" :key="aIndex" class="flex gap-2">
+                <div
+                  v-for="(achievement, aIndex) in project.achievements"
+                  :key="aIndex"
+                  class="flex gap-2"
+                >
                   <UInput
                     v-model="project.achievements[aIndex]"
-                    :placeholder="t('candidate.create.projects.achievement-placeholder', { defaultValue: 'Achievement description' })"
+                    :placeholder="
+                      t('candidate.create.projects.achievement-placeholder', {
+                        defaultValue: 'Achievement description',
+                      })
+                    "
                     size="lg"
                     class="w-full"
                   />
@@ -207,7 +355,11 @@
                   icon="i-lucide-plus"
                   @click="addAchievement(index)"
                 >
-                  {{ t('candidate.create.projects.add-achievement', { defaultValue: 'Add Achievement' }) }}
+                  {{
+                    t("candidate.create.projects.add-achievement", {
+                      defaultValue: "Add Achievement",
+                    })
+                  }}
                 </UButton>
               </div>
             </UFormField>
@@ -219,144 +371,147 @@
 </template>
 
 <script setup lang="ts">
-import type { ProjectEntry } from '@candidate/types/candidate'
-import { CalendarDate, parseDate } from '@internationalized/date'
-import { reactive } from 'vue'
+import type { ProjectEntry } from "@candidate/types/candidate";
+import { CalendarDate, parseDate } from "@internationalized/date";
+import { reactive } from "vue";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 interface Props {
-  modelValue: ProjectEntry[]
+  modelValue: ProjectEntry[];
 }
 
 interface Emits {
-  (e: 'update:modelValue', value: ProjectEntry[]): void
+  (e: "update:modelValue", value: ProjectEntry[]): void;
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+const props = defineProps<Props>();
+const emit = defineEmits<Emits>();
 
 // Helper function to convert date to CalendarDate
 const toCalendarDateValue = (
-  value: Date | string | CalendarDate | undefined
+  value: Date | string | CalendarDate | undefined,
 ): CalendarDate | undefined => {
-  if (!value) return undefined
-  if (value instanceof CalendarDate) return value
-  if (typeof value === 'string') {
+  if (!value) return undefined;
+  if (value instanceof CalendarDate) return value;
+  if (typeof value === "string") {
     try {
       // Try parsing as YYYY-MM-DD format first
-      return parseDate(value)
+      return parseDate(value);
     } catch {
       // If parseDate fails, try parsing as ISO string and convert
-      const date = new Date(value)
+      const date = new Date(value);
       if (!isNaN(date.getTime())) {
         return new CalendarDate(
           date.getFullYear(),
           date.getMonth() + 1,
-          date.getDate()
-        )
+          date.getDate(),
+        );
       }
-      return undefined
+      return undefined;
     }
   }
   if (value instanceof Date) {
     return new CalendarDate(
       value.getFullYear(),
       value.getMonth() + 1,
-      value.getDate()
-    )
+      value.getDate(),
+    );
   }
-  return undefined
-}
+  return undefined;
+};
 
 // Helper function to convert CalendarDate back to string (for API)
 const fromCalendarDateValue = (
-  value: CalendarDate | undefined
+  value: CalendarDate | undefined,
 ): string | undefined => {
-  if (!value) return undefined
+  if (!value) return undefined;
   if (value instanceof CalendarDate) {
-    return `${value.year}-${String(value.month).padStart(2, '0')}-${String(value.day).padStart(2, '0')}`
+    return `${value.year}-${String(value.month).padStart(2, "0")}-${String(value.day).padStart(2, "0")}`;
   }
-  return undefined
-}
+  return undefined;
+};
 
 // Local reactive array with CalendarDate conversions
-type ProjectWithCalendarDate = Omit<
-  ProjectEntry,
-  'startDate' | 'endDate'
-> & {
-  startDate?: CalendarDate
-  endDate?: CalendarDate
-}
+type ProjectWithCalendarDate = Omit<ProjectEntry, "startDate" | "endDate"> & {
+  startDate?: CalendarDate;
+  endDate?: CalendarDate;
+};
 
-const projects = reactive<ProjectWithCalendarDate[]>([])
-let isSyncingFromProps = false
+const projects = reactive<ProjectWithCalendarDate[]>([]);
+let isSyncingFromProps = false;
 
 // Sync with props and convert dates
 watch(
   () => props.modelValue,
   (newValue) => {
-    isSyncingFromProps = true
-    projects.splice(0, projects.length, ...newValue.map((proj) => ({
-      ...proj,
-      startDate: toCalendarDateValue(proj.startDate),
-      endDate: toCalendarDateValue(proj.endDate),
-    })))
+    isSyncingFromProps = true;
+    projects.splice(
+      0,
+      projects.length,
+      ...newValue.map((proj) => ({
+        ...proj,
+        startDate: toCalendarDateValue(proj.startDate),
+        endDate: toCalendarDateValue(proj.endDate),
+      })),
+    );
     nextTick(() => {
-      isSyncingFromProps = false
-    })
+      isSyncingFromProps = false;
+    });
   },
-  { immediate: true, deep: true }
-)
+  { immediate: true, deep: true },
+);
 
 // Watch for changes and emit converted values (only when not syncing from props)
 watch(
   () => projects,
   (newValue) => {
-    if (isSyncingFromProps) return
+    if (isSyncingFromProps) return;
 
     const converted = newValue.map((proj) => {
-      let startDate: Date | string | CalendarDate | undefined = proj.startDate
-      let endDate: Date | string | CalendarDate | undefined = proj.endDate
+      let startDate: Date | string | CalendarDate | undefined = proj.startDate;
+      let endDate: Date | string | CalendarDate | undefined = proj.endDate;
 
       if (startDate instanceof CalendarDate) {
-        startDate = fromCalendarDateValue(startDate)
+        startDate = fromCalendarDateValue(startDate);
       } else if (startDate instanceof Date) {
-        startDate = startDate.toISOString().split('T')[0]
+        startDate = startDate.toISOString().split("T")[0];
       }
 
       if (endDate instanceof CalendarDate) {
-        endDate = fromCalendarDateValue(endDate)
+        endDate = fromCalendarDateValue(endDate);
       } else if (endDate instanceof Date) {
-        endDate = endDate.toISOString().split('T')[0]
+        endDate = endDate.toISOString().split("T")[0];
       }
 
       return {
         ...proj,
         startDate,
         endDate,
-      }
-    })
-    emit('update:modelValue', converted as ProjectEntry[])
+      };
+    });
+    emit("update:modelValue", converted as ProjectEntry[]);
   },
-  { deep: true }
-)
+  { deep: true },
+);
 
-const technologiesText = reactive<string[]>([])
+const technologiesText = reactive<string[]>([]);
 
 watch(
   () => projects,
   (newValue) => {
-    technologiesText.splice(0, technologiesText.length, ...newValue.map(
-      (proj) => proj.technologiesUsed?.join(', ') || ''
-    ))
+    technologiesText.splice(
+      0,
+      technologiesText.length,
+      ...newValue.map((proj) => proj.technologiesUsed?.join(", ") || ""),
+    );
   },
-  { immediate: true, deep: true }
-)
+  { immediate: true, deep: true },
+);
 
 const handleAdd = () => {
   projects.push({
-    name: '',
+    name: "",
     company: undefined,
     startDate: undefined,
     endDate: undefined,
@@ -368,48 +523,50 @@ const handleAdd = () => {
     technologiesUsed: [],
     projectUrl: undefined,
     orderIndex: projects.length,
-  })
-  technologiesText.push('')
-}
+  });
+  technologiesText.push("");
+};
 
 const handleRemove = (index: number) => {
-  projects.splice(index, 1)
-  technologiesText.splice(index, 1)
+  projects.splice(index, 1);
+  technologiesText.splice(index, 1);
   // Update orderIndex
   projects.forEach((proj, idx) => {
-    proj.orderIndex = idx
-  })
-}
+    proj.orderIndex = idx;
+  });
+};
 
 const handleTechnologiesChange = (index: number, value: string) => {
   projects[index].technologiesUsed = value
-    .split(',')
+    .split(",")
     .map((t) => t.trim())
-    .filter((t) => t.length > 0)
-}
+    .filter((t) => t.length > 0);
+};
 
-const dateInputRefs = reactive<Record<string, any>>({})
+const dateInputRefs = reactive<Record<string, HTMLElement | null>>({});
 
-const setDateInputRef = (el: any, index: number, field: 'startDate' | 'endDate') => {
+const setDateInputRef = (
+  el: HTMLElement | null,
+  index: number,
+  field: "startDate" | "endDate",
+) => {
   if (el) {
-    dateInputRefs[`${index}-${field}`] = el
+    dateInputRefs[`${index}-${field}`] = el;
   }
-}
+};
 
-const getDateInputRef = (index: number, field: 'startDate' | 'endDate') => {
-  return dateInputRefs[`${index}-${field}`]
-}
+const getDateInputRef = (index: number, field: "startDate" | "endDate") => {
+  return dateInputRefs[`${index}-${field}`];
+};
 
 const addAchievement = (index: number) => {
   if (!projects[index].achievements) {
-    projects[index].achievements = []
+    projects[index].achievements = [];
   }
-  projects[index].achievements!.push('')
-}
+  projects[index].achievements!.push("");
+};
 
 const removeAchievement = (projIndex: number, achIndex: number) => {
-  projects[projIndex].achievements?.splice(achIndex, 1)
-}
-
+  projects[projIndex].achievements?.splice(achIndex, 1);
+};
 </script>
-

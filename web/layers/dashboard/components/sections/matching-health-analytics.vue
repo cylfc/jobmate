@@ -3,10 +3,12 @@
     <div class="flex items-center justify-between gap-3">
       <div class="min-w-0">
         <h2 class="text-base font-semibold text-default">
-          <slot name="title">{{ t('dashboard.matching-health.title') }}</slot>
+          <slot name="title">{{ t("dashboard.matching-health.title") }}</slot>
         </h2>
         <p class="text-sm text-muted">
-          <slot name="subtitle">{{ t('dashboard.matching-health.subtitle') }}</slot>
+          <slot name="subtitle">{{
+            t("dashboard.matching-health.subtitle")
+          }}</slot>
         </p>
       </div>
       <slot name="actions" />
@@ -30,13 +32,11 @@
 </template>
 
 <script setup lang="ts">
-import type { MatchingHealthMetric } from '@dashboard/types/dashboard'
+import type { MatchingHealthMetric } from "@dashboard/types/dashboard";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 defineProps<{
-  metrics: MatchingHealthMetric[]
-}>()
+  metrics: MatchingHealthMetric[];
+}>();
 </script>
-
-

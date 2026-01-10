@@ -3,10 +3,10 @@
     <div class="flex items-center justify-between gap-3">
       <div class="min-w-0">
         <h2 class="text-base font-semibold text-default">
-          <slot name="title">{{ t('dashboard.kpi.title') }}</slot>
+          <slot name="title">{{ t("dashboard.kpi.title") }}</slot>
         </h2>
         <p class="text-sm text-muted">
-          <slot name="subtitle">{{ t('dashboard.kpi.subtitle') }}</slot>
+          <slot name="subtitle">{{ t("dashboard.kpi.subtitle") }}</slot>
         </p>
       </div>
       <slot name="actions" />
@@ -33,17 +33,15 @@
 </template>
 
 <script setup lang="ts">
-import type { KpiCard } from '@dashboard/types/dashboard'
+import type { KpiCard } from "@dashboard/types/dashboard";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 defineEmits<{
-  (e: 'drilldown', kpiId: string): void
-}>()
+  (e: "drilldown", kpiId: string): void;
+}>();
 
 defineProps<{
-  cards: KpiCard[]
-}>()
+  cards: KpiCard[];
+}>();
 </script>
-
-

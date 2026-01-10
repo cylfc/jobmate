@@ -8,17 +8,17 @@
 @theme static {
   --font-sans: "Epunda Slab", serif;
 
-  --color-brand-50: #F8FDE5;
-  --color-brand-100: #F1FBB8;
-  --color-brand-200: #E6F78C;
-  --color-brand-300: #DBF262;
-  --color-brand-400: #D0ED40;
-  --color-brand-500: #CAE825;
-  --color-brand-600: #B7D11F;
-  --color-brand-700: #9FBA1A;
+  --color-brand-50: #f8fde5;
+  --color-brand-100: #f1fbb8;
+  --color-brand-200: #e6f78c;
+  --color-brand-300: #dbf262;
+  --color-brand-400: #d0ed40;
+  --color-brand-500: #cae825;
+  --color-brand-600: #b7d11f;
+  --color-brand-700: #9fba1a;
   --color-brand-800: #889416;
-  --color-brand-900: #6C6E11;
-  --color-brand-950: #6C6E11;
+  --color-brand-900: #6c6e11;
+  --color-brand-950: #6c6e11;
 
   --color-bg-50: hsl(0, 0%, 100%);
   --color-bg-100: hsl(48, 33.3%, 97.1%);

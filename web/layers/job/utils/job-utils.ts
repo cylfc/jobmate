@@ -3,11 +3,10 @@
  * Utility functions for job layer
  */
 export const formatJobTitle = (title: string, company: string): string => {
-  return `${title} at ${company}`
-}
+  return `${title} at ${company}`;
+};
 
-export const isJobActive = (startDate: Date, endDate?: Date): boolean => {
-  const now = new Date()
-  return now >= startDate && (!endDate || now <= endDate)
-}
-
+export const isJobActive = (_startDate: Date, _endDate?: Date): boolean => {
+  const now = new Date();
+  return now >= _startDate && (!_endDate || now <= _endDate);
+};

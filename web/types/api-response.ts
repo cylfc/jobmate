@@ -31,4 +31,3 @@ export interface ApiResponse<T = unknown> {
   meta?: ApiMeta;
   status: number;
 }
-

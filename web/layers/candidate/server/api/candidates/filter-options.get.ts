@@ -3,132 +3,146 @@
  * Returns available options for candidate filters
  * Calculated from actual candidate data
  */
-import { useApiClient } from '@shared/api'
-import type { CandidateFilterOptions, FilterOption } from '@candidate/types/candidate'
-import type { ApiResponse } from '@/types/api-response'
+import { useApiClient } from "@shared/api";
+import type {
+  CandidateFilterOptions,
+  FilterOption,
+} from "@candidate/types/candidate";
+import type { ApiResponse } from "@/types/api-response";
 
-export default defineEventHandler(async (event): Promise<ApiResponse<CandidateFilterOptions>> => {
-  try {
-    // Get access token from Authorization header
-    const authHeader = getHeader(event, 'authorization')
-    if (!authHeader) {
-      throw createError({
-        statusCode: 401,
-        message: 'Authorization header required',
-      })
-    }
-
-    const apiClient = useApiClient()
-
-    // Fetch all candidates to calculate filter options - returns { data: [...], meta: {...}, status: 200 }
-    const backendResponse = await apiClient.get<Array<{
-      skills: string[]
-      experience: Record<string, unknown>[]
-      currentCompany?: string
-    }>>('/candidates?limit=1000', {
-      Authorization: authHeader,
-    })
-
-    // Status options (static)
-    const statusOptions: FilterOption[] = [
-      { label: 'Active', value: 'active' },
-      { label: 'Inactive', value: 'inactive' },
-      { label: 'Archived', value: 'archived' },
-    ]
-
-    // Calculate experience range from actual data
-    const experiences: number[] = []
-    backendResponse.data.forEach((candidate) => {
-      if (Array.isArray(candidate.experience) && candidate.experience.length > 0) {
-        const exp = candidate.experience.find((e) => e.years !== undefined) as { years?: number }
-        if (exp?.years !== undefined) {
-          experiences.push(exp.years)
-        }
+export default defineEventHandler(
+  async (event): Promise<ApiResponse<CandidateFilterOptions>> => {
+    try {
+      // Get access token from Authorization header
+      const authHeader = getHeader(event, "authorization");
+      if (!authHeader) {
+        throw createError({
+          statusCode: 401,
+          message: "Authorization header required",
+        });
       }
-    })
 
-    const experienceRange = {
-      min: experiences.length > 0 ? Math.min(...experiences) : 0,
-      max: experiences.length > 0 ? Math.max(...experiences) : 30,
-      step: 1,
-    }
+      const apiClient = useApiClient();
 
-    // Extract unique skills from all candidates
-    const skillsSet = new Set<string>()
-    backendResponse.data.forEach((candidate) => {
-      if (Array.isArray(candidate.skills)) {
-        candidate.skills.forEach((skill) => {
-          if (skill && typeof skill === 'string') {
-            skillsSet.add(skill)
+      // Fetch all candidates to calculate filter options - returns { data: [...], meta: {...}, status: 200 }
+      const backendResponse = await apiClient.get<
+        Array<{
+          skills: string[];
+          experience: Record<string, unknown>[];
+          currentCompany?: string;
+        }>
+      >("/candidates?limit=1000", {
+        Authorization: authHeader,
+      });
+
+      // Status options (static)
+      const statusOptions: FilterOption[] = [
+        { label: "Active", value: "active" },
+        { label: "Inactive", value: "inactive" },
+        { label: "Archived", value: "archived" },
+      ];
+
+      // Calculate experience range from actual data
+      const experiences: number[] = [];
+      backendResponse.data.forEach((candidate) => {
+        if (
+          Array.isArray(candidate.experience) &&
+          candidate.experience.length > 0
+        ) {
+          const exp = candidate.experience.find(
+            (e) => e.years !== undefined,
+          ) as { years?: number };
+          if (exp?.years !== undefined) {
+            experiences.push(exp.years);
           }
-        })
-      }
-    })
+        }
+      });
 
-    const skillsOptions: FilterOption[] = Array.from(skillsSet)
-      .sort()
-      .map((skill) => ({
-        label: skill,
-        value: skill.toLowerCase().replace(/\s+/g, '-'),
-      }))
+      const experienceRange = {
+        min: experiences.length > 0 ? Math.min(...experiences) : 0,
+        max: experiences.length > 0 ? Math.max(...experiences) : 30,
+        step: 1,
+      };
 
-    // Extract unique companies from all candidates
-    const companiesSet = new Set<string>()
-    backendResponse.data.forEach((candidate) => {
-      if (candidate.currentCompany && typeof candidate.currentCompany === 'string') {
-        companiesSet.add(candidate.currentCompany)
-      }
-    })
+      // Extract unique skills from all candidates
+      const skillsSet = new Set<string>();
+      backendResponse.data.forEach((candidate) => {
+        if (Array.isArray(candidate.skills)) {
+          candidate.skills.forEach((skill) => {
+            if (skill && typeof skill === "string") {
+              skillsSet.add(skill);
+            }
+          });
+        }
+      });
 
-    const companiesOptions: FilterOption[] = Array.from(companiesSet)
-      .sort()
-      .map((company) => ({
-        label: company,
-        value: company.toLowerCase().replace(/\s+/g, '-'),
-      }))
+      const skillsOptions: FilterOption[] = Array.from(skillsSet)
+        .sort()
+        .map((skill) => ({
+          label: skill,
+          value: skill.toLowerCase().replace(/\s+/g, "-"),
+        }));
 
-    const options: CandidateFilterOptions = {
-      status: statusOptions,
-      experienceRange,
-      skills: skillsOptions,
-      companies: companiesOptions,
-    }
+      // Extract unique companies from all candidates
+      const companiesSet = new Set<string>();
+      backendResponse.data.forEach((candidate) => {
+        if (
+          candidate.currentCompany &&
+          typeof candidate.currentCompany === "string"
+        ) {
+          companiesSet.add(candidate.currentCompany);
+        }
+      });
 
-    // Return in standard format
-    return {
-      data: options,
-      meta: undefined,
-      status: backendResponse.status,
-    } as ApiResponse<CandidateFilterOptions>
-  } catch {
-    // If error fetching candidates, return default/mock options
-    // This ensures the UI still works even if backend is unavailable
-    const statusOptions: FilterOption[] = [
-      { label: 'Active', value: 'active' },
-      { label: 'Inactive', value: 'inactive' },
-      { label: 'Archived', value: 'archived' },
-    ]
+      const companiesOptions: FilterOption[] = Array.from(companiesSet)
+        .sort()
+        .map((company) => ({
+          label: company,
+          value: company.toLowerCase().replace(/\s+/g, "-"),
+        }));
 
-    const experienceRange = {
-      min: 0,
-      max: 30,
-      step: 1,
-    }
-
-    const skillsOptions: FilterOption[] = []
-    const companiesOptions: FilterOption[] = []
-
-    // Return in standard format with default options
-    return {
-      data: {
+      const options: CandidateFilterOptions = {
         status: statusOptions,
         experienceRange,
         skills: skillsOptions,
         companies: companiesOptions,
-      },
-      meta: undefined,
-      status: 200,
-    } as ApiResponse<CandidateFilterOptions>
-  }
-})
+      };
 
+      // Return in standard format
+      return {
+        data: options,
+        meta: undefined,
+        status: backendResponse.status,
+      } as ApiResponse<CandidateFilterOptions>;
+    } catch {
+      // If error fetching candidates, return default/mock options
+      // This ensures the UI still works even if backend is unavailable
+      const statusOptions: FilterOption[] = [
+        { label: "Active", value: "active" },
+        { label: "Inactive", value: "inactive" },
+        { label: "Archived", value: "archived" },
+      ];
+
+      const experienceRange = {
+        min: 0,
+        max: 30,
+        step: 1,
+      };
+
+      const skillsOptions: FilterOption[] = [];
+      const companiesOptions: FilterOption[] = [];
+
+      // Return in standard format with default options
+      return {
+        data: {
+          status: statusOptions,
+          experienceRange,
+          skills: skillsOptions,
+          companies: companiesOptions,
+        },
+        meta: undefined,
+        status: 200,
+      } as ApiResponse<CandidateFilterOptions>;
+    }
+  },
+);

@@ -3,14 +3,13 @@
  * Initialize auth store from localStorage on app startup
  * Client-side only
  */
-import { useAuthStore } from '@auth/stores/auth'
+import { useAuthStore } from "@auth/stores/auth";
 
 export default defineNuxtPlugin(() => {
-  const authStore = useAuthStore()
-  
+  const authStore = useAuthStore();
+
   // Initialize auth state from localStorage
   if (import.meta.client) {
-    authStore.init()
+    authStore.init();
   }
-})
-
+});
